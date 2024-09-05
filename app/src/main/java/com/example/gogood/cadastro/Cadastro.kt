@@ -28,6 +28,8 @@ import androidx.compose.material.icons.filled.ArrowForward
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.RadioButton
+import androidx.compose.material3.RadioButtonColors
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -70,10 +72,6 @@ class Cadastro : ComponentActivity() {
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun CadastroApp(modifier: Modifier = Modifier) {
-    val emailState = remember { mutableStateOf("") }
-    val senhaState = remember { mutableStateOf("") }
-    val confirmarSenhaState = remember { mutableStateOf("") }
-
     Column(
         modifier = modifier
             .fillMaxSize()
@@ -222,167 +220,7 @@ fun CadastroApp(modifier: Modifier = Modifier) {
                         }
                     }
                     Spacer(modifier = Modifier.height(28.dp))
-                    Row(
-                        horizontalArrangement = Arrangement.Center,
-                        verticalAlignment = Alignment.Bottom,
-                        modifier = Modifier
-                            .fillMaxWidth()
-                    ) {
-                        Text(
-                            text = "Cadastre-se",
-                            fontSize = 30.sp,
-                            fontWeight = FontWeight.Black,
-                        )
-                    }
-                    Column {
-                        Row(
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .padding(top = 14.dp),
-                            horizontalArrangement = Arrangement.Center,
-                            verticalAlignment = Alignment.CenterVertically
-                        ) {
-                            Column {
-                                Text(
-                                    text = "Email*",
-                                    fontSize = 12.sp,
-                                    fontWeight = FontWeight.Bold
-                                )
-                                BasicTextField(
-                                    value = emailState.value,
-                                    onValueChange = { emailState.value = it },
-                                    modifier = Modifier
-                                        .width(250.dp)
-                                        .height(45.dp)
-                                        .border(1.dp, Color.Black, RoundedCornerShape(8.dp))
-                                        .background(Color.White, RoundedCornerShape(8.dp))
-                                        .padding(start = 15.dp, top = 15.dp),
-                                    singleLine = true,
-                                )
-                            }
-                        }
-
-                        Row(
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .padding(top = 14.dp),
-                            horizontalArrangement = Arrangement.Center,
-                            verticalAlignment = Alignment.CenterVertically
-                        ) {
-                            Column {
-                                Text(
-                                    text = "Senha*",
-                                    fontSize = 12.sp,
-                                    fontWeight = FontWeight.Bold,
-                                )
-                                BasicTextField(
-                                    value = senhaState.value,
-                                    onValueChange = { senhaState.value = it },
-                                    modifier = Modifier
-                                        .width(250.dp)
-                                        .height(45.dp)
-                                        .border(1.dp, Color.Black, RoundedCornerShape(8.dp))
-                                        .background(Color.White, RoundedCornerShape(8.dp))
-                                        .padding(start = 15.dp, top = 15.dp),
-                                    singleLine = true,
-                                )
-
-                            }
-                        }
-
-                        Row(
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .padding(top = 14.dp),
-                            horizontalArrangement = Arrangement.Center,
-                            verticalAlignment = Alignment.CenterVertically
-                        ) {
-                            Column {
-                                Text(
-                                    text = "Confirmar senha*",
-                                    fontSize = 12.sp,
-                                    fontWeight = FontWeight.Bold,
-                                )
-                                BasicTextField(
-                                    value = confirmarSenhaState.value,
-                                    onValueChange = { confirmarSenhaState.value = it },
-                                    modifier = Modifier
-                                        .width(250.dp)
-                                        .height(45.dp)
-                                        .border(1.dp, Color.Black, RoundedCornerShape(8.dp))
-                                        .background(Color.White, RoundedCornerShape(8.dp))
-                                        .padding(start = 15.dp, top = 15.dp),
-                                    singleLine = true,
-                                )
-                            }
-                        }
-                    }
-                    Spacer(modifier = Modifier.height(8.dp))
-                    Row(
-                        horizontalArrangement = Arrangement.Center,
-                        verticalAlignment = Alignment.CenterVertically,
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(top = 16.dp),
-                    ) {
-                        IconButton(
-                            onClick = { /* TODO: Ação ao clicar */ },
-                            modifier = Modifier
-                                .size(50.dp)
-                                .shadow(8.dp, CircleShape)
-                                .background(GogoodGray, CircleShape)
-                        ) {
-                            Icon(
-                                imageVector = Icons.Default.ArrowForward,
-                                contentDescription = "Back",
-                                tint = Color.White
-                            )
-                        }
-                    }
-                    Spacer(modifier = Modifier.height(18.dp))
-                    Row(
-                        horizontalArrangement = Arrangement.Center,
-                        verticalAlignment = Alignment.Bottom,
-                        modifier = Modifier
-                            .fillMaxWidth()
-                    ) {
-                        Column(horizontalAlignment = Alignment.CenterHorizontally) {
-                            Text(
-                                text = "Ou faça parte com",
-                                fontSize = 12.sp,
-                                fontWeight = FontWeight.Normal,
-                            )
-                            Spacer(modifier = Modifier.height(10.dp))
-                            GoogleIcon()
-                        }
-
-                    }
-
-                    Spacer(modifier = Modifier.height(10.dp))
-                    Row(
-                        horizontalArrangement = Arrangement.Center,
-                        verticalAlignment = Alignment.Bottom,
-                        modifier = Modifier
-                            .fillMaxWidth()
-                    ) {
-                        Text(
-                            buildAnnotatedString {
-                                append("Já tem cadastro? Retome sua \n")
-                                append("segurança! ")
-                                withStyle(
-                                    style = SpanStyle(
-                                        color = GogoodGreen,
-                                        textDecoration = TextDecoration.Underline
-                                    )
-                                ) {
-                                    append("Login")
-                                }
-                            },
-                            fontSize = 12.sp,
-                            textAlign = TextAlign.Center,
-                            fontWeight = FontWeight.Normal,
-                        )
-                    }
+                    DadosPessoaisSection()
                 }
             }
         }
@@ -394,5 +232,327 @@ fun CadastroApp(modifier: Modifier = Modifier) {
 fun GreetingPreview() {
     GoGoodTheme {
         CadastroApp()
+    }
+}
+
+@Composable
+fun CadastroSection(){
+    val emailState = remember { mutableStateOf("") }
+    val senhaState = remember { mutableStateOf("") }
+    val confirmarSenhaState = remember { mutableStateOf("") }
+
+    Row(
+        horizontalArrangement = Arrangement.Center,
+        verticalAlignment = Alignment.Bottom,
+        modifier = Modifier
+            .fillMaxWidth()
+    ) {
+        Text(
+            text = "Cadastre-se",
+            fontSize = 30.sp,
+            fontWeight = FontWeight.Black,
+        )
+    }
+    Column {
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(top = 14.dp),
+            horizontalArrangement = Arrangement.Center,
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            Column {
+                Text(
+                    text = "Email*",
+                    fontSize = 12.sp,
+                    fontWeight = FontWeight.Bold
+                )
+                BasicTextField(
+                    value = emailState.value,
+                    onValueChange = { emailState.value = it },
+                    modifier = Modifier
+                        .width(250.dp)
+                        .height(45.dp)
+                        .border(1.dp, Color.Black, RoundedCornerShape(8.dp))
+                        .background(Color.White, RoundedCornerShape(8.dp))
+                        .padding(start = 15.dp, top = 15.dp),
+                    singleLine = true,
+                )
+            }
+        }
+
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(top = 14.dp),
+            horizontalArrangement = Arrangement.Center,
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            Column {
+                Text(
+                    text = "Senha*",
+                    fontSize = 12.sp,
+                    fontWeight = FontWeight.Bold,
+                )
+                BasicTextField(
+                    value = senhaState.value,
+                    onValueChange = { senhaState.value = it },
+                    modifier = Modifier
+                        .width(250.dp)
+                        .height(45.dp)
+                        .border(1.dp, Color.Black, RoundedCornerShape(8.dp))
+                        .background(Color.White, RoundedCornerShape(8.dp))
+                        .padding(start = 15.dp, top = 15.dp),
+                    singleLine = true,
+                )
+
+            }
+        }
+
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(top = 14.dp),
+            horizontalArrangement = Arrangement.Center,
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            Column {
+                Text(
+                    text = "Confirmar senha*",
+                    fontSize = 12.sp,
+                    fontWeight = FontWeight.Bold,
+                )
+                BasicTextField(
+                    value = confirmarSenhaState.value,
+                    onValueChange = { confirmarSenhaState.value = it },
+                    modifier = Modifier
+                        .width(250.dp)
+                        .height(45.dp)
+                        .border(1.dp, Color.Black, RoundedCornerShape(8.dp))
+                        .background(Color.White, RoundedCornerShape(8.dp))
+                        .padding(start = 15.dp, top = 15.dp),
+                    singleLine = true,
+                )
+            }
+        }
+    }
+    Spacer(modifier = Modifier.height(8.dp))
+    Row(
+        horizontalArrangement = Arrangement.Center,
+        verticalAlignment = Alignment.CenterVertically,
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(top = 16.dp),
+    ) {
+        IconButton(
+            onClick = {  },
+            modifier = Modifier
+                .size(50.dp)
+                .shadow(8.dp, CircleShape)
+                .background(GogoodGray, CircleShape)
+        ) {
+            Icon(
+                imageVector = Icons.Default.ArrowForward,
+                contentDescription = "Back",
+                tint = Color.White
+            )
+        }
+    }
+    Spacer(modifier = Modifier.height(18.dp))
+    Row(
+        horizontalArrangement = Arrangement.Center,
+        verticalAlignment = Alignment.Bottom,
+        modifier = Modifier
+            .fillMaxWidth()
+    ) {
+        Column(horizontalAlignment = Alignment.CenterHorizontally) {
+            Text(
+                text = "Ou faça parte com",
+                fontSize = 12.sp,
+                fontWeight = FontWeight.Normal,
+            )
+            Spacer(modifier = Modifier.height(10.dp))
+            GoogleIcon()
+        }
+
+    }
+
+    Spacer(modifier = Modifier.height(10.dp))
+    Row(
+        horizontalArrangement = Arrangement.Center,
+        verticalAlignment = Alignment.Bottom,
+        modifier = Modifier
+            .fillMaxWidth()
+    ) {
+        Text(
+            buildAnnotatedString {
+                append("Já tem cadastro? Retome sua \n")
+                append("segurança! ")
+                withStyle(
+                    style = SpanStyle(
+                        color = GogoodGreen,
+                        textDecoration = TextDecoration.Underline
+                    )
+                ) {
+                    append("Login")
+                }
+            },
+            fontSize = 12.sp,
+            textAlign = TextAlign.Center,
+            fontWeight = FontWeight.Normal,
+        )
+    }
+}
+
+@Composable
+fun DadosPessoaisSection(){
+    val emailState = remember { mutableStateOf("") }
+    val senhaState = remember { mutableStateOf("") }
+    val confirmarSenhaState = remember { mutableStateOf("") }
+
+    Row(
+        horizontalArrangement = Arrangement.Center,
+        verticalAlignment = Alignment.Bottom,
+        modifier = Modifier
+            .fillMaxWidth()
+    ) {
+        Text(
+            text = "Dados pessoais",
+            fontSize = 24.sp,
+            fontWeight = FontWeight.Black,
+        )
+    }
+    Column {
+        Row (
+            verticalAlignment = Alignment.CenterVertically,
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(top = 14.dp, start = 24.dp, end = 24.dp),
+        ) {
+            BasicText(text = "Selecione sua identidade de gênero:", style = TextStyle(fontSize = 12.sp, fontWeight = FontWeight.Normal))
+        }
+
+        Column {
+            RadioButton(
+                modifier = Modifier.padding(start = 9.dp),
+                colors = RadioButtonColors(
+                    selectedColor = GogoodGreen,
+                    unselectedColor = Color.Transparent,
+                    disabledSelectedColor = Color.Transparent,
+                    disabledUnselectedColor = Color.Transparent
+                ),
+                selected = true,
+                onClick = { /*TODO*/ })
+            RadioButton(
+                modifier = Modifier.padding(start = 9.dp),
+                colors = RadioButtonColors(
+                    selectedColor = GogoodGreen,
+                    unselectedColor = Color.Transparent,
+                    disabledSelectedColor = Color.Transparent,
+                    disabledUnselectedColor = Color.Transparent
+                ),
+                selected = true,
+                onClick = { /*TODO*/ })
+            RadioButton(
+                modifier = Modifier.padding(start = 9.dp),
+                colors = RadioButtonColors(
+                    selectedColor = GogoodGreen,
+                    unselectedColor = Color.Transparent,
+                    disabledSelectedColor = Color.Transparent,
+                    disabledUnselectedColor = Color.Transparent
+                ),
+                selected = true,
+                onClick = { /*TODO*/ })
+            RadioButton(
+                modifier = Modifier.padding(start = 9.dp),
+                colors = RadioButtonColors(
+                    selectedColor = GogoodGreen,
+                    unselectedColor = Color.Transparent,
+                    disabledSelectedColor = Color.Transparent,
+                    disabledUnselectedColor = Color.Transparent
+                ),
+                selected = true,
+                onClick = { /*TODO*/ })
+        }
+    }
+    Spacer(modifier = Modifier.height(8.dp))
+    Row(
+        horizontalArrangement = Arrangement.Center,
+        verticalAlignment = Alignment.CenterVertically,
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(top = 16.dp),
+    ) {
+        IconButton(
+            onClick = {  },
+            modifier = Modifier
+                .size(50.dp)
+                .shadow(8.dp, CircleShape)
+                .background(GogoodGray, CircleShape)
+        ) {
+            Icon(
+                imageVector = Icons.Default.ArrowBack,
+                contentDescription = "Back",
+                tint = Color.White
+            )
+        }
+        Spacer(modifier = Modifier.width(24.dp))
+        IconButton(
+            onClick = {  },
+            modifier = Modifier
+                .size(50.dp)
+                .shadow(8.dp, CircleShape)
+                .background(GogoodGray, CircleShape)
+        ) {
+            Icon(
+                imageVector = Icons.Default.ArrowForward,
+                contentDescription = "Back",
+                tint = Color.White
+            )
+        }
+    }
+    Spacer(modifier = Modifier.height(18.dp))
+    Row(
+        horizontalArrangement = Arrangement.Center,
+        verticalAlignment = Alignment.Bottom,
+        modifier = Modifier
+            .fillMaxWidth()
+    ) {
+        Column(horizontalAlignment = Alignment.CenterHorizontally) {
+            Text(
+                text = "Ou faça parte com",
+                fontSize = 12.sp,
+                fontWeight = FontWeight.Normal,
+            )
+            Spacer(modifier = Modifier.height(10.dp))
+            GoogleIcon()
+        }
+
+    }
+
+    Spacer(modifier = Modifier.height(10.dp))
+    Row(
+        horizontalArrangement = Arrangement.Center,
+        verticalAlignment = Alignment.Bottom,
+        modifier = Modifier
+            .fillMaxWidth()
+    ) {
+        Text(
+            buildAnnotatedString {
+                append("Já tem cadastro? Retome sua \n")
+                append("segurança! ")
+                withStyle(
+                    style = SpanStyle(
+                        color = GogoodGreen,
+                        textDecoration = TextDecoration.Underline
+                    )
+                ) {
+                    append("Login")
+                }
+            },
+            fontSize = 12.sp,
+            textAlign = TextAlign.Center,
+            fontWeight = FontWeight.Normal,
+        )
     }
 }
