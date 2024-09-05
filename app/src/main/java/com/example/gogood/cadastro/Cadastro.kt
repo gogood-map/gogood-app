@@ -25,9 +25,6 @@ import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.ArrowForward
-import androidx.compose.material3.CalendarLocale
-import androidx.compose.material3.DatePicker
-import androidx.compose.material3.DatePickerState
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -35,12 +32,11 @@ import androidx.compose.material3.RadioButton
 import androidx.compose.material3.RadioButtonColors
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
-import androidx.compose.material3.TimeInput
-import androidx.compose.material3.TimePickerState
-import androidx.compose.material3.rememberDatePickerState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.shadow
@@ -413,9 +409,8 @@ fun CadastroSection() {
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun DadosPessoaisSection() {
-    val emailState = remember { mutableStateOf("") }
-    val senhaState = remember { mutableStateOf("") }
-    val confirmarSenhaState = remember { mutableStateOf("") }
+    var selectedDate by remember { mutableStateOf("") }
+
 
     Row(
         horizontalArrangement = Arrangement.Center,
@@ -520,6 +515,7 @@ fun DadosPessoaisSection() {
         }
     }
     Spacer(modifier = Modifier.height(8.dp))
+
     Row(
         horizontalArrangement = Arrangement.Center,
         verticalAlignment = Alignment.CenterVertically,
