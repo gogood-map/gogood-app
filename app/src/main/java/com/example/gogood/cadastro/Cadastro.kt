@@ -25,6 +25,9 @@ import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.ArrowForward
+import androidx.compose.material3.CalendarLocale
+import androidx.compose.material3.DatePicker
+import androidx.compose.material3.DatePickerState
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -32,6 +35,9 @@ import androidx.compose.material3.RadioButton
 import androidx.compose.material3.RadioButtonColors
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
+import androidx.compose.material3.TimeInput
+import androidx.compose.material3.TimePickerState
+import androidx.compose.material3.rememberDatePickerState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -199,7 +205,7 @@ fun CadastroApp(modifier: Modifier = Modifier) {
                             )
                         }
                         Spacer(modifier = Modifier.width(4.dp))
-                        Column (
+                        Column(
                             horizontalAlignment = Alignment.CenterHorizontally,
                             verticalArrangement = Arrangement.Center
                         ) {
@@ -236,7 +242,7 @@ fun GreetingPreview() {
 }
 
 @Composable
-fun CadastroSection(){
+fun CadastroSection() {
     val emailState = remember { mutableStateOf("") }
     val senhaState = remember { mutableStateOf("") }
     val confirmarSenhaState = remember { mutableStateOf("") }
@@ -345,7 +351,7 @@ fun CadastroSection(){
             .padding(top = 16.dp),
     ) {
         IconButton(
-            onClick = {  },
+            onClick = { },
             modifier = Modifier
                 .size(50.dp)
                 .shadow(8.dp, CircleShape)
@@ -404,8 +410,9 @@ fun CadastroSection(){
     }
 }
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun DadosPessoaisSection(){
+fun DadosPessoaisSection() {
     val emailState = remember { mutableStateOf("") }
     val senhaState = remember { mutableStateOf("") }
     val confirmarSenhaState = remember { mutableStateOf("") }
@@ -423,56 +430,93 @@ fun DadosPessoaisSection(){
         )
     }
     Column {
-        Row (
+        Row(
             verticalAlignment = Alignment.CenterVertically,
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(top = 14.dp, start = 24.dp, end = 24.dp),
         ) {
-            BasicText(text = "Selecione sua identidade de gênero:", style = TextStyle(fontSize = 12.sp, fontWeight = FontWeight.Normal))
+            BasicText(
+                text = "Selecione sua identidade de gênero:",
+                style = TextStyle(fontSize = 12.sp, fontWeight = FontWeight.Normal)
+            )
         }
 
-        Column {
-            RadioButton(
-                modifier = Modifier.padding(start = 9.dp),
-                colors = RadioButtonColors(
-                    selectedColor = GogoodGreen,
-                    unselectedColor = Color.Transparent,
-                    disabledSelectedColor = Color.Transparent,
-                    disabledUnselectedColor = Color.Transparent
-                ),
-                selected = true,
-                onClick = { /*TODO*/ })
-            RadioButton(
-                modifier = Modifier.padding(start = 9.dp),
-                colors = RadioButtonColors(
-                    selectedColor = GogoodGreen,
-                    unselectedColor = Color.Transparent,
-                    disabledSelectedColor = Color.Transparent,
-                    disabledUnselectedColor = Color.Transparent
-                ),
-                selected = true,
-                onClick = { /*TODO*/ })
-            RadioButton(
-                modifier = Modifier.padding(start = 9.dp),
-                colors = RadioButtonColors(
-                    selectedColor = GogoodGreen,
-                    unselectedColor = Color.Transparent,
-                    disabledSelectedColor = Color.Transparent,
-                    disabledUnselectedColor = Color.Transparent
-                ),
-                selected = true,
-                onClick = { /*TODO*/ })
-            RadioButton(
-                modifier = Modifier.padding(start = 9.dp),
-                colors = RadioButtonColors(
-                    selectedColor = GogoodGreen,
-                    unselectedColor = Color.Transparent,
-                    disabledSelectedColor = Color.Transparent,
-                    disabledUnselectedColor = Color.Transparent
-                ),
-                selected = true,
-                onClick = { /*TODO*/ })
+        Column(
+            verticalArrangement = Arrangement.spacedBy(-20.dp) // Ajusta o espaçamento entre os itens
+        ) {
+            Row(
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.spacedBy(-2.dp)
+            ) {
+                RadioButton(
+                    modifier = Modifier.padding(start = 9.dp),
+                    colors = RadioButtonColors(
+                        selectedColor = GogoodGreen,
+                        unselectedColor = Color.Transparent,
+                        disabledSelectedColor = Color.Transparent,
+                        disabledUnselectedColor = Color.Transparent
+                    ),
+                    selected = true,
+                    onClick = { /*TODO*/ })
+                BasicText(
+                    text = "Feminino",
+                    style = TextStyle(fontSize = 12.sp, fontWeight = FontWeight.Normal)
+                )
+            }
+            Row(
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.spacedBy(-2.dp)
+            ) {
+                RadioButton(
+                    modifier = Modifier.padding(start = 9.dp),
+                    colors = RadioButtonColors(
+                        selectedColor = GogoodGreen,
+                        unselectedColor = Color(0xcFFC4D1E2),
+                        disabledSelectedColor = Color.Transparent,
+                        disabledUnselectedColor = Color.Transparent
+                    ),
+                    selected = false,
+                    onClick = { /*TODO*/ })
+                BasicText(
+                    text = "Masculino",
+                    style = TextStyle(fontSize = 12.sp, fontWeight = FontWeight.Normal)
+                )
+
+            }
+            Row(
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.spacedBy(-2.dp)
+            ) {
+                RadioButton(
+                    modifier = Modifier.padding(start = 9.dp),
+                    colors = RadioButtonColors(
+                        selectedColor = GogoodGreen,
+                        unselectedColor = Color(0xcFFC4D1E2),
+                        disabledSelectedColor = Color.Transparent,
+                        disabledUnselectedColor = Color.Transparent
+                    ),
+                    selected = false,
+                    onClick = { /*TODO*/ })
+                BasicText(text = "Prefiro não dizer", style = TextStyle(fontSize = 12.sp, fontWeight = FontWeight.Normal))
+            }
+            Row(
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.spacedBy(-2.dp)
+            ) {
+                RadioButton(
+                    modifier = Modifier.padding(start = 9.dp),
+                    colors = RadioButtonColors(
+                        selectedColor = GogoodGreen,
+                        unselectedColor = Color(0xcFFC4D1E2),
+                        disabledSelectedColor = Color.Transparent,
+                        disabledUnselectedColor = Color.Transparent
+                    ),
+                    selected = false,
+                    onClick = { /*TODO*/ })
+                BasicText(text = "Outro", style = TextStyle(fontSize = 12.sp, fontWeight = FontWeight.Normal))
+
+            }
         }
     }
     Spacer(modifier = Modifier.height(8.dp))
@@ -484,7 +528,7 @@ fun DadosPessoaisSection(){
             .padding(top = 16.dp),
     ) {
         IconButton(
-            onClick = {  },
+            onClick = { },
             modifier = Modifier
                 .size(50.dp)
                 .shadow(8.dp, CircleShape)
@@ -498,7 +542,7 @@ fun DadosPessoaisSection(){
         }
         Spacer(modifier = Modifier.width(24.dp))
         IconButton(
-            onClick = {  },
+            onClick = { },
             modifier = Modifier
                 .size(50.dp)
                 .shadow(8.dp, CircleShape)
