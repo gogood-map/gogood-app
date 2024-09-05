@@ -83,7 +83,7 @@ fun LoginApp(modifier: Modifier = Modifier) {
             .background(GogoodWhite)
             .padding(start = 24.dp, end = 24.dp)
     ) {
-        Spacer(modifier = Modifier.height(50.dp))
+        Spacer(modifier = Modifier.height(16.dp))
 
         Row {
             IconButton(
