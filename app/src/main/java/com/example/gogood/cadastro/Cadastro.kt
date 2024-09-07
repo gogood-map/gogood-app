@@ -41,6 +41,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
@@ -120,7 +121,7 @@ fun CadastroApp(modifier: Modifier = Modifier) {
             ) {
                 Column {
                     Spacer(modifier = Modifier.height(30.dp))
-                    Stepper("dadosPessoais")
+                    Stepper("Concluído")
                     Spacer(modifier = Modifier.height(28.dp))
                     ConcluidoSection()
                 }
@@ -138,8 +139,9 @@ fun GreetingPreview() {
 }
 
 @Composable
-fun Stepper(step: String){
+fun Stepper(step: String) {
     val steps = listOf("Cadastro", "Dados Pessoais", "Personalização", "Concluído")
+
     Row(
         modifier = Modifier
             .fillMaxWidth()
@@ -147,103 +149,51 @@ fun Stepper(step: String){
             .padding(horizontal = 16.dp),
         horizontalArrangement = Arrangement.SpaceBetween
     ) {
-        Column(
-            horizontalAlignment = Alignment.CenterHorizontally,
-            verticalArrangement = Arrangement.Center
-        ) {
-            BasicText(
-                text = "Cadastro",
-                style = TextStyle(
-                    fontSize = 11.sp,
-                    fontWeight = FontWeight.Medium
-                ),
-                modifier = Modifier.padding(bottom = 2.dp)
-            )
+        steps.forEach { currentStep ->
+            val isActiveStep = steps.indexOf(currentStep) <= steps.indexOf(step)
+            val backgroundColor = if (isActiveStep) {
+                Brush.horizontalGradient(
+                    colors = listOf(Color(0xFF00FF99), Color(0xFF00C9A7))
+                )
+            } else {
+                Brush.linearGradient(colors = listOf(Color(0xFFCCCCCC), Color(0xFFCCCCCC)))
+            }
 
-            Box(
-                modifier = Modifier
-                    .width(65.dp)
-                    .height(8.dp)
-                    .shadow(
-                        13.dp,
-                        RoundedCornerShape(50),
-                        ambientColor = Color(0xFF00FF99).copy(alpha = 0.8f),
-                        spotColor = Color(0xFF00C9A7).copy(alpha = 0.8f)
+            Column(
+                horizontalAlignment = Alignment.CenterHorizontally,
+                verticalArrangement = Arrangement.Center
+            ) {
+                if (currentStep == step) {
+                    BasicText(
+                        text = currentStep,
+                        style = TextStyle(
+                            fontSize = 11.sp,
+                            fontWeight = FontWeight.Medium,
+                            color = if (isActiveStep) Color(0xFF00FF99) else Color(0xFFCCCCCC)
+                        ),
+                        modifier = Modifier.padding(bottom = 2.dp)
                     )
-                    .background(
-                        Brush.horizontalGradient(
-                            listOf(
-                                Color(0xFF00FF99),
-                                Color(0xFF00C9A7)
-                            )
-                        ), shape = RoundedCornerShape(4.dp)
-                    )
-            )
-        }
+                } else {
+                    Spacer(modifier = Modifier.height(14.dp)) // Adjust height to align with text baseline
+                }
 
-        Spacer(modifier = Modifier.width(4.dp))
-        Column(
-            horizontalAlignment = Alignment.CenterHorizontally,
-            verticalArrangement = Arrangement.Center
-        ) {
-            BasicText(
-                text = "",
-                style = TextStyle(
-                    fontSize = 11.sp,
-                    fontWeight = FontWeight.Medium
-                ),
-                modifier = Modifier.padding(bottom = 2.dp)
-            )
-            Box(
-                modifier = Modifier
-                    .width(65.dp)
-                    .height(8.dp)
-                    .background(Color(0xFFCCCCCC), shape = RoundedCornerShape(4.dp))
-            )
-        }
+                Box(
+                    modifier = Modifier
+                        .width(65.dp) // Consistent width
+                        .height(8.dp) // Consistent height
+                        .background(backgroundColor, shape = RoundedCornerShape(8.dp))
+                )
+            }
 
-        Spacer(modifier = Modifier.width(4.dp))
-        Column(
-            horizontalAlignment = Alignment.CenterHorizontally,
-            verticalArrangement = Arrangement.Center
-        ) {
-            BasicText(
-                text = "",
-                style = TextStyle(
-                    fontSize = 11.sp,
-                    fontWeight = FontWeight.Medium
-                ),
-                modifier = Modifier.padding(bottom = 2.dp)
-            )
-            Box(
-                modifier = Modifier
-                    .width(65.dp)
-                    .height(8.dp)
-                    .background(Color(0xFFCCCCCC), shape = RoundedCornerShape(4.dp))
-            )
-        }
-        Spacer(modifier = Modifier.width(4.dp))
-        Column(
-            horizontalAlignment = Alignment.CenterHorizontally,
-            verticalArrangement = Arrangement.Center
-        ) {
-            BasicText(
-                text = "",
-                style = TextStyle(
-                    fontSize = 11.sp,
-                    fontWeight = FontWeight.Medium
-                ),
-                modifier = Modifier.padding(bottom = 2.dp)
-            )
-            Box(
-                modifier = Modifier
-                    .width(65.dp)
-                    .height(8.dp)
-                    .background(Color(0xFFCCCCCC), shape = RoundedCornerShape(4.dp))
-            )
+            Spacer(modifier = Modifier.width(4.dp))
         }
     }
 }
+
+
+
+
+
 
 @Composable
 fun CadastroSection() {
