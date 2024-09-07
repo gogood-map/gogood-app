@@ -50,7 +50,13 @@ android {
 }
 
 dependencies {
-
+    implementation (libs.ui)
+    implementation (libs.androidx.foundation)
+    implementation (libs.androidx.material3.vlatestversion)
+    implementation (libs.androidx.lifecycle.viewmodel.compose)
+    implementation(libs.androidx.ui.text.google.fonts)
+    implementation(libs.coil.compose)
+    implementation (libs.material3)
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.lifecycle.runtime.ktx)
     implementation(libs.androidx.activity.compose)
