@@ -50,7 +50,11 @@ android {
 }
 
 dependencies {
-    implementation("androidx.compose.ui:ui-text-google-fonts:1.7.0")
+    implementation (libs.ui)
+    implementation (libs.androidx.foundation)
+    implementation (libs.androidx.material3.vlatestversion)
+
+    implementation(libs.androidx.ui.text.google.fonts)
     implementation(libs.coil.compose)
     implementation (libs.material3)
     implementation(libs.androidx.core.ktx)

@@ -1,5 +1,6 @@
 package com.example.gogood.cadastro
 
+import ConclusaoArte
 import GoogleIcon
 import android.os.Bundle
 import androidx.activity.ComponentActivity
@@ -109,7 +110,7 @@ fun CadastroApp(modifier: Modifier = Modifier) {
             Box(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .height(600.dp)
+                    .height(550.dp)
                     .shadow(
                         elevation = 10.dp,
                         shape = RoundedCornerShape(16.dp),
@@ -121,7 +122,7 @@ fun CadastroApp(modifier: Modifier = Modifier) {
                     Spacer(modifier = Modifier.height(30.dp))
                     Stepper("dadosPessoais")
                     Spacer(modifier = Modifier.height(28.dp))
-                    DadosPessoaisSection()
+                    ConcluidoSection()
                 }
             }
         }
@@ -627,5 +628,214 @@ fun DadosPessoaisSection() {
             textAlign = TextAlign.Center,
             fontWeight = FontWeight.Normal,
         )
+    }
+}
+
+@Composable
+fun PersonalizacaoSection() {
+    val enderecoRemember = remember { mutableStateOf("") }
+
+    Column(
+        horizontalAlignment = Alignment.CenterHorizontally,
+        verticalArrangement = Arrangement.Center,
+        modifier = Modifier
+            .fillMaxWidth()
+    ) {
+        Text(
+            text = "Personalização",
+            fontSize = 30.sp,
+            fontWeight = FontWeight.Black,
+        )
+        Row(
+            horizontalArrangement = Arrangement.Center,
+            verticalAlignment = Alignment.Bottom,
+            modifier = Modifier
+                .fillMaxWidth()
+        ) {
+            Text(
+                buildAnnotatedString {
+                    append("Estamos quase lá! Só mais \n")
+                    append("algumas informações... ")
+                },
+                fontSize = 12.sp,
+                textAlign = TextAlign.Center,
+                fontWeight = FontWeight.Normal,
+            )
+        }
+    }
+    Column {
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(top = 14.dp),
+            horizontalArrangement = Arrangement.Center,
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            Column {
+                Text(
+                    text = "Seu endereço:",
+                    fontSize = 12.sp,
+                    fontWeight = FontWeight.Bold
+                )
+                BasicTextField(
+                    value = enderecoRemember.value,
+                    onValueChange = { enderecoRemember.value = it },
+                    modifier = Modifier
+                        .width(250.dp)
+                        .height(45.dp)
+                        .border(1.dp, Color.Black, RoundedCornerShape(8.dp))
+                        .background(Color.White, RoundedCornerShape(8.dp))
+                        .padding(start = 15.dp, top = 15.dp),
+                    singleLine = true,
+                )
+            }
+        }
+    }
+    Spacer(modifier = Modifier.height(8.dp))
+    Row(
+        horizontalArrangement = Arrangement.Center,
+        verticalAlignment = Alignment.CenterVertically,
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(top = 16.dp),
+    ) {
+        IconButton(
+            onClick = { },
+            modifier = Modifier
+                .size(50.dp)
+                .shadow(8.dp, CircleShape)
+                .background(GogoodGray, CircleShape)
+        ) {
+            Icon(
+                imageVector = Icons.Default.ArrowBack,
+                contentDescription = "Back",
+                tint = Color.White
+            )
+        }
+        Spacer(modifier = Modifier.width(24.dp))
+        IconButton(
+            onClick = { },
+            modifier = Modifier
+                .size(50.dp)
+                .shadow(8.dp, CircleShape)
+                .background(GogoodGray, CircleShape)
+        ) {
+            Icon(
+                imageVector = Icons.Default.ArrowForward,
+                contentDescription = "Back",
+                tint = Color.White
+            )
+        }
+    }
+    Spacer(modifier = Modifier.height(18.dp))
+    Row(
+        horizontalArrangement = Arrangement.Center,
+        verticalAlignment = Alignment.Bottom,
+        modifier = Modifier
+            .fillMaxWidth()
+    ) {
+        Column(horizontalAlignment = Alignment.CenterHorizontally) {
+            Text(
+                text = "Ou faça parte com",
+                fontSize = 12.sp,
+                fontWeight = FontWeight.Normal,
+            )
+            Spacer(modifier = Modifier.height(10.dp))
+            GoogleIcon()
+        }
+
+    }
+
+    Spacer(modifier = Modifier.height(10.dp))
+    Row(
+        horizontalArrangement = Arrangement.Center,
+        verticalAlignment = Alignment.Bottom,
+        modifier = Modifier
+            .fillMaxWidth()
+    ) {
+        Text(
+            buildAnnotatedString {
+                append("Já tem cadastro? Retome sua \n")
+                append("segurança! ")
+                withStyle(
+                    style = SpanStyle(
+                        color = GogoodGreen,
+                        textDecoration = TextDecoration.Underline
+                    )
+                ) {
+                    append("Login")
+                }
+            },
+            fontSize = 12.sp,
+            textAlign = TextAlign.Center,
+            fontWeight = FontWeight.Normal,
+        )
+    }
+}
+
+@Composable
+fun ConcluidoSection() {
+    val enderecoRemember = remember { mutableStateOf("") }
+
+    Column(
+        horizontalAlignment = Alignment.CenterHorizontally,
+        verticalArrangement = Arrangement.Center,
+        modifier = Modifier
+            .fillMaxWidth()
+    ) {
+        Text(
+            text = "Cadastro concluído",
+            fontSize = 24.sp,
+            fontWeight = FontWeight.Black,
+        )
+        Row(
+            horizontalArrangement = Arrangement.Center,
+            verticalAlignment = Alignment.Bottom,
+            modifier = Modifier
+                .fillMaxWidth()
+        ) {
+            Text(
+                buildAnnotatedString {
+                    append("Obrigado por se juntar a nós. Sua  \n")
+                    append("segurança é nossa prioridade.")
+                },
+                fontSize = 12.sp,
+                textAlign = TextAlign.Center,
+                fontWeight = FontWeight.Normal,
+            )
+        }
+    }
+    Column {
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(top = 14.dp),
+            horizontalArrangement = Arrangement.Center,
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            ConclusaoArte()
+        }
+    }
+    Spacer(modifier = Modifier.height(8.dp))
+    Row(
+        horizontalArrangement = Arrangement.Center,
+        verticalAlignment = Alignment.CenterVertically,
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(top = 16.dp),
+    ) {
+        IconButton(
+            onClick = { },
+            modifier = Modifier
+                .size(50.dp)
+                .shadow(8.dp, CircleShape)
+                .background(GogoodGray, CircleShape)
+        ) {
+            Icon(
+                imageVector = Icons.Default.ArrowForward,
+                contentDescription = "Back",
+                tint = Color.White
+            )
+        }
     }
 }
