@@ -28,6 +28,7 @@ import androidx.compose.material.icons.filled.ArrowForward
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.RadioButton
 import androidx.compose.material3.RadioButtonColors
 import androidx.compose.material3.Scaffold
@@ -108,7 +109,7 @@ fun CadastroApp(modifier: Modifier = Modifier) {
             Box(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .height(620.dp)
+                    .height(600.dp)
                     .shadow(
                         elevation = 10.dp,
                         shape = RoundedCornerShape(16.dp),
@@ -118,109 +119,7 @@ fun CadastroApp(modifier: Modifier = Modifier) {
             ) {
                 Column {
                     Spacer(modifier = Modifier.height(30.dp))
-                    Row(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .height(24.dp)
-                            .padding(horizontal = 16.dp),
-                        horizontalArrangement = Arrangement.SpaceBetween
-                    ) {
-                        Column(
-                            horizontalAlignment = Alignment.CenterHorizontally,
-                            verticalArrangement = Arrangement.Center
-                        ) {
-                            BasicText(
-                                text = "Cadastro",
-                                style = TextStyle(
-                                    fontSize = 11.sp,
-                                    fontWeight = FontWeight.Medium
-                                ),
-                                modifier = Modifier.padding(bottom = 2.dp)
-                            )
-
-                            Box(
-                                modifier = Modifier
-                                    .width(65.dp)
-                                    .height(8.dp)
-                                    .shadow(
-                                        13.dp,
-                                        RoundedCornerShape(50),
-                                        ambientColor = Color(0xFF00FF99).copy(alpha = 0.8f),
-                                        spotColor = Color(0xFF00C9A7).copy(alpha = 0.8f)
-                                    )
-                                    .background(
-                                        Brush.horizontalGradient(
-                                            listOf(
-                                                Color(0xFF00FF99),
-                                                Color(0xFF00C9A7)
-                                            )
-                                        ), shape = RoundedCornerShape(4.dp)
-                                    )
-                            )
-                        }
-
-                        Spacer(modifier = Modifier.width(4.dp))
-                        Column(
-                            horizontalAlignment = Alignment.CenterHorizontally,
-                            verticalArrangement = Arrangement.Center
-                        ) {
-                            BasicText(
-                                text = "",
-                                style = TextStyle(
-                                    fontSize = 11.sp,
-                                    fontWeight = FontWeight.Medium
-                                ),
-                                modifier = Modifier.padding(bottom = 2.dp)
-                            )
-                            Box(
-                                modifier = Modifier
-                                    .width(65.dp)
-                                    .height(8.dp)
-                                    .background(Color(0xFFCCCCCC), shape = RoundedCornerShape(4.dp))
-                            )
-                        }
-
-                        Spacer(modifier = Modifier.width(4.dp))
-                        Column(
-                            horizontalAlignment = Alignment.CenterHorizontally,
-                            verticalArrangement = Arrangement.Center
-                        ) {
-                            BasicText(
-                                text = "",
-                                style = TextStyle(
-                                    fontSize = 11.sp,
-                                    fontWeight = FontWeight.Medium
-                                ),
-                                modifier = Modifier.padding(bottom = 2.dp)
-                            )
-                            Box(
-                                modifier = Modifier
-                                    .width(65.dp)
-                                    .height(8.dp)
-                                    .background(Color(0xFFCCCCCC), shape = RoundedCornerShape(4.dp))
-                            )
-                        }
-                        Spacer(modifier = Modifier.width(4.dp))
-                        Column(
-                            horizontalAlignment = Alignment.CenterHorizontally,
-                            verticalArrangement = Arrangement.Center
-                        ) {
-                            BasicText(
-                                text = "",
-                                style = TextStyle(
-                                    fontSize = 11.sp,
-                                    fontWeight = FontWeight.Medium
-                                ),
-                                modifier = Modifier.padding(bottom = 2.dp)
-                            )
-                            Box(
-                                modifier = Modifier
-                                    .width(65.dp)
-                                    .height(8.dp)
-                                    .background(Color(0xFFCCCCCC), shape = RoundedCornerShape(4.dp))
-                            )
-                        }
-                    }
+                    Stepper("dadosPessoais")
                     Spacer(modifier = Modifier.height(28.dp))
                     DadosPessoaisSection()
                 }
@@ -234,6 +133,114 @@ fun CadastroApp(modifier: Modifier = Modifier) {
 fun GreetingPreview() {
     GoGoodTheme {
         CadastroApp()
+    }
+}
+
+@Composable
+fun Stepper(step: String){
+    val steps = listOf("Cadastro", "Dados Pessoais", "Personalização", "Concluído")
+    Row(
+        modifier = Modifier
+            .fillMaxWidth()
+            .height(24.dp)
+            .padding(horizontal = 16.dp),
+        horizontalArrangement = Arrangement.SpaceBetween
+    ) {
+        Column(
+            horizontalAlignment = Alignment.CenterHorizontally,
+            verticalArrangement = Arrangement.Center
+        ) {
+            BasicText(
+                text = "Cadastro",
+                style = TextStyle(
+                    fontSize = 11.sp,
+                    fontWeight = FontWeight.Medium
+                ),
+                modifier = Modifier.padding(bottom = 2.dp)
+            )
+
+            Box(
+                modifier = Modifier
+                    .width(65.dp)
+                    .height(8.dp)
+                    .shadow(
+                        13.dp,
+                        RoundedCornerShape(50),
+                        ambientColor = Color(0xFF00FF99).copy(alpha = 0.8f),
+                        spotColor = Color(0xFF00C9A7).copy(alpha = 0.8f)
+                    )
+                    .background(
+                        Brush.horizontalGradient(
+                            listOf(
+                                Color(0xFF00FF99),
+                                Color(0xFF00C9A7)
+                            )
+                        ), shape = RoundedCornerShape(4.dp)
+                    )
+            )
+        }
+
+        Spacer(modifier = Modifier.width(4.dp))
+        Column(
+            horizontalAlignment = Alignment.CenterHorizontally,
+            verticalArrangement = Arrangement.Center
+        ) {
+            BasicText(
+                text = "",
+                style = TextStyle(
+                    fontSize = 11.sp,
+                    fontWeight = FontWeight.Medium
+                ),
+                modifier = Modifier.padding(bottom = 2.dp)
+            )
+            Box(
+                modifier = Modifier
+                    .width(65.dp)
+                    .height(8.dp)
+                    .background(Color(0xFFCCCCCC), shape = RoundedCornerShape(4.dp))
+            )
+        }
+
+        Spacer(modifier = Modifier.width(4.dp))
+        Column(
+            horizontalAlignment = Alignment.CenterHorizontally,
+            verticalArrangement = Arrangement.Center
+        ) {
+            BasicText(
+                text = "",
+                style = TextStyle(
+                    fontSize = 11.sp,
+                    fontWeight = FontWeight.Medium
+                ),
+                modifier = Modifier.padding(bottom = 2.dp)
+            )
+            Box(
+                modifier = Modifier
+                    .width(65.dp)
+                    .height(8.dp)
+                    .background(Color(0xFFCCCCCC), shape = RoundedCornerShape(4.dp))
+            )
+        }
+        Spacer(modifier = Modifier.width(4.dp))
+        Column(
+            horizontalAlignment = Alignment.CenterHorizontally,
+            verticalArrangement = Arrangement.Center
+        ) {
+            BasicText(
+                text = "",
+                style = TextStyle(
+                    fontSize = 11.sp,
+                    fontWeight = FontWeight.Medium
+                ),
+                modifier = Modifier.padding(bottom = 2.dp)
+            )
+            Box(
+                modifier = Modifier
+                    .width(65.dp)
+                    .height(8.dp)
+                    .background(Color(0xFFCCCCCC), shape = RoundedCornerShape(4.dp))
+            )
+        }
     }
 }
 
@@ -429,7 +436,7 @@ fun DadosPessoaisSection() {
             verticalAlignment = Alignment.CenterVertically,
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(top = 14.dp, start = 24.dp, end = 24.dp),
+                .padding(top = 20.dp, start = 24.dp, end = 24.dp),
         ) {
             BasicText(
                 text = "Selecione sua identidade de gênero:",
@@ -493,7 +500,10 @@ fun DadosPessoaisSection() {
                     ),
                     selected = false,
                     onClick = { /*TODO*/ })
-                BasicText(text = "Prefiro não dizer", style = TextStyle(fontSize = 12.sp, fontWeight = FontWeight.Normal))
+                BasicText(
+                    text = "Prefiro não dizer",
+                    style = TextStyle(fontSize = 12.sp, fontWeight = FontWeight.Normal)
+                )
             }
             Row(
                 verticalAlignment = Alignment.CenterVertically,
@@ -509,13 +519,35 @@ fun DadosPessoaisSection() {
                     ),
                     selected = false,
                     onClick = { /*TODO*/ })
-                BasicText(text = "Outro", style = TextStyle(fontSize = 12.sp, fontWeight = FontWeight.Normal))
+                BasicText(
+                    text = "Outro",
+                    style = TextStyle(fontSize = 12.sp, fontWeight = FontWeight.Normal)
+                )
 
             }
         }
     }
-    Spacer(modifier = Modifier.height(8.dp))
+    Column(
+        verticalArrangement = Arrangement.Center,
+        modifier = Modifier.padding(horizontal = 25.dp)
+    ) {
+        Text(
+            text = "Data de Nascimento",
+            style = MaterialTheme.typography.bodyMedium,
+            color = Color.Black,
+            modifier = Modifier.padding(vertical = 2.dp)
+        )
+        DatePickerInput(
+            label = "dd/MM/yyyy",
+            selectedDate = selectedDate,
+            onDateSelected = { date -> selectedDate = date },
+            modifier = Modifier
+                .height(45.dp)
+                .width(170.dp)
 
+        )
+    }
+    Spacer(modifier = Modifier.height(14.dp))
     Row(
         horizontalArrangement = Arrangement.Center,
         verticalAlignment = Alignment.CenterVertically,
@@ -552,6 +584,7 @@ fun DadosPessoaisSection() {
         }
     }
     Spacer(modifier = Modifier.height(18.dp))
+
     Row(
         horizontalArrangement = Arrangement.Center,
         verticalAlignment = Alignment.Bottom,
