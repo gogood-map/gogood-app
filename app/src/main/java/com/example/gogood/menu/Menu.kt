@@ -58,19 +58,6 @@ import java.nio.file.WatchEvent
 import java.time.LocalDateTime
 
 
-class MenuActivity: ComponentActivity(){
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        enableEdgeToEdge()
-        setContent{
-            GoGoodTheme {
-
-                Menu()
-
-            }
-        }
-    }
-}
 
 @Composable
 fun Menu(modifier: Modifier = Modifier) {
