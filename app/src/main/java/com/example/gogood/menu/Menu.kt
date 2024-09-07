@@ -1,5 +1,9 @@
-package com.example.gogood
+package com.example.gogood.menu
 
+import android.os.Bundle
+import androidx.activity.ComponentActivity
+import androidx.activity.compose.setContent
+import androidx.activity.enableEdgeToEdge
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -27,6 +31,7 @@ import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
+import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -43,20 +48,40 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import coil.compose.AsyncImage
 import com.example.gogood.ui.theme.GoGoodTheme
-import com.example.gogood.ui.theme.displayFontFamily
+import com.example.gogood.ui.theme.GogoodBorderWhite
+import com.example.gogood.ui.theme.GogoodCardGray
+import com.example.gogood.ui.theme.GogoodGray
+import com.example.gogood.ui.theme.GogoodGraySubTitle
+import com.example.gogood.ui.theme.GogoodGreen
+import com.example.gogood.ui.theme.GogoodHeartFavoriteRed
+import java.nio.file.WatchEvent
 import java.time.LocalDateTime
 
+
+class MenuActivity: ComponentActivity(){
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        enableEdgeToEdge()
+        setContent{
+            GoGoodTheme {
+
+                Menu()
+
+            }
+        }
+    }
+}
+
 @Composable
-fun Menu() {
+fun Menu(modifier: Modifier = Modifier) {
     val data = LocalDateTime.now()
     val mensagem = GerarBoasVindas(data)
     Column(
         verticalArrangement = Arrangement.spacedBy(26.dp),
         modifier = Modifier
             .fillMaxSize()
-            .background(Color.White)
             .padding(horizontal = 16.dp)
-            .padding(top = 50.dp)
+            .padding(top = 16.dp)
     ) {
         Icon(
             Icons.Sharp.Close,
@@ -68,7 +93,6 @@ fun Menu() {
         CardBoasVindas("Teresa", mensagem)
         Favoritos()
         Servicos()
-
     }
 }
 
@@ -112,14 +136,12 @@ fun CardBoasVindas(nomeUsuario: String, mensagem: String) {
 fun Titulo(texto: String) {
     Text(
         text = texto,
-        fontFamily = displayFontFamily,
         style = TextStyle(
-            fontFamily = displayFontFamily,
             fontSize = 28.sp,
             fontWeight = FontWeight.Bold
         ),
         fontWeight = FontWeight.Bold,
-        color = Cinza,
+        color = GogoodGray,
     )
 }
 
@@ -127,13 +149,11 @@ fun Titulo(texto: String) {
 fun SubTitulo(texto: String) {
     Text(
         text = texto,
-        fontFamily = displayFontFamily,
         style = TextStyle(
-            fontFamily = displayFontFamily,
             fontSize = 20.sp,
             fontWeight = FontWeight.Normal
         ),
-        color = CinzaSubTitulo,
+        color = GogoodGraySubTitle,
     )
 }
 
@@ -153,34 +173,33 @@ fun ImagemUsuario(url: String) {
 
 @Composable
 fun ListaFavoritos() {
-    val favoritos: MutableList<Favorito> = mutableListOf(
-        Favorito("Rua Peixe Peixoto", 146, "Escritório"),
-        Favorito("Rua das Madureiras", 466, "Casa"),
-        Favorito("Rua Paulo Sampaio", 832, "Parceiro(a)"),
-    )
-    Box {
-        LazyColumn(modifier = Modifier.padding(horizontal = 16.dp)) {
+    val favoritos = gerarFavoritos()
+
+    Column {
+        LazyColumn(modifier = Modifier
+            .padding(horizontal = 16.dp)
+            .height(260.dp)) {
             items(favoritos) { fav ->
                 ItemListaFavorito(fav)
-                HorizontalDivider(color = BordaItemLista)
+                HorizontalDivider(color = GogoodBorderWhite)
             }
-            item {
-                Row(
-                    verticalAlignment = Alignment.Top,
-                    horizontalArrangement = Arrangement.spacedBy(10.dp),
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(top = 10.dp)
-                ) {
-                    Icon(
-                        Icons.AutoMirrored.Filled.PlaylistAdd,
-                        modifier = Modifier
-                            .size(28.dp),
-                        contentDescription = "Botão de Adicionar Favorito"
-                    )
-                    TextoItemListaFavorito("Adicionar Favorito")
-                }
-            }
+
+        }
+        Row(
+            verticalAlignment = Alignment.Top,
+            horizontalArrangement = Arrangement.spacedBy(10.dp),
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(top = 10.dp)
+                .padding(horizontal = 16.dp)
+        ) {
+            Icon(
+                Icons.AutoMirrored.Filled.PlaylistAdd,
+                modifier = Modifier
+                    .size(28.dp),
+                contentDescription = "Botão de Adicionar Favorito"
+            )
+            TextoItemListaFavorito("Adicionar Favorito")
         }
     }
 
@@ -202,7 +221,7 @@ fun ItemListaFavorito(favorito: Favorito) {
             Icons.Filled.Favorite, contentDescription = "Botão de fechar menu",
             modifier = Modifier
                 .size(28.dp),
-            tint = Vermelho
+            tint = GogoodHeartFavoriteRed
 
         )
         Column(
@@ -219,13 +238,11 @@ fun ItemListaFavorito(favorito: Favorito) {
 fun TextoItemListaFavorito(texto: String) {
     Text(
         text = texto,
-        fontFamily = displayFontFamily,
         style = TextStyle(
-            fontFamily = displayFontFamily,
             fontSize = 20.sp,
             fontWeight = FontWeight.Normal
         ),
-        color = Cinza
+        color = GogoodGray
     )
 }
 
@@ -233,26 +250,23 @@ fun TextoItemListaFavorito(texto: String) {
 fun TextoSubItemListaFavorito(texto: String) {
     Text(
         text = texto,
-        fontFamily = displayFontFamily,
         style = TextStyle(
-            fontFamily = displayFontFamily,
             fontSize = 16.sp,
             fontWeight = FontWeight.Normal
         ),
-        color = CinzaSubTitulo,
+        color = GogoodGraySubTitle,
     )
 }
 @Composable
 fun TextoNomeServico(texto: String){
     Text(
         text = texto,
-        fontFamily = displayFontFamily,
+
         style = TextStyle(
-            fontFamily = displayFontFamily,
             fontSize = 12.sp,
             fontWeight = FontWeight.Bold
         ),
-        color = CinzaSubTitulo
+        color = GogoodGraySubTitle
     )
 }
 @Composable
@@ -270,7 +284,7 @@ fun CardServico(texto: String, cor: Color, icone: ImageVector, tamanho: Dp) {
             .fillMaxSize(),
             contentAlignment = Alignment.Center){
             Column(horizontalAlignment = Alignment.CenterHorizontally) {
-                Icon(icone, contentDescription = "Ícone", tint = ServicoNome)
+                Icon(icone, contentDescription = "Ícone", tint = GogoodCardGray)
                 TextoNomeServico(texto)
             }
 
@@ -283,6 +297,38 @@ fun CardServico(texto: String, cor: Color, icone: ImageVector, tamanho: Dp) {
     }
 }
 
+
+
+
+@Preview(showBackground = true)
+@Composable
+fun ItemFavoritoListaPreview() {
+    ItemListaFavorito(Favorito("Rua Mickey", 1928, "Escritório"))
+
+}
+
+@Preview(showBackground = true)
+@Composable
+fun ListaFavoritosPreview() {
+    GoGoodTheme {
+        ListaFavoritos()
+    }
+}
+@Preview(showBackground = true)
+@Composable
+fun CardServicoPreview() {
+    CardServico(texto = "Card", cor = GogoodGreen, tamanho = 80.dp,
+        icone = Icons.Sharp.Close)
+}
+@Preview(showBackground = true)
+@Composable
+fun MenuPreview(){
+    GoGoodTheme {
+        Scaffold (modifier = Modifier.fillMaxSize()){innerPadding->
+            Menu(modifier = Modifier.padding(innerPadding))
+        }
+    }
+}
 
 private fun GerarBoasVindas(data: LocalDateTime): String {
     var dataApoio: LocalDateTime = LocalDateTime.now()
@@ -303,26 +349,23 @@ private fun GerarBoasVindas(data: LocalDateTime): String {
     return mensagemBoasVindas
 }
 
+fun gerarFavoritos(): List<Favorito> {
+    val logradouros = listOf("Avenida Paulista", "Rua Oscar Freire", "Rua das Flores", "Avenida Brasil",
+        "Rua Augusta", "Rua Consolação", "Avenida Ipiranga", "Rua Haddock Lobo",
+        "Rua Faria Lima", "Avenida Rebouças", "Rua Alameda Santos", "Rua Vergueiro",
+        "Rua Teodoro Sampaio", "Avenida Pacaembu", "Rua Itapeva", "Rua Pamplona",
+        "Rua Bela Cintra", "Rua dos Pinheiros", "Rua Bandeira Paulista", "Avenida Morumbi")
 
-@Preview
-@Composable
-fun ItemFavoritoListaPreview() {
-    ItemListaFavorito(Favorito("Rua Mickey", 1928, "Escritório"))
+    val tipos = listOf("Casa", "Escritório", "Parceiro(a)")
 
-}
+    val favoritos = mutableListOf<Favorito>()
 
-
-@Preview
-@Composable
-fun ListaFavoritosPreview() {
-    GoGoodTheme {
-        ListaFavoritos()
+    for (i in 1..100) {
+        val logradouro = logradouros.random()
+        val numero = (1..1000).random()
+        val tipo = tipos.random()
+        favoritos.add(Favorito(logradouro, numero, tipo))
     }
-}
 
-@Preview
-@Composable
-fun CardServicoPreview() {
-    CardServico(texto = "Card", cor = ServicoNome, tamanho = 80.dp,
-        icone = Icons.Sharp.Close)
+    return favoritos
 }
