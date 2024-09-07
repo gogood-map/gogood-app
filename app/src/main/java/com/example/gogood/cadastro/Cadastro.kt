@@ -1,6 +1,7 @@
 package com.example.gogood.cadastro
 
 import ConclusaoArte
+import androidx.lifecycle.viewmodel.compose.viewModel
 import GoogleIcon
 import android.os.Bundle
 import androidx.activity.ComponentActivity
@@ -13,12 +14,14 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.BasicText
@@ -35,6 +38,8 @@ import androidx.compose.material3.RadioButtonColors
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -51,14 +56,21 @@ import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextDecoration
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
 import com.example.gogood.ui.theme.GoGoodTheme
 import com.example.gogood.ui.theme.GogoodGray
 import com.example.gogood.ui.theme.GogoodGreen
 import com.example.gogood.ui.theme.GogoodWhite
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.launch
 
 class Cadastro : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -74,9 +86,33 @@ class Cadastro : ComponentActivity() {
     }
 }
 
+class SectionViewModel : ViewModel() {
+    private val _boxHeight = MutableStateFlow(400.dp)
+    val boxHeight: StateFlow<Dp> = _boxHeight
+    val currentSection = MutableStateFlow("CadastroSection")
+
+    init {
+        viewModelScope.launch {
+            currentSection.collect { section ->
+                _boxHeight.value = when (section) {
+                    "CadastroSection" -> 620.dp
+                    "DadosPessoaisSection" -> 600.dp
+                    "PersonalizacaoSection" -> 500.dp
+                    "ConcluidoSection" -> 550.dp
+                    else -> 400.dp
+                }
+            }
+        }
+    }
+}
+
+
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun CadastroApp(modifier: Modifier = Modifier) {
+fun CadastroApp(modifier: Modifier = Modifier, viewModel: SectionViewModel = viewModel()) {
+    val currentSection by viewModel.currentSection.collectAsState()
+    val boxHeight by viewModel.boxHeight.collectAsState()
+
     Column(
         modifier = modifier
             .fillMaxSize()
@@ -100,7 +136,6 @@ fun CadastroApp(modifier: Modifier = Modifier) {
                 )
             }
         }
-
         Column(
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.Center,
@@ -111,7 +146,7 @@ fun CadastroApp(modifier: Modifier = Modifier) {
             Box(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .height(550.dp)
+                    .height(boxHeight)
                     .shadow(
                         elevation = 10.dp,
                         shape = RoundedCornerShape(16.dp),
@@ -121,9 +156,33 @@ fun CadastroApp(modifier: Modifier = Modifier) {
             ) {
                 Column {
                     Spacer(modifier = Modifier.height(30.dp))
-                    Stepper("Concluído")
-                    Spacer(modifier = Modifier.height(28.dp))
-                    ConcluidoSection()
+
+                    when (currentSection) {
+                        "CadastroSection" -> {
+                            Stepper("Cadastro")
+                            Spacer(modifier = Modifier.height(28.dp))
+                            CadastroSection(viewModel = viewModel)
+                        }
+
+                        "DadosPessoaisSection" -> {
+                            Stepper("Dados Pessoais")
+                            Spacer(modifier = Modifier.height(28.dp))
+                            DadosPessoaisSection(viewModel = viewModel)
+                        }
+
+                        "PersonalizacaoSection" -> {
+                            Stepper("Personalização")
+                            Spacer(modifier = Modifier.height(28.dp))
+                            PersonalizacaoSection(viewModel = viewModel)
+                        }
+
+                        "ConcluidoSection" -> {
+                            Stepper("Concluído")
+                            Spacer(modifier = Modifier.height(28.dp))
+                            ConcluidoSection(viewModel = viewModel)
+                        }
+
+                    }
                 }
             }
         }
@@ -145,9 +204,10 @@ fun Stepper(step: String) {
     Row(
         modifier = Modifier
             .fillMaxWidth()
-            .height(24.dp)
+            .height(40.dp) // Ajuste a altura para acomodar o texto e as barras
             .padding(horizontal = 16.dp),
-        horizontalArrangement = Arrangement.SpaceBetween
+        horizontalArrangement = Arrangement.SpaceBetween, // Mantém o espaçamento entre os itens
+        verticalAlignment = Alignment.CenterVertically // Centraliza verticalmente
     ) {
         steps.forEach { currentStep ->
             val isActiveStep = steps.indexOf(currentStep) <= steps.indexOf(step)
@@ -161,42 +221,46 @@ fun Stepper(step: String) {
 
             Column(
                 horizontalAlignment = Alignment.CenterHorizontally,
-                verticalArrangement = Arrangement.Center
+                verticalArrangement = Arrangement.Center,
+                modifier = Modifier
+                    .weight(1f)
+                    .fillMaxHeight()
             ) {
-                if (currentStep == step) {
-                    BasicText(
-                        text = currentStep,
-                        style = TextStyle(
-                            fontSize = 11.sp,
-                            fontWeight = FontWeight.Medium,
-                            color = if (isActiveStep) Color(0xFF00FF99) else Color(0xFFCCCCCC)
-                        ),
-                        modifier = Modifier.padding(bottom = 2.dp)
-                    )
-                } else {
-                    Spacer(modifier = Modifier.height(14.dp)) // Adjust height to align with text baseline
+                Box(
+                    modifier = Modifier.height(16.dp)
+                ) {
+                    if (currentStep == step) {
+                        BasicText(
+                            text = currentStep,
+                            style = TextStyle(
+                                fontSize = 11.sp,
+                                fontWeight = FontWeight.Medium,
+                                color = if (isActiveStep) Color(0xFF00FF99) else Color(0xFFCCCCCC)
+                            ),
+                            modifier = Modifier
+                                .widthIn(max = 80.dp),
+                            maxLines = 1,
+                            overflow = TextOverflow.Ellipsis
+                        )
+                    }
                 }
+
 
                 Box(
                     modifier = Modifier
-                        .width(65.dp) // Consistent width
-                        .height(8.dp) // Consistent height
+                        .width(65.dp)
+                        .height(8.dp)
                         .background(backgroundColor, shape = RoundedCornerShape(8.dp))
                 )
             }
 
-            Spacer(modifier = Modifier.width(4.dp))
         }
     }
 }
 
 
-
-
-
-
 @Composable
-fun CadastroSection() {
+fun CadastroSection(viewModel: SectionViewModel) {
     val emailState = remember { mutableStateOf("") }
     val senhaState = remember { mutableStateOf("") }
     val confirmarSenhaState = remember { mutableStateOf("") }
@@ -305,7 +369,9 @@ fun CadastroSection() {
             .padding(top = 16.dp),
     ) {
         IconButton(
-            onClick = { },
+            onClick = {
+                viewModel.currentSection.value = "DadosPessoaisSection"
+            },
             modifier = Modifier
                 .size(50.dp)
                 .shadow(8.dp, CircleShape)
@@ -366,7 +432,7 @@ fun CadastroSection() {
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun DadosPessoaisSection() {
+fun DadosPessoaisSection(viewModel: SectionViewModel) {
     var selectedDate by remember { mutableStateOf("") }
 
 
@@ -507,7 +573,9 @@ fun DadosPessoaisSection() {
             .padding(top = 16.dp),
     ) {
         IconButton(
-            onClick = { },
+            onClick = {
+                viewModel.currentSection.value = "CadastroSection"
+            },
             modifier = Modifier
                 .size(50.dp)
                 .shadow(8.dp, CircleShape)
@@ -521,7 +589,9 @@ fun DadosPessoaisSection() {
         }
         Spacer(modifier = Modifier.width(24.dp))
         IconButton(
-            onClick = { },
+            onClick = {
+                viewModel.currentSection.value = "PersonalizacaoSection"
+            },
             modifier = Modifier
                 .size(50.dp)
                 .shadow(8.dp, CircleShape)
@@ -582,7 +652,7 @@ fun DadosPessoaisSection() {
 }
 
 @Composable
-fun PersonalizacaoSection() {
+fun PersonalizacaoSection(viewModel: SectionViewModel) {
     val enderecoRemember = remember { mutableStateOf("") }
 
     Column(
@@ -650,7 +720,9 @@ fun PersonalizacaoSection() {
             .padding(top = 16.dp),
     ) {
         IconButton(
-            onClick = { },
+            onClick = {
+                viewModel.currentSection.value = "DadosPessoaisSection"
+            },
             modifier = Modifier
                 .size(50.dp)
                 .shadow(8.dp, CircleShape)
@@ -664,7 +736,9 @@ fun PersonalizacaoSection() {
         }
         Spacer(modifier = Modifier.width(24.dp))
         IconButton(
-            onClick = { },
+            onClick = {
+                viewModel.currentSection.value = "ConcluidoSection"
+            },
             modifier = Modifier
                 .size(50.dp)
                 .shadow(8.dp, CircleShape)
@@ -724,9 +798,7 @@ fun PersonalizacaoSection() {
 }
 
 @Composable
-fun ConcluidoSection() {
-    val enderecoRemember = remember { mutableStateOf("") }
-
+fun ConcluidoSection(viewModel: SectionViewModel) {
     Column(
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Center,
