@@ -1,85 +1,122 @@
 package com.example.gogood
 
+import android.app.DatePickerDialog
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
-import androidx.activity.enableEdgeToEdge
-import androidx.compose.foundation.background
+import androidx.compose.foundation.Image
+import androidx.compose.foundation.border
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxHeight
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.items
-import androidx.compose.foundation.shape.CircleShape
-import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.filled.PlaylistAdd
-import androidx.compose.material.icons.filled.Favorite
-import androidx.compose.material.icons.sharp.Analytics
-import androidx.compose.material.icons.sharp.Close
-import androidx.compose.material.icons.sharp.History
-import androidx.compose.material3.Card
-import androidx.compose.material3.CardDefaults
-import androidx.compose.material3.HorizontalDivider
-import androidx.compose.material3.Icon
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextField
+import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
-import androidx.compose.ui.Alignment
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.vector.ImageVector
-import androidx.compose.ui.layout.ContentScale
-import androidx.compose.ui.text.TextStyle
-import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
-import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
-import coil.compose.AsyncImage
+import com.example.gogood.menu.Menu
 import com.example.gogood.ui.theme.GoGoodTheme
-import com.example.gogood.ui.theme.displayFontFamily
-import java.time.LocalDateTime
+import java.util.Calendar
 
-data class Favorito(val logradouro: String, val numero: Int, val tipo: String)
-
-val Cinza = Color(0xFF334049)
-val Vermelho = Color(red = 217, green = 26, blue = 0)
-val CinzaSubTitulo = Color(0xFF5B5B58)
-val BordaItemLista = Color(0xFFD4DCDA)
-val ServicoNome = Color(0XFF334946)
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        enableEdgeToEdge()
-
         setContent {
             GoGoodTheme {
-                App()
+               Menu()
             }
         }
     }
 }
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun App(){
-    Menu()
+fun DatePickerInput(
+    label: String,
+    selectedDate: String,
+    onDateSelected: (String) -> Unit,
+    modifier: Modifier = Modifier
+) {
+    val context = LocalContext.current
+    val calendar = Calendar.getInstance()
+    val year = calendar.get(Calendar.YEAR)
+    val month = calendar.get(Calendar.MONTH)
+    val day = calendar.get(Calendar.DAY_OF_MONTH)
+
+
+    val datePickerDialog = DatePickerDialog(
+        context,
+        { _, selectedYear, selectedMonth, selectedDayOfMonth ->
+            val formattedDate = "$selectedDayOfMonth/${selectedMonth + 1}/$selectedYear"
+            onDateSelected(formattedDate)
+        }, year, month, day
+    )
+
+    Column(
+        verticalArrangement = Arrangement.Center,
+    ) {
+
+        TextField(
+            value = selectedDate,
+            onValueChange = {},
+            textStyle = MaterialTheme.typography.bodySmall,
+            colors = TextFieldDefaults.textFieldColors(
+                unfocusedIndicatorColor = Color.Transparent,
+                disabledIndicatorColor = Color.Transparent,
+                focusedIndicatorColor = Color.White,
+                containerColor = Color.White
+            ),
+            label = { Text(text = label, fontSize = MaterialTheme.typography.bodySmall.fontSize) },
+            modifier = modifier
+                .clickable { datePickerDialog.show() }
+                .border(1.dp, Color.Black, MaterialTheme.shapes.small),
+            trailingIcon = {
+                Image(
+                    painter = painterResource(id = R.drawable.calendar),
+                    contentDescription = "Ícone de calendário",
+                    modifier = Modifier
+                        .clickable { datePickerDialog.show() }
+                        .padding(1.dp)
+                        .size(20.dp),
+                )
+            },
+            enabled = false
+        )
+
+    }
+
 }
 
-
-@Preview
 @Composable
-fun AppPreview() {
-    GoGoodTheme {
-        App()
+fun MyApp() {
+    var selectedDate by remember { mutableStateOf("") }
+
+    Column(
+        modifier = Modifier.padding(16.dp)
+    ) {
+        DatePickerInput(
+            label = "dd/MM/yyyy",
+            selectedDate = selectedDate,
+            onDateSelected = { date -> selectedDate = date }
+        )
     }
+}
+
+@Preview(showBackground = true)
+@Composable
+fun DefaultPreview() {
+    MyApp()
 }
