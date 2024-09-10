@@ -54,9 +54,11 @@ import com.example.gogood.ui.theme.GogoodGray
 import com.example.gogood.ui.theme.GogoodGraySubTitle
 import com.example.gogood.ui.theme.GogoodGreen
 import com.example.gogood.ui.theme.GogoodHeartFavoriteRed
+import java.nio.file.WatchEvent
 import java.time.LocalDateTime
 
-// Menu with Modifier param
+
+
 @Composable
 fun Menu(modifier: Modifier = Modifier) {
     val data = LocalDateTime.now()
@@ -83,7 +85,7 @@ fun Menu(modifier: Modifier = Modifier) {
 
 @Composable
 fun Favoritos() {
-    Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
+    Column (verticalArrangement = Arrangement.spacedBy(8.dp)){
         Titulo(texto = "Favoritos")
         ListaFavoritos()
     }
@@ -91,14 +93,15 @@ fun Favoritos() {
 
 @Composable
 fun Servicos() {
-    Column(verticalArrangement = Arrangement.spacedBy(16.dp)) {
+    Column (verticalArrangement = Arrangement.spacedBy(16.dp)){
         Titulo(texto = "Serviços")
-        Row(horizontalArrangement = Arrangement.Center, modifier = Modifier.fillMaxWidth()) {
+        Row (horizontalArrangement = Arrangement.Center, modifier = Modifier.fillMaxWidth()){
             CardServico(texto = "Histórico", cor = Color(0xFFB0DCFC), icone = Icons.Sharp.History, tamanho = 100.dp)
-            Spacer(modifier = Modifier.width(24.dp))
-            CardServico(texto = "Analytics", cor = Color(0xFFB0FCCD), icone = Icons.Sharp.Analytics, tamanho = 100.dp)
+            Spacer(modifier= Modifier.width(24.dp))
+            CardServico(texto = "Analaytics", cor = Color(0xFFB0FCCD), icone = Icons.Sharp.Analytics, tamanho = 100.dp)
         }
     }
+
 }
 
 @Composable
@@ -151,6 +154,7 @@ fun ImagemUsuario(url: String) {
             .clip(CircleShape)
             .width(80.dp)
             .height(80.dp)
+
     )
 }
 
@@ -185,22 +189,27 @@ fun ListaFavoritos() {
             TextoItemListaFavorito("Adicionar Favorito")
         }
     }
+
+
 }
 
 @Composable
 fun ItemListaFavorito(favorito: Favorito) {
+
     Row(
         verticalAlignment = Alignment.Top, horizontalArrangement = Arrangement.spacedBy(10.dp),
         modifier = Modifier
             .fillMaxWidth()
             .height(90.dp)
             .padding(top = 10.dp)
+
     ) {
         Icon(
             Icons.Filled.Favorite, contentDescription = "Botão de fechar menu",
             modifier = Modifier
                 .size(28.dp),
             tint = GogoodHeartFavoriteRed
+
         )
         Column(
             verticalArrangement = Arrangement.spacedBy(20.dp),
@@ -235,11 +244,11 @@ fun TextoSubItemListaFavorito(texto: String) {
         color = GogoodGraySubTitle,
     )
 }
-
 @Composable
-fun TextoNomeServico(texto: String) {
+fun TextoNomeServico(texto: String){
     Text(
         text = texto,
+
         style = TextStyle(
             fontSize = 12.sp,
             fontWeight = FontWeight.Bold
@@ -247,7 +256,6 @@ fun TextoNomeServico(texto: String) {
         color = GogoodGraySubTitle
     )
 }
-
 @Composable
 fun CardServico(texto: String, cor: Color, icone: ImageVector, tamanho: Dp) {
     Card(
@@ -259,21 +267,31 @@ fun CardServico(texto: String, cor: Color, icone: ImageVector, tamanho: Dp) {
         ), shape = RoundedCornerShape(20)
     ) {
         Box(modifier = Modifier
+
             .fillMaxSize(),
-            contentAlignment = Alignment.Center
-        ) {
+            contentAlignment = Alignment.Center){
             Column(horizontalAlignment = Alignment.CenterHorizontally) {
                 Icon(icone, contentDescription = "Ícone", tint = GogoodCardGray)
                 TextoNomeServico(texto)
             }
+
+
         }
+
+
+
+
     }
 }
+
+
+
 
 @Preview(showBackground = true)
 @Composable
 fun ItemFavoritoListaPreview() {
     ItemListaFavorito(Favorito("Rua Mickey", 1928, "Escritório"))
+
 }
 
 @Preview(showBackground = true)
@@ -283,40 +301,47 @@ fun ListaFavoritosPreview() {
         ListaFavoritos()
     }
 }
-
 @Preview(showBackground = true)
 @Composable
 fun CardServicoPreview() {
-    CardServico(texto = "Card", cor = GogoodGreen, tamanho = 80.dp, icone = Icons.Sharp.Close)
+    CardServico(texto = "Card", cor = GogoodGreen, tamanho = 80.dp,
+        icone = Icons.Sharp.Close)
 }
-
 @Preview(showBackground = true)
 @Composable
-fun MenuPreview() {
+fun MenuPreview(){
     GoGoodTheme {
-        Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
+        Scaffold (modifier = Modifier.fillMaxSize()){innerPadding->
             Menu(modifier = Modifier.padding(innerPadding))
         }
     }
 }
 
 private fun GerarBoasVindas(data: LocalDateTime): String {
-    val mensagemBoasVindas = when {
-        data.hour in 6..11 -> "Bom dia! ☀️"
-        data.hour in 12..18 -> "Boa tarde! 🌤️"
-        else -> "Boa noite! 🌙"
+    var dataApoio: LocalDateTime = LocalDateTime.now()
+    var mensagemBoasVindas = ""
+    when {
+        dataApoio.hour in 6..11 && dataApoio.minute <= 59 -> {
+            mensagemBoasVindas = "Bom dia! ☀️"
+        }
+
+        dataApoio.hour in 12..18 && dataApoio.minute <= 59 -> {
+            mensagemBoasVindas = "Boa tarde! 🌤️"
+        }
+
+        else -> {
+            mensagemBoasVindas = "Boa noite! 🌙"
+        }
     }
     return mensagemBoasVindas
 }
 
 fun gerarFavoritos(): List<Favorito> {
-    val logradouros = listOf(
-        "Avenida Paulista", "Rua Oscar Freire", "Rua das Flores", "Avenida Brasil",
+    val logradouros = listOf("Avenida Paulista", "Rua Oscar Freire", "Rua das Flores", "Avenida Brasil",
         "Rua Augusta", "Rua Consolação", "Avenida Ipiranga", "Rua Haddock Lobo",
         "Rua Faria Lima", "Avenida Rebouças", "Rua Alameda Santos", "Rua Vergueiro",
         "Rua Teodoro Sampaio", "Avenida Pacaembu", "Rua Itapeva", "Rua Pamplona",
-        "Rua Bela Cintra", "Rua dos Pinheiros", "Rua Bandeira Paulista", "Avenida Morumbi"
-    )
+        "Rua Bela Cintra", "Rua dos Pinheiros", "Rua Bandeira Paulista", "Avenida Morumbi")
 
     val tipos = listOf("Casa", "Escritório", "Parceiro(a)")
 
