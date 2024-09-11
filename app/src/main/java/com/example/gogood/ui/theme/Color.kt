@@ -17,3 +17,7 @@ val GogoodCardGray = Color(0XFF334946)
 val GogoodBorderWhite = Color(0xFFD4DCDA)
 val CianoButton = Color(0xFF00B176)
 val CinzaFont = Color(0xFF334049)
+val GogoodOptionRed = Color(0xFFF11D00)
+val GogoodOptionYellow = Color(0xFFFFDB0F)
+val GogoodOptionGreen = Color(0xFF10C200)
+

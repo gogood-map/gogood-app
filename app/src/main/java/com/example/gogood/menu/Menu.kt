@@ -1,5 +1,6 @@
 package com.example.gogood.menu
 
+
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
@@ -33,8 +34,10 @@ import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
+import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
@@ -57,6 +60,7 @@ import androidx.compose.ui.window.Dialog
 import coil.compose.AsyncImage
 import com.example.gogood.ui.theme.CianoButton
 import com.example.gogood.ui.theme.CinzaFont
+import com.example.gogood.bandeja.Bandeja
 import com.example.gogood.ui.theme.GoGoodTheme
 import com.example.gogood.ui.theme.GogoodBorderWhite
 import com.example.gogood.ui.theme.GogoodCardGray
@@ -64,20 +68,20 @@ import com.example.gogood.ui.theme.GogoodGray
 import com.example.gogood.ui.theme.GogoodGraySubTitle
 import com.example.gogood.ui.theme.GogoodGreen
 import com.example.gogood.ui.theme.GogoodHeartFavoriteRed
-import java.nio.file.WatchEvent
+import kotlinx.coroutines.launch
 import java.time.LocalDateTime
-
 
 
 @Composable
 fun Menu(modifier: Modifier = Modifier) {
     val data = LocalDateTime.now()
     val mensagem = GerarBoasVindas(data)
+
     Column(
         verticalArrangement = Arrangement.spacedBy(26.dp),
         modifier = Modifier
             .fillMaxSize()
-            .padding(horizontal = 16.dp)
+            .padding(horizontal = 24.dp)
             .padding(top = 16.dp)
     ) {
         Icon(
@@ -90,25 +94,51 @@ fun Menu(modifier: Modifier = Modifier) {
         CardBoasVindas("Teresa", mensagem)
         Favoritos()
         Servicos()
+
+
     }
 }
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun Favoritos() {
+
     Column (verticalArrangement = Arrangement.spacedBy(8.dp)){
         Titulo(texto = "Favoritos")
         ListaFavoritos()
     }
+
 }
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun Servicos() {
+    val sheetState = rememberModalBottomSheetState()
+    val scope = rememberCoroutineScope()
+    var showBottomSheet by remember { mutableStateOf(false) }
+
+
     Column (verticalArrangement = Arrangement.spacedBy(16.dp)){
         Titulo(texto = "Serviços")
         Row (horizontalArrangement = Arrangement.Center, modifier = Modifier.fillMaxWidth()){
-            CardServico(texto = "Histórico", cor = Color(0xFFB0DCFC), icone = Icons.Sharp.History, tamanho = 100.dp)
+            CardServico(texto = "Histórico", cor = Color(0xFFB0DCFC), icone = Icons.Sharp.History, tamanho = 100.dp){
+                showBottomSheet = true
+            }
             Spacer(modifier= Modifier.width(24.dp))
-            CardServico(texto = "Analaytics", cor = Color(0xFFB0FCCD), icone = Icons.Sharp.Analytics, tamanho = 100.dp)
+            CardServico(texto = "Analaytics", cor = Color(0xFFB0FCCD), icone = Icons.Sharp.Analytics, tamanho = 100.dp){
+                showBottomSheet = true
+            }
+        }
+    }
+    if (showBottomSheet) {
+        ModalBottomSheet(
+            onDismissRequest = {
+                showBottomSheet = false
+            },
+            sheetState = sheetState
+        ) {
+            // Sheet content
+            Bandeja(abrir = true)
         }
     }
 
@@ -125,8 +155,9 @@ fun CardBoasVindas(nomeUsuario: String, mensagem: String) {
             Titulo(texto = "Olá, $nomeUsuario")
             SubTitulo(texto = mensagem)
         }
-        ImagemUsuario(url = "https://midias.correio24horas.com.br/2024/08/14/davi-brito-2386295.jpg")
+        ImagemUsuario(url = "https://okawalivros.com.br/wp-content/uploads/2017/10/uma-pessoa-cativante-1080x675.jpg")
     }
+
 }
 
 @Composable
@@ -177,7 +208,7 @@ fun ListaFavoritos() {
     Column {
         LazyColumn(modifier = Modifier
             .padding(horizontal = 16.dp)
-            .height(260.dp)) {
+            .height(320.dp)) {
             items(favoritos) { fav ->
                 ItemListaFavorito(fav)
                 HorizontalDivider(color = GogoodBorderWhite)
@@ -369,11 +400,12 @@ fun TextoNomeServico(texto: String){
     )
 }
 @Composable
-fun CardServico(texto: String, cor: Color, icone: ImageVector, tamanho: Dp) {
+fun CardServico(texto: String, cor: Color, icone: ImageVector, tamanho: Dp, onClick: ()->Unit) {
     Card(
         modifier = Modifier
             .width(tamanho)
-            .height(tamanho),
+            .height(tamanho)
+            .clickable(enabled = true, onClick = onClick),
         colors = CardDefaults.cardColors(
             containerColor = cor
         ), shape = RoundedCornerShape(20)
@@ -389,10 +421,6 @@ fun CardServico(texto: String, cor: Color, icone: ImageVector, tamanho: Dp) {
 
 
         }
-
-
-
-
     }
 }
 
@@ -417,7 +445,7 @@ fun ListaFavoritosPreview() {
 @Composable
 fun CardServicoPreview() {
     CardServico(texto = "Card", cor = GogoodGreen, tamanho = 80.dp,
-        icone = Icons.Sharp.Close)
+        icone = Icons.Sharp.Close){}
 }
 @Preview(showBackground = true)
 @Composable
