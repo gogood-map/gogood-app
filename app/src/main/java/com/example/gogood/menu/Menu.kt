@@ -1,5 +1,11 @@
 package com.example.gogood.menu
 
+
+import android.os.Bundle
+import androidx.activity.ComponentActivity
+import androidx.activity.compose.setContent
+import androidx.activity.enableEdgeToEdge
+import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -17,6 +23,7 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.PlaylistAdd
 import androidx.compose.material.icons.filled.Favorite
@@ -24,6 +31,7 @@ import androidx.compose.material.icons.sharp.Analytics
 import androidx.compose.material.icons.sharp.Close
 import androidx.compose.material.icons.sharp.History
 import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -32,13 +40,10 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
-import androidx.compose.material3.rememberModalBottomSheetState
+import androidx.compose.material3.TextField
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.rememberCoroutineScope
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -51,7 +56,10 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.compose.ui.window.Dialog
 import coil.compose.AsyncImage
+import com.example.gogood.ui.theme.CianoButton
+import com.example.gogood.ui.theme.CinzaFont
 import com.example.gogood.bandeja.Bandeja
 import com.example.gogood.ui.theme.GoGoodTheme
 import com.example.gogood.ui.theme.GogoodBorderWhite
@@ -193,6 +201,8 @@ fun ImagemUsuario(url: String) {
 
 @Composable
 fun ListaFavoritos() {
+    val (showDialog, setShowDialog) = remember { mutableStateOf(false) }
+
     val favoritos = gerarFavoritos()
 
     Column {
@@ -212,6 +222,9 @@ fun ListaFavoritos() {
                 .fillMaxWidth()
                 .padding(top = 10.dp)
                 .padding(horizontal = 16.dp)
+                .clickable {
+                    setShowDialog(true)
+                }
         ) {
             Icon(
                 Icons.AutoMirrored.Filled.PlaylistAdd,
@@ -223,7 +236,104 @@ fun ListaFavoritos() {
         }
     }
 
+    if (showDialog) {
+        ModalFavorito(onDismiss = { setShowDialog(false) })
+    }
 
+}
+
+@Composable
+fun ModalFavorito(onDismiss: () -> Unit) {
+    Dialog(onDismissRequest = onDismiss) {
+        Column(
+            modifier = Modifier
+                .fillMaxWidth()
+                .clip(RoundedCornerShape(8.dp))
+                .background(Color.White)
+                .padding(24.dp)
+        ) {
+            Text(
+                text = "Adicionar favorito",
+                modifier = Modifier.padding(bottom = 16.dp),
+                style = TextStyle(fontSize = 24.sp), fontWeight = FontWeight(500), color = CinzaFont
+            )
+
+            val (logradouro, setLogradouro) = remember { mutableStateOf("") }
+            val (numero, setNumero) = remember { mutableStateOf("") }
+            val (tipo, setTipo) = remember { mutableStateOf("") }
+
+
+            TextField(
+                value = logradouro,
+                onValueChange = setLogradouro,
+                label = { Text("Logradouro") },
+                placeholder = { Text("Digite o logradouro") },
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(bottom = 8.dp),
+                textStyle = TextStyle(fontSize = 18.sp)
+            )
+
+            BasicTextField(
+                value = logradouro,
+                onValueChange = setLogradouro,
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(bottom = 8.dp),
+                decorationBox = { innerTextField ->
+                    if (logradouro.isEmpty()) {
+                        Text("Logradouro")
+                    }
+                    innerTextField()
+                }
+            )
+
+            BasicTextField(
+                value = numero,
+                onValueChange = setNumero,
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(bottom = 8.dp),
+                decorationBox = { innerTextField ->
+                    if (numero.isEmpty()) {
+                        Text("Número")
+                    }
+                    innerTextField()
+                }
+            )
+
+            BasicTextField(
+                value = tipo,
+                onValueChange = setTipo,
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(bottom = 8.dp),
+                decorationBox = { innerTextField ->
+                    if (tipo.isEmpty()) {
+                        Text("Tipo (Ex: Casa, Trabalho)")
+                    }
+                    innerTextField()
+                }
+            )
+            Spacer(modifier = Modifier.height(24.dp))
+
+            Button(
+                onClick = {},
+                colors = ButtonDefaults.buttonColors(
+                    containerColor = CianoButton,
+                    contentColor = Color.White
+                ),
+
+                shape = RoundedCornerShape(8.dp),
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(51.88.dp)
+            ) {
+                Text("Adicionar", fontSize = 16.sp, fontWeight = FontWeight.Bold)
+            }
+
+        }
+    }
 }
 
 @Composable
