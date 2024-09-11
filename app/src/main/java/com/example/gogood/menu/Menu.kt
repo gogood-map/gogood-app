@@ -73,7 +73,7 @@ fun Menu(modifier: Modifier = Modifier) {
         verticalArrangement = Arrangement.spacedBy(26.dp),
         modifier = Modifier
             .fillMaxSize()
-            .padding(horizontal = 16.dp)
+            .padding(horizontal = 24.dp)
             .padding(top = 16.dp)
     ) {
         Icon(
@@ -147,7 +147,7 @@ fun CardBoasVindas(nomeUsuario: String, mensagem: String) {
             Titulo(texto = "Olá, $nomeUsuario")
             SubTitulo(texto = mensagem)
         }
-        ImagemUsuario(url = "https://midias.correio24horas.com.br/2024/08/14/davi-brito-2386295.jpg")
+        ImagemUsuario(url = "https://okawalivros.com.br/wp-content/uploads/2017/10/uma-pessoa-cativante-1080x675.jpg")
     }
 
 }
@@ -198,7 +198,7 @@ fun ListaFavoritos() {
     Column {
         LazyColumn(modifier = Modifier
             .padding(horizontal = 16.dp)
-            .height(260.dp)) {
+            .height(320.dp)) {
             items(favoritos) { fav ->
                 ItemListaFavorito(fav)
                 HorizontalDivider(color = GogoodBorderWhite)
