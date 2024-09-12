@@ -13,6 +13,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.DirectionsBike
@@ -39,6 +40,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.example.gogood.graficos.Grafico
 import com.example.gogood.ui.theme.GoGoodTheme
 import com.example.gogood.ui.theme.GogoodGray
 import com.example.gogood.ui.theme.GogoodGreen
@@ -52,12 +54,17 @@ import com.example.gogood.ui.theme.GogoodWhite
 fun Bandeja(abrir: Boolean) {
 
 
-    Column(
+    LazyColumn(
         modifier = Modifier.fillMaxSize(),
     ){
+        item {
+            PesquisaRotas()
+        }
+        item{
+            Analise()
+        }
 
-        PesquisaRotas()
-        Analise()
+
 
     }
 }
@@ -100,9 +107,11 @@ fun Analise(){
     Column(
         modifier = Modifier
             .fillMaxWidth()
+            .height(500.dp)
             .padding(horizontal=34.dp).padding(top=0.dp), verticalArrangement = Arrangement.spacedBy(16.dp)
     ){
         TituloBandeja("Análise de ocorrências")
+        Grafico()
     }
 }
 
