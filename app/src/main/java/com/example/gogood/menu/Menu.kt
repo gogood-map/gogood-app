@@ -5,6 +5,7 @@ import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -18,6 +19,7 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
@@ -26,6 +28,8 @@ import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.PlaylistAdd
 import androidx.compose.material.icons.filled.Favorite
+import androidx.compose.material.icons.filled.Home
+import androidx.compose.material.icons.filled.Work
 import androidx.compose.material.icons.sharp.Analytics
 import androidx.compose.material.icons.sharp.Close
 import androidx.compose.material.icons.sharp.History
@@ -33,14 +37,24 @@ import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.DropdownMenuItem
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.ExposedDropdownMenuBox
+import androidx.compose.material3.ExposedDropdownMenuDefaults
+import androidx.compose.material3.ExposedDropdownMenuDefaults.outlinedTextFieldColors
+import androidx.compose.material3.ExposedDropdownMenuDefaults.textFieldColors
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
+import androidx.compose.material3.OutlinedTextField
+import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -213,77 +227,48 @@ fun ListaFavoritos() {
 
 @Composable
 fun ModalFavorito(onDismiss: () -> Unit) {
+
+
     Dialog(onDismissRequest = onDismiss) {
         Column(
             modifier = Modifier
-                .fillMaxWidth()
+                .width(366.dp)
                 .clip(RoundedCornerShape(8.dp))
                 .background(Color.White)
                 .padding(24.dp)
         ) {
+
+
+
             Text(
                 text = "Adicionar favorito",
                 modifier = Modifier.padding(bottom = 16.dp),
                 style = TextStyle(fontSize = 24.sp), fontWeight = FontWeight(500), color = CinzaFont
             )
 
-            val (logradouro, setLogradouro) = remember { mutableStateOf("") }
-            val (numero, setNumero) = remember { mutableStateOf("") }
-            val (tipo, setTipo) = remember { mutableStateOf("") }
+            val (endereco, setEndereco) = remember { mutableStateOf("") }
+            val (tipo, setTipo) = remember { mutableStateOf("Casa") }
 
 
             TextField(
-                value = logradouro,
-                onValueChange = setLogradouro,
-                label = { Text("Logradouro") },
-                placeholder = { Text("Digite o logradouro") },
+                value = endereco,
+                onValueChange = setEndereco,
+                label = { Text("Endereço*") },
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(bottom = 8.dp),
                 textStyle = TextStyle(fontSize = 18.sp)
             )
+            Spacer(modifier = Modifier.height(24.dp))
 
-            BasicTextField(
-                value = logradouro,
-                onValueChange = setLogradouro,
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(bottom = 8.dp),
-                decorationBox = { innerTextField ->
-                    if (logradouro.isEmpty()) {
-                        Text("Logradouro")
-                    }
-                    innerTextField()
-                }
+            DynamicSelectTextField(
+                selectedValue = tipo,
+                options = listOf("Casa", "Escritório", "Parceiro(a)"),
+                label = "Tipo (Opcional)",
+                onValueChangedEvent = setTipo,
+                modifier = Modifier.fillMaxWidth()
             )
 
-            BasicTextField(
-                value = numero,
-                onValueChange = setNumero,
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(bottom = 8.dp),
-                decorationBox = { innerTextField ->
-                    if (numero.isEmpty()) {
-                        Text("Número")
-                    }
-                    innerTextField()
-                }
-            )
-
-            BasicTextField(
-                value = tipo,
-                onValueChange = setTipo,
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(bottom = 8.dp),
-                decorationBox = { innerTextField ->
-                    if (tipo.isEmpty()) {
-                        Text("Tipo (Ex: Casa, Trabalho)")
-                    }
-                    innerTextField()
-                }
-            )
             Spacer(modifier = Modifier.height(24.dp))
 
             Button(
@@ -297,10 +282,59 @@ fun ModalFavorito(onDismiss: () -> Unit) {
                 modifier = Modifier
                     .fillMaxWidth()
                     .height(51.88.dp)
-            ) {
+            )
+            {
                 Text("Adicionar", fontSize = 16.sp, fontWeight = FontWeight.Bold)
             }
 
+
+        }
+    }
+}
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun DynamicSelectTextField(
+    selectedValue: String,
+    options: List<String>,
+    label: String,
+    onValueChangedEvent: (String) -> Unit,
+    modifier: Modifier = Modifier
+) {
+    var expanded by remember { mutableStateOf(false) }
+
+    ExposedDropdownMenuBox(
+        expanded = expanded,
+        onExpandedChange = { expanded = !expanded },
+        modifier = modifier
+    ) {
+        OutlinedTextField(
+            readOnly = true,
+            value = selectedValue,
+            onValueChange = {},
+            label = { Text(text = label) },
+            trailingIcon = {
+                ExposedDropdownMenuDefaults.TrailingIcon(expanded = expanded)
+            },
+            colors = outlinedTextFieldColors(
+                focusedLabelColor = CinzaFont
+            ),
+
+            modifier = Modifier
+                .menuAnchor()
+                .fillMaxWidth()
+        )
+
+        ExposedDropdownMenu(expanded = expanded, onDismissRequest = { expanded = false }) {
+            options.forEach { option: String ->
+                DropdownMenuItem(
+                    text = { Text(text = option) },
+                    onClick = {
+                        expanded = false
+                        onValueChangedEvent(option)
+                    }
+                )
+            }
         }
     }
 }
