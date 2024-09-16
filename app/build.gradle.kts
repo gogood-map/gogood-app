@@ -52,6 +52,7 @@ android {
 
 
 dependencies {
+
     implementation (libs.ui)
     implementation (libs.androidx.foundation)
     implementation (libs.androidx.material3.vlatestversion)
