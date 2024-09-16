@@ -1,4 +1,4 @@
-package com.example.gogood
+package com.example.gogood.cadastro
 
 import android.app.DatePickerDialog
 import android.os.Bundle
@@ -29,7 +29,7 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import com.example.gogood.cadastro.CadastroApp
+import com.example.gogood.R
 import com.example.gogood.menu.Menu
 import com.example.gogood.ui.theme.GoGoodTheme
 import java.util.Calendar
