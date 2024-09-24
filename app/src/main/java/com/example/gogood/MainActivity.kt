@@ -31,6 +31,7 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.example.gogood.cadastro.CadastroApp
+import com.example.gogood.mapa.HeatmapMap
 import com.example.gogood.menu.Menu
 import com.example.gogood.menu.MenuPreview
 import com.example.gogood.ui.theme.GoGoodTheme
@@ -44,6 +45,7 @@ class MainActivity : ComponentActivity() {
                 Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
                     Menu(modifier = Modifier.padding(innerPadding))
                 }
+                HeatmapMap()
             }
         }
     }
