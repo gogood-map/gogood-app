@@ -89,5 +89,11 @@ dependencies {
     implementation(libs.kotlinx.serialization.json)
     implementation(libs.retrofit)
     implementation(libs.converter.gson)
+    implementation (libs.android.maps.utils)
+    implementation (libs.maps.utils.ktx)
+    implementation(libs.play.services.maps.v1802)
+    implementation(libs.maps.compose)
+    implementation(libs.retrofit)
+    implementation(libs.converter.gson)
 
 }
