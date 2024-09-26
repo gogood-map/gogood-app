@@ -553,7 +553,7 @@ fun DadosPessoaisSection(viewModel: SectionViewModel) {
             modifier = Modifier.padding(vertical = 2.dp)
         )
         DatePickerInput(
-            label = "dd/MM/yyyy",
+            label = "dd/mm/yyyy",
             selectedDate = selectedDate,
             onDateSelected = { date -> selectedDate = date },
             modifier = Modifier

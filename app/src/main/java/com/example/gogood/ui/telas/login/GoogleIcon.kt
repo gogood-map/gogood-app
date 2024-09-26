@@ -11,7 +11,7 @@ import com.example.gogood.R
 @Composable
 fun GoogleIcon() {
     Image(
-        painter = painterResource(id = R.drawable.googleicon), // Altere para o nome correto do arquivo
+        painter = painterResource(id = R.drawable.googleicon),
         contentDescription = "Google Icon",
         modifier = Modifier.size(20.dp),
         contentScale = ContentScale.Crop
