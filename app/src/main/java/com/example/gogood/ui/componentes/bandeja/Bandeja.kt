@@ -1,4 +1,4 @@
-package com.example.gogood.bandeja
+package com.example.gogood.ui.componentes.bandeja
 
 import android.annotation.SuppressLint
 import androidx.compose.foundation.background
