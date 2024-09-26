@@ -1,10 +1,6 @@
 package com.example.gogood.menu
 
 
-import android.os.Bundle
-import androidx.activity.ComponentActivity
-import androidx.activity.compose.setContent
-import androidx.activity.enableEdgeToEdge
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -23,7 +19,6 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.PlaylistAdd
 import androidx.compose.material.icons.filled.Favorite
@@ -69,7 +64,7 @@ import androidx.compose.ui.window.Dialog
 import coil.compose.AsyncImage
 import com.example.gogood.ui.theme.CianoButton
 import com.example.gogood.ui.theme.CinzaFont
-import com.example.gogood.bandeja.Bandeja
+import com.example.gogood.ui.componentes.bandeja.Bandeja
 import com.example.gogood.ui.theme.GoGoodTheme
 import com.example.gogood.ui.theme.GogoodBorderWhite
 import com.example.gogood.ui.theme.GogoodCardGray
@@ -77,7 +72,6 @@ import com.example.gogood.ui.theme.GogoodGray
 import com.example.gogood.ui.theme.GogoodGraySubTitle
 import com.example.gogood.ui.theme.GogoodGreen
 import com.example.gogood.ui.theme.GogoodHeartFavoriteRed
-import kotlinx.coroutines.launch
 import java.time.LocalDateTime
 
 
