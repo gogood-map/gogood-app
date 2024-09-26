@@ -4,7 +4,9 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.viewinterop.AndroidView
+import androidx.navigation.NavHostController
 import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.GoogleMap
 import com.google.android.gms.maps.MapView
@@ -20,7 +22,7 @@ import retrofit2.http.GET
 import retrofit2.http.Url
 
 @Composable
-fun HeatmapMap() {
+fun HeatmapMap(navController: NavHostController) {
     val context = LocalContext.current
     val mapView = remember { MapView(context) }
     var googleMap by remember { mutableStateOf<GoogleMap?>(null) }
@@ -95,4 +97,10 @@ data class LatLngData(val latitude: String, val longitude: String, val id: Strin
 interface ApiService {
     @GET
     fun getGenericData(@Url url: String): Call<ResponseBody>
+}
+
+@Preview
+@Composable
+fun HeatmapPreview(modifier: Modifier = Modifier) {
+    HeatmapMap(navController = NavHostController(LocalContext.current))
 }
