@@ -29,6 +29,7 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.navigation.compose.rememberNavController
 import com.example.gogood.R
 import com.example.gogood.menu.Menu
 import com.example.gogood.ui.theme.GoGoodTheme
@@ -40,7 +41,7 @@ class MainActivity : ComponentActivity() {
         setContent {
             GoGoodTheme {
                 Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
-                    Menu(modifier = Modifier.padding(innerPadding))
+                    Menu(navController = rememberNavController(), modifier = Modifier.padding(innerPadding))
                 }
             }
         }
