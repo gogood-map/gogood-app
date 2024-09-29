@@ -7,7 +7,7 @@ import androidx.activity.compose.setContent
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.tooling.preview.Preview
 import com.example.gogood.menu.MenuPreview
-import com.example.gogood.navegacao.TelaNavegacao
+import com.example.gogood.navegacao.AppNavegacao
 import com.example.gogood.ui.theme.GoGoodTheme
 
 class MainActivity : ComponentActivity() {
@@ -15,7 +15,7 @@ class MainActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
         setContent {
             GoGoodTheme {
-                TelaNavegacao()
+                AppNavegacao()
             }
         }
     }
