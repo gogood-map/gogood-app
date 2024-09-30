@@ -1,4 +1,4 @@
-package com.example.gogood.mapa
+package com.example.gogood.ui.telas.mapa
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -10,7 +10,6 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.BasicTextField
@@ -18,19 +17,11 @@ import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Menu
-import androidx.compose.material.icons.filled.Search
-import androidx.compose.material3.Button
-import androidx.compose.material3.DrawerState
-import androidx.compose.material3.DrawerValue
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.ModalBottomSheet
-import androidx.compose.material3.ModalDrawerSheet
-import androidx.compose.material3.ModalNavigationDrawer
-import androidx.compose.material3.Text
-import androidx.compose.material3.rememberDrawerState
 import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -44,10 +35,8 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.viewinterop.AndroidView
 import androidx.navigation.NavController
 import androidx.navigation.NavHostController
-import com.example.gogood.menu.Menu
 import com.example.gogood.navegacao.Menu
 import com.example.gogood.ui.componentes.bandeja.Bandeja
-import com.example.gogood.ui.theme.GoGoodTheme
 import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.GoogleMap
 import com.google.android.gms.maps.MapView
@@ -64,7 +53,7 @@ import retrofit2.http.Url
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun HeatmapMap(navController: NavController) {
+fun MapaDeCalor(navController: NavController) {
     val context = LocalContext.current
     val mapView = remember { MapView(context) }
     var googleMap by remember { mutableStateOf<GoogleMap?>(null) }
@@ -220,5 +209,5 @@ interface ApiService {
 @Preview
 @Composable
 fun HeatmapPreview(modifier: Modifier = Modifier) {
-    HeatmapMap(navController = NavHostController(LocalContext.current))
+    MapaDeCalor(navController = NavHostController(LocalContext.current))
 }
