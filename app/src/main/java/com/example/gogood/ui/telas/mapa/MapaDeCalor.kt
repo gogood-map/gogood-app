@@ -41,6 +41,7 @@ import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.GoogleMap
 import com.google.android.gms.maps.MapView
 import com.google.android.gms.maps.model.LatLng
+import com.google.android.gms.maps.model.PolylineOptions
 import com.google.android.gms.maps.model.TileOverlayOptions
 import com.google.gson.Gson
 import com.google.maps.android.heatmaps.HeatmapTileProvider
@@ -58,6 +59,7 @@ fun MapaDeCalor(navController: NavController) {
     val mapView = remember { MapView(context) }
     var googleMap by remember { mutableStateOf<GoogleMap?>(null) }
     var weightedLatLngs by remember { mutableStateOf<List<WeightedLatLng>>(emptyList()) }
+    var latLngs by remember { mutableStateOf<List<LatLng>>(emptyList()) }
 
     var showBottomSheet by remember { mutableStateOf(false) }
     val bottomSheetState = rememberModalBottomSheetState(
@@ -76,9 +78,11 @@ fun MapaDeCalor(navController: NavController) {
     LaunchedEffect(mapView) {
         mapView.getMapAsync { map ->
             googleMap = map
-            fetchLocations { locations ->
+            fetchLocations { locations, lines ->
                 weightedLatLngs = locations
+                latLngs = lines
                 setupHeatmap(googleMap, weightedLatLngs)
+                setupPolyline(googleMap, latLngs)
             }
         }
     }
@@ -161,7 +165,15 @@ private fun setupHeatmap(googleMap: GoogleMap?, weightedLatLngs: List<WeightedLa
     )
 }
 
-private fun fetchLocations(onSuccess: (List<WeightedLatLng>) -> Unit) {
+private fun setupPolyline(googleMap: GoogleMap?, latLngs: List<LatLng>) {
+    val polylineOptions = PolylineOptions().apply {
+        width(5f)
+        addAll(latLngs)
+    }
+    googleMap?.addPolyline(polylineOptions)
+}
+
+private fun fetchLocations(onSuccess: (List<WeightedLatLng>, List<LatLng>) -> Unit) {
     val retrofit = Retrofit.Builder()
         .baseUrl("https://66f20350415379191552cec4.mockapi.io/")
         .addConverterFactory(GsonConverterFactory.create())
@@ -176,27 +188,31 @@ private fun fetchLocations(onSuccess: (List<WeightedLatLng>) -> Unit) {
         ) {
             if (response.isSuccessful) {
                 response.body()?.string()?.let { body ->
-                    val locations = parseJsonToWeightedLatLng(body)
-                    onSuccess(locations)
+                    val (weightedLatLngs, latLngs) = parseJsonToWeightedLatLngAndLatLng(body)
+                    onSuccess(weightedLatLngs, latLngs)
                 }
             }
         }
 
         override fun onFailure(call: Call<ResponseBody>, t: Throwable) {
-            // Tratar erro
+
         }
     })
 }
 
-private fun parseJsonToWeightedLatLng(json: String): List<WeightedLatLng> {
+private fun parseJsonToWeightedLatLngAndLatLng(json: String): Pair<List<WeightedLatLng>, List<LatLng>> {
     val gson = Gson()
     val data = gson.fromJson(json, Array<LatLngData>::class.java)
-    return data.map {
+    val weightedLatLngs = data.map {
         WeightedLatLng(
             LatLng(it.latitude.toDouble(), it.longitude.toDouble()),
             1.0
-        ) // peso padrão
+        )
     }
+    val latLngs = data.map {
+        LatLng(it.latitude.toDouble(), it.longitude.toDouble())
+    }
+    return Pair(weightedLatLngs, latLngs)
 }
 
 data class LatLngData(val latitude: String, val longitude: String, val id: String)

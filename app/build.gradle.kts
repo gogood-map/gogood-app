@@ -72,6 +72,7 @@ dependencies {
     implementation(libs.androidx.ui.text.google.fonts)
     implementation(libs.coil.compose.v270)
     implementation(libs.play.services.maps)
+    implementation(libs.androidx.navigation.runtime.ktx)
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
@@ -95,5 +96,4 @@ dependencies {
     implementation(libs.maps.compose)
     implementation(libs.retrofit)
     implementation(libs.converter.gson)
-
 }
