@@ -64,6 +64,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
+import com.example.gogood.ui.telas.cadastro.SectionViewModel
 import com.example.gogood.ui.theme.GoGoodTheme
 import com.example.gogood.ui.theme.GogoodGray
 import com.example.gogood.ui.theme.GogoodGreen
@@ -88,27 +89,6 @@ class Cadastro : ComponentActivity() {
         }
     }
 }
-
-class SectionViewModel : ViewModel() {
-    private val _boxHeight = MutableStateFlow(400.dp)
-    val boxHeight: StateFlow<Dp> = _boxHeight
-    val currentSection = MutableStateFlow("CadastroSection")
-
-    init {
-        viewModelScope.launch {
-            currentSection.collect { section ->
-                _boxHeight.value = when (section) {
-                    "CadastroSection" -> 620.dp
-                    "DadosPessoaisSection" -> 600.dp
-                    "PersonalizacaoSection" -> 500.dp
-                    "ConcluidoSection" -> 550.dp
-                    else -> 400.dp
-                }
-            }
-        }
-    }
-}
-
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -593,7 +573,7 @@ fun DadosPessoaisSection(viewModel: SectionViewModel) {
         Spacer(modifier = Modifier.width(24.dp))
         IconButton(
             onClick = {
-                viewModel.currentSection.value = "PersonalizacaoSection"
+                viewModel.currentSection.value = "ConcluidoSection"
             },
             modifier = Modifier
                 .size(50.dp)

@@ -120,7 +120,7 @@ fun MapaDeCalor(navController: NavController) {
                 value = searchState,
                 onValueChange = { searchState = it },
                 modifier = Modifier
-                    .weight(5f)
+                    .weight(7f)
                     .height(45.dp)
                     .border(1.dp, Color.Black, RoundedCornerShape(32.dp))
                     .background(Color.White, RoundedCornerShape(32.dp))
