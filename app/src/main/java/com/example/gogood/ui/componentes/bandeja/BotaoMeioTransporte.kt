@@ -1,8 +1,7 @@
 package com.example.gogood.ui.componentes.bandeja
 
-import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Icon
@@ -22,7 +21,7 @@ fun BotaoMeioTransporte(
     onClick: () -> Unit
 ) {
     Button(
-        onClick = onClick, shape = CircleShape, colors = ButtonDefaults.buttonColors(
+        onClick = onClick, shape = RoundedCornerShape(30), colors = ButtonDefaults.buttonColors(
             containerColor = if (selecionado) GogoodGray else Color(0xFFCFCFCF),
             contentColor = if (selecionado) Color.White else Color(0xFF7C7C7C),
         ),

@@ -144,18 +144,6 @@ fun Servicos() {
             }
         }
     }
-    if (showBottomSheet) {
-        ModalBottomSheet(
-            onDismissRequest = {
-                showBottomSheet = false
-            },
-            sheetState = sheetState
-        ) {
-            // Sheet content
-            Bandeja(navController = rememberNavController(), abrir = true)
-        }
-    }
-
 }
 
 @Composable

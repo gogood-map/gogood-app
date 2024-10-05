@@ -10,6 +10,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.BasicTextField
@@ -37,6 +38,7 @@ import androidx.navigation.NavController
 import androidx.navigation.NavHostController
 import com.example.gogood.navegacao.Menu
 import com.example.gogood.ui.componentes.bandeja.Bandeja
+import com.example.gogood.ui.componentes.bandeja.OpcaoRota
 import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.GoogleMap
 import com.google.android.gms.maps.MapView
@@ -67,6 +69,12 @@ fun MapaDeCalor(navController: NavController) {
     )
 
     var searchState by remember { mutableStateOf("") }
+
+    val moockOpcoesRota: List<OpcaoRota> = listOf(
+        OpcaoRota("15 min", 100, 1.5),
+        OpcaoRota("20 min", 150, 2.5),
+        OpcaoRota("10 min", 300, 3.5)
+    )
 
     DisposableEffect(mapView) {
         mapView.onCreate(null)
@@ -114,13 +122,13 @@ fun MapaDeCalor(navController: NavController) {
                 )
             }
 
-            Spacer(modifier = Modifier.weight(1f))
+            Spacer(modifier = Modifier.width(24.dp))
 
             BasicTextField(
                 value = searchState,
                 onValueChange = { searchState = it },
                 modifier = Modifier
-                    .weight(7f)
+                    .fillMaxWidth()
                     .height(45.dp)
                     .border(1.dp, Color.Black, RoundedCornerShape(32.dp))
                     .background(Color.White, RoundedCornerShape(32.dp))
@@ -142,8 +150,9 @@ fun MapaDeCalor(navController: NavController) {
             onDismissRequest = { showBottomSheet = false }
         ) {
             Bandeja(
+                abrir = showBottomSheet,
                 navController = navController,
-                abrir = true
+                opcoesRota = moockOpcoesRota
             )
         }
     }
