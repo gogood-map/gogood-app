@@ -51,24 +51,6 @@ import com.example.gogood.ui.theme.GogoodGray
 import com.example.gogood.ui.theme.GogoodGreen
 import com.example.gogood.ui.theme.GogoodWhite
 
-class Login : ComponentActivity() {
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        enableEdgeToEdge()
-        setContent {
-            GoGoodTheme {
-                Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
-                    LoginApp(
-                        modifier = Modifier.padding(innerPadding),
-                        navController = rememberNavController()
-                    )
-                }
-            }
-        }
-    }
-}
-
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun LoginApp(navController: NavController, modifier: Modifier = Modifier) {
     val emailState = remember { mutableStateOf("") }
@@ -200,7 +182,9 @@ fun LoginApp(navController: NavController, modifier: Modifier = Modifier) {
                             .padding(top = 16.dp),
                     ) {
                         IconButton(
-                            onClick = { /* TODO: Ação ao clicar */ },
+                            onClick = {
+                                navController.navigate("MapaDeCalor")
+                            },
                             modifier = Modifier
                                 .size(50.dp)
                                 .shadow(8.dp, CircleShape)
