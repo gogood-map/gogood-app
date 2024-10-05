@@ -35,19 +35,6 @@ import com.example.gogood.menu.Menu
 import com.example.gogood.ui.theme.GoGoodTheme
 import java.util.Calendar
 
-class MainActivity : ComponentActivity() {
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        setContent {
-            GoGoodTheme {
-                Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
-                    Menu(navController = rememberNavController(), modifier = Modifier.padding(innerPadding))
-                }
-            }
-        }
-    }
-}
-
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun DatePickerInput(

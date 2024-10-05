@@ -20,7 +20,6 @@ class SectionViewModel : ViewModel() {
                 _boxHeight.value = when (section) {
                     "CadastroSection" -> 620.dp
                     "DadosPessoaisSection" -> 600.dp
-                    "PersonalizacaoSection" -> 500.dp
                     "ConcluidoSection" -> 550.dp
                     else -> 400.dp
                 }

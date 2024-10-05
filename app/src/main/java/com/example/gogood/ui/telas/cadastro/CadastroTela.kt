@@ -8,7 +8,6 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
-import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
@@ -18,15 +17,11 @@ import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
-import androidx.navigation.compose.rememberNavController
-import com.example.gogood.cadastro.ConcluidoSection
-import com.example.gogood.cadastro.DadosPessoaisSection
-import com.example.gogood.cadastro.PersonalizacaoSection
 import com.example.gogood.ui.theme.GogoodWhite
 import androidx.lifecycle.viewmodel.compose.viewModel
 
 @Composable
-fun CadastroApp(navController: NavController, modifier: Modifier = Modifier, viewModel: SectionViewModel = viewModel()) {
+fun CadastroTela(navController: NavController, modifier: Modifier = Modifier, viewModel: SectionViewModel = viewModel()) {
     val currentSection by viewModel.currentSection.collectAsState()
     val boxHeight by viewModel.boxHeight.collectAsState()
 

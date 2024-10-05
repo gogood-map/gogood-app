@@ -12,10 +12,11 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
-import com.example.gogood.cadastro.CadastroApp
+
 import com.example.gogood.login.LoginApp
 import com.example.gogood.ui.telas.mapa.MapaDeCalor
 import com.example.gogood.menu.Menu
+import com.example.gogood.ui.telas.cadastro.CadastroTela
 import com.example.gogood.ui.theme.GoGoodTheme
 import kotlinx.serialization.Serializable
 
@@ -60,7 +61,7 @@ fun AppNavegacao() {
                 LoginApp(navController)
             }
             composable<Cadastro> {
-                CadastroApp(navController)
+                CadastroTela(navController)
             }
             composable<Menu> {
                 Menu(navController)

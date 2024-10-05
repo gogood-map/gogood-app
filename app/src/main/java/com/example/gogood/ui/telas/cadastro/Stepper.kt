@@ -42,7 +42,7 @@ fun Stepper(step: String) {
                 horizontalAlignment = Alignment.CenterHorizontally,
                 verticalArrangement = Arrangement.Center,
                 modifier = Modifier
-                    .weight(5f)
+                    .weight(9f)
                     .fillMaxHeight()
             ) {
                 Box(

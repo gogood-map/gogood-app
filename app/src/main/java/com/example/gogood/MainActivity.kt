@@ -10,9 +10,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.navigation.compose.rememberNavController
-import com.example.gogood.menu.MenuPreview
-import com.example.gogood.navegacao.AppNavegacao
-import com.example.gogood.ui.telas.cadastro.CadastroApp
+import com.example.gogood.ui.telas.cadastro.CadastroTela
 import com.example.gogood.ui.theme.GoGoodTheme
 
 class MainActivity : ComponentActivity() {
@@ -21,7 +19,7 @@ class MainActivity : ComponentActivity() {
         setContent {
             GoGoodTheme {
                 Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
-                    CadastroApp(
+                    CadastroTela(
                         modifier = Modifier.padding(innerPadding),
                         navController = rememberNavController()
                     )
@@ -35,6 +33,6 @@ class MainActivity : ComponentActivity() {
 @Composable
 fun DefaultPreview() {
     GoGoodTheme {
-        CadastroApp(rememberNavController())
+        CadastroTela(rememberNavController())
     }
 }
