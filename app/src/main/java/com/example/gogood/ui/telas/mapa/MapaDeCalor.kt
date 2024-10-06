@@ -30,15 +30,13 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.viewinterop.AndroidView
 import androidx.navigation.NavController
 import androidx.navigation.NavHostController
-import com.example.gogood.navegacao.Menu
-import com.example.gogood.ui.componentes.bandeja.Bandeja
 import com.example.gogood.ui.componentes.bandeja.OpcaoRota
+import com.example.gogood.ui.componentes.solicitacaoLogin.SoliciatacaoLogin
 import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.GoogleMap
 import com.google.android.gms.maps.MapView
@@ -100,60 +98,26 @@ fun MapaDeCalor(navController: NavController) {
         modifier = Modifier.fillMaxSize()
     )
 
-    Box(modifier = Modifier.fillMaxSize()) {
-        Row(
-            modifier = Modifier
-                .align(Alignment.TopCenter)
-                .padding(16.dp)
-                .fillMaxWidth(),
-            verticalAlignment = Alignment.CenterVertically
-        ) {
-            IconButton(
-                onClick = { navController.navigate(Menu) },
-                modifier = Modifier
-                    .size(32.dp)
-                    .shadow(8.dp, CircleShape)
-                    .background(shape = CircleShape, color = MaterialTheme.colorScheme.primary)
-            ) {
-                Icon(
-                    imageVector = Icons.Default.Menu,
-                    contentDescription = "Pesquisar",
-                    tint = Color.White
-                )
-            }
 
-            Spacer(modifier = Modifier.width(24.dp))
 
-            BasicTextField(
-                value = searchState,
-                onValueChange = { searchState = it },
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .height(45.dp)
-                    .border(1.dp, Color.Black, RoundedCornerShape(32.dp))
-                    .background(Color.White, RoundedCornerShape(32.dp))
-                    .padding(start = 15.dp, top = 15.dp),
-                singleLine = true,
-                keyboardOptions = KeyboardOptions.Default.copy(imeAction = ImeAction.Done),
-                keyboardActions = KeyboardActions(
-                    onDone = {
-                        showBottomSheet = true
-                    }
-                )
-            )
-        }
-    }
+    CaixaPesquisa(
+        navController = navController,
+        searchState = searchState,
+        onValueChange = { searchState = it },
+        onDone = { showBottomSheet = true }
+    )
 
     if (showBottomSheet) {
         ModalBottomSheet(
             sheetState = bottomSheetState,
             onDismissRequest = { showBottomSheet = false }
         ) {
-            Bandeja(
-                abrir = showBottomSheet,
-                navController = navController,
-                opcoesRota = moockOpcoesRota
-            )
+//            Bandeja(
+//                abrir = showBottomSheet,
+//                navController = navController,
+//                opcoesRota = moockOpcoesRota
+//            )
+            SoliciatacaoLogin(navController = navController)
         }
     }
 }
