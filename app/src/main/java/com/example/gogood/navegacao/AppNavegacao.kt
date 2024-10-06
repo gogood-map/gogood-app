@@ -8,10 +8,9 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
-import com.example.gogood.ui.telas.mapa.MapaDeCalor
-import com.example.gogood.menu.Menu
 import com.example.gogood.ui.telas.cadastro.CadastroTela
 import com.example.gogood.ui.telas.login.LoginTela
+import com.example.gogood.ui.telas.mapa.MapaDeCalor
 import com.example.gogood.ui.theme.GoGoodTheme
 
 @Composable
@@ -32,9 +31,6 @@ fun AppNavegacao() {
             }
             composable("Cadastro") {
                 CadastroTela(navController)
-            }
-            composable("Menu") {
-                Menu(navController)
             }
         }
     }
