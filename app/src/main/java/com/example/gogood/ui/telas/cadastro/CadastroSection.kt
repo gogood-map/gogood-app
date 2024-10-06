@@ -1,7 +1,5 @@
 package com.example.gogood.ui.telas.cadastro
 
-
-import GoogleIcon
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.*
@@ -27,6 +25,7 @@ import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.example.gogood.ui.telas.login.GoogleIcon
 import com.example.gogood.ui.theme.GogoodGray
 import com.example.gogood.ui.theme.GogoodGreen
 

@@ -1,6 +1,5 @@
 package com.example.gogood.ui.telas.cadastro
 
-import androidx.compose.runtime.mutableStateOf
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.ViewModel
