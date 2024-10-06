@@ -6,12 +6,14 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import com.example.gogood.ui.theme.GogoodGray
 import com.example.gogood.ui.theme.GogoodOptionGreen
 import com.example.gogood.ui.theme.GogoodOptionRed
@@ -59,9 +61,9 @@ fun BotaoOpcaoRota(opcao: OpcaoRota, selecionado: Boolean = false, onClick: () -
                         .background(cor)
                         .border(1.5.dp, if (selecionado) Color.White else Color.Transparent)
                 )
-                TextoBandeja(texto = riscoTexto)
+                Text(text = riscoTexto, fontSize = 16.sp)
             }
-            TextoBandeja(opcao.duracao)
+            Text(text = "${opcao.distancia} km", fontSize = 16.sp)
         }
     }
 }
