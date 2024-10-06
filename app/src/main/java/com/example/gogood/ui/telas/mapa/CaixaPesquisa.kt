@@ -28,17 +28,17 @@ import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.unit.dp
-import androidx.navigation.NavController
 
 @Composable
 fun CaixaPesquisa(
-    navController: NavController,
+    onShowMenu: () -> Unit,
     searchState: String,
     onValueChange: (String) -> Unit,
     onDone: () -> Unit,
     modifier: Modifier = Modifier
 ) {
-    Box(modifier = Modifier.fillMaxSize()) {
+
+    Box(modifier = modifier.fillMaxSize()) {
         Row(
             modifier = Modifier
                 .align(Alignment.TopCenter)
@@ -47,7 +47,7 @@ fun CaixaPesquisa(
             verticalAlignment = Alignment.CenterVertically
         ) {
             IconButton(
-                onClick = { navController.navigate("Menu") },
+                onClick = { onShowMenu() },
                 modifier = Modifier
                     .size(32.dp)
                     .shadow(8.dp, CircleShape)
