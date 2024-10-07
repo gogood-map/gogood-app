@@ -1,6 +1,7 @@
 plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.jetbrains.kotlin.android)
+    alias(libs.plugins.kotlin.serialization)
 }
 
 android {
@@ -71,6 +72,7 @@ dependencies {
     implementation(libs.androidx.ui.text.google.fonts)
     implementation(libs.coil.compose.v270)
     implementation(libs.play.services.maps)
+    implementation(libs.androidx.navigation.runtime.ktx)
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
@@ -79,13 +81,19 @@ dependencies {
     debugImplementation(libs.androidx.ui.tooling)
     debugImplementation(libs.androidx.ui.test.manifest)
     implementation(libs.androidx.material.icons.extended)
-
-    implementation ("com.google.maps.android:android-maps-utils:3.8.0")
-    implementation ("com.google.maps.android:maps-utils-ktx:5.1.1")
-    implementation("com.google.android.gms:play-services-maps:18.0.2")
-    implementation("com.google.maps.android:maps-compose:6.1.0")
-
-    implementation("com.squareup.retrofit2:retrofit:2.9.0")
-    implementation("com.squareup.retrofit2:converter-gson:2.9.0")
-
+    implementation(libs.viewmodel.compose)
+    implementation (libs.android.maps.utils)
+    implementation (libs.maps.utils.ktx)
+    implementation(libs.play.services.maps.v1802)
+    implementation(libs.maps.compose)
+    implementation(libs.navigation.compose)
+    implementation(libs.kotlinx.serialization.json)
+    implementation(libs.retrofit)
+    implementation(libs.converter.gson)
+    implementation (libs.android.maps.utils)
+    implementation (libs.maps.utils.ktx)
+    implementation(libs.play.services.maps.v1802)
+    implementation(libs.maps.compose)
+    implementation(libs.retrofit)
+    implementation(libs.converter.gson)
 }

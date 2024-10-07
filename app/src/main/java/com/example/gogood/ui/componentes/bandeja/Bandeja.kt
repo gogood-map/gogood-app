@@ -1,4 +1,4 @@
-package com.example.gogood.bandeja
+package com.example.gogood.ui.componentes.bandeja
 
 import android.annotation.SuppressLint
 import androidx.compose.foundation.background
@@ -39,6 +39,8 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.navigation.NavController
+import androidx.navigation.compose.rememberNavController
 import com.example.gogood.ui.theme.GoGoodTheme
 import com.example.gogood.ui.theme.GogoodGray
 import com.example.gogood.ui.theme.GogoodGreen
@@ -49,11 +51,18 @@ import com.example.gogood.ui.theme.GogoodWhite
 
 
 @Composable
-fun Bandeja(abrir: Boolean) {
+fun Bandeja(
+        abrir: Boolean,
+        navController: NavController,
+        modifier: Modifier = Modifier
+    ) {
 
+    if (!abrir) {
+        return
+    }
 
     Column(
-        modifier = Modifier.fillMaxSize(),
+        modifier = modifier
     ){
 
         PesquisaRotas()
@@ -309,7 +318,7 @@ fun BotaoOpcaoRota(opcao: OpcaoRota, selecionado: Boolean = false, onClick: () -
 @Preview(showSystemUi = false, showBackground = true)
 fun BandejaPreview() {
     GoGoodTheme {
-        Bandeja(abrir = true)
+        Bandeja(abrir = true, rememberNavController())
     }
 }
 

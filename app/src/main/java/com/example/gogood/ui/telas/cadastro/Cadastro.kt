@@ -62,6 +62,8 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import androidx.navigation.NavController
+import androidx.navigation.compose.rememberNavController
 import com.example.gogood.ui.theme.GoGoodTheme
 import com.example.gogood.ui.theme.GogoodGray
 import com.example.gogood.ui.theme.GogoodGreen
@@ -77,7 +79,10 @@ class Cadastro : ComponentActivity() {
         setContent {
             GoGoodTheme {
                 Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
-                    CadastroApp(modifier = Modifier.padding(innerPadding))
+                    CadastroApp(
+                        modifier = Modifier.padding(innerPadding),
+                        navController = rememberNavController()
+                    )
                 }
             }
         }
@@ -107,7 +112,7 @@ class SectionViewModel : ViewModel() {
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun CadastroApp(modifier: Modifier = Modifier, viewModel: SectionViewModel = viewModel()) {
+fun CadastroApp(navController: NavController,modifier: Modifier = Modifier, viewModel: SectionViewModel = viewModel()) {
     val currentSection by viewModel.currentSection.collectAsState()
     val boxHeight by viewModel.boxHeight.collectAsState()
 
@@ -191,7 +196,7 @@ fun CadastroApp(modifier: Modifier = Modifier, viewModel: SectionViewModel = vie
 @Composable
 fun GreetingPreview() {
     GoGoodTheme {
-        CadastroApp()
+        CadastroApp(rememberNavController())
     }
 }
 
@@ -553,7 +558,7 @@ fun DadosPessoaisSection(viewModel: SectionViewModel) {
             modifier = Modifier.padding(vertical = 2.dp)
         )
         DatePickerInput(
-            label = "dd/MM/yyyy",
+            label = "dd/mm/yyyy",
             selectedDate = selectedDate,
             onDateSelected = { date -> selectedDate = date },
             modifier = Modifier

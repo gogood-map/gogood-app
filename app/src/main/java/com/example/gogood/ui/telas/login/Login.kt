@@ -44,6 +44,8 @@ import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.navigation.NavController
+import androidx.navigation.compose.rememberNavController
 import com.example.gogood.ui.theme.GoGoodTheme
 import com.example.gogood.ui.theme.GogoodGray
 import com.example.gogood.ui.theme.GogoodGreen
@@ -56,7 +58,10 @@ class Login : ComponentActivity() {
         setContent {
             GoGoodTheme {
                 Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
-                    LoginApp(modifier = Modifier.padding(innerPadding))
+                    LoginApp(
+                        modifier = Modifier.padding(innerPadding),
+                        navController = rememberNavController()
+                    )
                 }
             }
         }
@@ -65,7 +70,7 @@ class Login : ComponentActivity() {
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun LoginApp(modifier: Modifier = Modifier) {
+fun LoginApp(navController: NavController, modifier: Modifier = Modifier) {
     val emailState = remember { mutableStateOf("") }
     val senhaState = remember { mutableStateOf("") }
 
@@ -255,6 +260,6 @@ fun LoginApp(modifier: Modifier = Modifier) {
 @Composable
 fun GreetingPreview() {
     GoGoodTheme {
-        LoginApp()
+        LoginApp(rememberNavController())
     }
 }

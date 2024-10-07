@@ -1,10 +1,6 @@
 package com.example.gogood.menu
 
 
-import android.os.Bundle
-import androidx.activity.ComponentActivity
-import androidx.activity.compose.setContent
-import androidx.activity.enableEdgeToEdge
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -23,7 +19,6 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.PlaylistAdd
 import androidx.compose.material.icons.filled.Favorite
@@ -41,6 +36,7 @@ import androidx.compose.material3.ExposedDropdownMenuDefaults
 import androidx.compose.material3.ExposedDropdownMenuDefaults.outlinedTextFieldColors
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
@@ -66,10 +62,12 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Dialog
+import androidx.navigation.NavController
+import androidx.navigation.compose.rememberNavController
 import coil.compose.AsyncImage
 import com.example.gogood.ui.theme.CianoButton
 import com.example.gogood.ui.theme.CinzaFont
-import com.example.gogood.bandeja.Bandeja
+import com.example.gogood.ui.componentes.bandeja.Bandeja
 import com.example.gogood.ui.theme.GoGoodTheme
 import com.example.gogood.ui.theme.GogoodBorderWhite
 import com.example.gogood.ui.theme.GogoodCardGray
@@ -77,29 +75,36 @@ import com.example.gogood.ui.theme.GogoodGray
 import com.example.gogood.ui.theme.GogoodGraySubTitle
 import com.example.gogood.ui.theme.GogoodGreen
 import com.example.gogood.ui.theme.GogoodHeartFavoriteRed
-import kotlinx.coroutines.launch
 import java.time.LocalDateTime
 
 
 @Composable
-fun Menu(modifier: Modifier = Modifier) {
+fun Menu(navController: NavController,modifier: Modifier = Modifier) {
     val data = LocalDateTime.now()
     val mensagem = GerarBoasVindas(data)
 
     Column(
         verticalArrangement = Arrangement.spacedBy(26.dp),
-        modifier = Modifier
+        modifier = modifier
             .fillMaxSize()
             .padding(horizontal = 24.dp)
             .padding(top = 16.dp)
     ) {
-        Icon(
-            Icons.Sharp.Close,
-            contentDescription = "Botão de fechar menu",
+        IconButton(
+            onClick = { navController.popBackStack() },
             modifier = Modifier
-                .align(Alignment.End)
                 .size(30.dp)
-        )
+                .background(Color.Transparent)
+                .align(Alignment.End)
+        ) {
+            Icon(
+                Icons.Sharp.Close,
+                contentDescription = "Botão de fechar menu",
+                modifier = Modifier
+                    .size(30.dp)
+            )
+        }
+
         CardBoasVindas("Teresa", mensagem)
         Favoritos()
         Servicos()
@@ -147,7 +152,7 @@ fun Servicos() {
             sheetState = sheetState
         ) {
             // Sheet content
-            Bandeja(abrir = true)
+            Bandeja(navController = rememberNavController(), abrir = true)
         }
     }
 
@@ -482,7 +487,7 @@ fun CardServicoPreview() {
 fun MenuPreview(){
     GoGoodTheme {
         Scaffold (modifier = Modifier.fillMaxSize()){innerPadding->
-            Menu(modifier = Modifier.padding(innerPadding))
+            Menu(navController = rememberNavController(), modifier = Modifier.padding(innerPadding))
         }
     }
 }
