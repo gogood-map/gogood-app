@@ -1,42 +1,23 @@
 package com.example.gogood.ui.telas.mapa
 
-import androidx.compose.foundation.background
-import androidx.compose.foundation.border
-import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.slideInHorizontally
+import androidx.compose.animation.slideOutHorizontally
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.shape.CircleShape
-import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.foundation.text.BasicTextField
-import androidx.compose.foundation.text.KeyboardActions
-import androidx.compose.foundation.text.KeyboardOptions
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Menu
 import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.*
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.shadow
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.viewinterop.AndroidView
 import androidx.navigation.NavController
 import androidx.navigation.NavHostController
-import com.example.gogood.navegacao.Menu
-import com.example.gogood.ui.componentes.bandeja.Bandeja
+import com.example.gogood.ui.componentes.solicitacaoLogin.SoliciatacaoLogin
+import com.example.gogood.ui.telas.menu.Menu
 import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.GoogleMap
 import com.google.android.gms.maps.MapView
@@ -67,6 +48,13 @@ fun MapaDeCalor(navController: NavController) {
     )
 
     var searchState by remember { mutableStateOf("") }
+    var showMenu by remember { mutableStateOf(false) }
+
+//    val moockOpcoesRota: List<OpcaoRota> = listOf(
+//        OpcaoRota("15 min", 100, 1.5),
+//        OpcaoRota("20 min", 150, 2.5),
+//        OpcaoRota("10 min", 300, 3.5)
+//    )
 
     DisposableEffect(mapView) {
         mapView.onCreate(null)
@@ -92,48 +80,21 @@ fun MapaDeCalor(navController: NavController) {
         modifier = Modifier.fillMaxSize()
     )
 
-    Box(modifier = Modifier.fillMaxSize()) {
-        Row(
-            modifier = Modifier
-                .align(Alignment.TopCenter)
-                .padding(16.dp)
-                .fillMaxWidth(),
-            verticalAlignment = Alignment.CenterVertically
-        ) {
-            IconButton(
-                onClick = { navController.navigate(Menu) },
-                modifier = Modifier
-                    .size(32.dp)
-                    .shadow(8.dp, CircleShape)
-                    .background(shape = CircleShape, color = MaterialTheme.colorScheme.primary)
-            ) {
-                Icon(
-                    imageVector = Icons.Default.Menu,
-                    contentDescription = "Pesquisar",
-                    tint = Color.White
-                )
-            }
+    CaixaPesquisa(
+        onShowMenu = { showMenu = true },
+        searchState = searchState,
+        onValueChange = { searchState = it },
+        onDone = { showBottomSheet = true }
+    )
 
-            Spacer(modifier = Modifier.weight(1f))
-
-            BasicTextField(
-                value = searchState,
-                onValueChange = { searchState = it },
-                modifier = Modifier
-                    .weight(5f)
-                    .height(45.dp)
-                    .border(1.dp, Color.Black, RoundedCornerShape(32.dp))
-                    .background(Color.White, RoundedCornerShape(32.dp))
-                    .padding(start = 15.dp, top = 15.dp),
-                singleLine = true,
-                keyboardOptions = KeyboardOptions.Default.copy(imeAction = ImeAction.Done),
-                keyboardActions = KeyboardActions(
-                    onDone = {
-                        showBottomSheet = true
-                    }
-                )
-            )
-        }
+    AnimatedVisibility(
+        visible = showMenu,
+        enter = slideInHorizontally(initialOffsetX = { -it }),
+        exit = slideOutHorizontally(targetOffsetX = { -it })
+    ) {
+        Menu(
+            onClose = { showMenu = false },
+        )
     }
 
     if (showBottomSheet) {
@@ -141,9 +102,14 @@ fun MapaDeCalor(navController: NavController) {
             sheetState = bottomSheetState,
             onDismissRequest = { showBottomSheet = false }
         ) {
-            Bandeja(
+//            Bandeja(
+//                abrir = showBottomSheet,
+//                navController = navController,
+//                opcoesRota = moockOpcoesRota
+//            )
+            SoliciatacaoLogin(
                 navController = navController,
-                abrir = true
+                modifier = Modifier.padding(bottom = 64.dp)
             )
         }
     }
