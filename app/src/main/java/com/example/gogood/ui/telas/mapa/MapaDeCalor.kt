@@ -17,7 +17,7 @@ import androidx.compose.ui.viewinterop.AndroidView
 import androidx.navigation.NavController
 import androidx.navigation.NavHostController
 import com.example.gogood.ui.componentes.solicitacaoLogin.SoliciatacaoLogin
-import com.example.gogood.ui.telas.menu.Menu
+import com.example.gogood.ui.componentes.menu.Menu
 import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.GoogleMap
 import com.google.android.gms.maps.MapView
