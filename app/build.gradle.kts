@@ -1,3 +1,6 @@
+import java.io.FileInputStream
+import java.util.Properties
+
 plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.jetbrains.kotlin.android)
@@ -14,6 +17,17 @@ android {
         targetSdk = 34
         versionCode = 1
         versionName = "1.0"
+
+        val localProperties = project.rootProject.file("local.properties")
+        val properties = Properties().apply {
+            load(FileInputStream(localProperties))
+        }
+
+        buildConfigField(
+            type = "String",
+            name = "API_BASE_URL",
+            value = properties.getProperty("API_BASE_URL")
+        )
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
         vectorDrawables {
@@ -39,6 +53,7 @@ android {
     }
     buildFeatures {
         compose = true
+        buildConfig = true
     }
     composeOptions {
         kotlinCompilerExtensionVersion = "1.5.1"
@@ -50,17 +65,15 @@ android {
     }
 }
 
-
-
 dependencies {
 
-    implementation (libs.ui)
-    implementation (libs.androidx.foundation)
-    implementation (libs.androidx.material3.vlatestversion)
-    implementation (libs.androidx.lifecycle.viewmodel.compose)
+    implementation(libs.ui)
+    implementation(libs.androidx.foundation)
+    implementation(libs.androidx.material3.vlatestversion)
+    implementation(libs.androidx.lifecycle.viewmodel.compose)
     implementation(libs.androidx.ui.text.google.fonts)
     implementation(libs.coil.compose)
-    implementation (libs.material3)
+    implementation(libs.material3)
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.lifecycle.runtime.ktx)
     implementation(libs.androidx.activity.compose)
@@ -70,7 +83,6 @@ dependencies {
     implementation(libs.androidx.ui.tooling.preview)
     implementation(libs.androidx.material3)
     implementation(libs.androidx.ui.text.google.fonts)
-    implementation(libs.coil.compose.v270)
     implementation(libs.play.services.maps)
     implementation(libs.androidx.navigation.runtime.ktx)
     testImplementation(libs.junit)
@@ -82,18 +94,20 @@ dependencies {
     debugImplementation(libs.androidx.ui.test.manifest)
     implementation(libs.androidx.material.icons.extended)
     implementation(libs.viewmodel.compose)
-    implementation (libs.android.maps.utils)
-    implementation (libs.maps.utils.ktx)
+    implementation(libs.android.maps.utils)
+    implementation(libs.maps.utils.ktx)
     implementation(libs.play.services.maps.v1802)
     implementation(libs.maps.compose)
     implementation(libs.navigation.compose)
     implementation(libs.kotlinx.serialization.json)
     implementation(libs.retrofit)
     implementation(libs.converter.gson)
-    implementation (libs.android.maps.utils)
-    implementation (libs.maps.utils.ktx)
+    implementation(libs.android.maps.utils)
+    implementation(libs.maps.utils.ktx)
     implementation(libs.play.services.maps.v1802)
     implementation(libs.maps.compose)
-    implementation(libs.retrofit)
-    implementation(libs.converter.gson)
+    implementation(libs.logging.interceptor)
+    implementation(libs.androidx.datastore.preferences)
+    implementation(libs.koin.android)
+    implementation(libs.koin.compose.viewmodel)
 }
