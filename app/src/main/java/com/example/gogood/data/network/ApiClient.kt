@@ -47,4 +47,8 @@ object ApiClient {
         api.create(UserService::class.java)
     }
 
+//    fun <T> createService(service: Class<T>): T {
+//        return api.create(service)
+//    }
+
 }

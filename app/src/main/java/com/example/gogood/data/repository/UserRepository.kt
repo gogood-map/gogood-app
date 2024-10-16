@@ -2,15 +2,14 @@ package com.example.gogood.data.repository
 
 import com.example.gogood.data.network.UserService
 import com.example.gogood.domain.model.User
-import com.example.gogood.domain.repository.UserRepository
+import com.example.gogood.domain.repository.IUserRepository
 import retrofit2.Response
 
-class UserRepositoryImpl(
+class UserRepository(
     private val userService: UserService
-
-): UserRepository {
-    override suspend fun delete(email: String): Response<Void> {
-        TODO("Not yet implemented")
+): IUserRepository {
+    override suspend fun delete(id: Int): Response<Void> {
+        return userService.delete(id)
     }
 
     override suspend fun getUser(userId: String): Response<User> {

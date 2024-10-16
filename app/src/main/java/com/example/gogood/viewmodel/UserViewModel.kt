@@ -5,11 +5,11 @@ import androidx.lifecycle.viewModelScope
 import com.example.gogood.data.network.ApiClient.userService
 import com.example.gogood.data.network.LoginRequest
 import com.example.gogood.domain.model.User
-import com.example.gogood.domain.repository.UserRepository
+import com.example.gogood.domain.repository.IUserRepository
 import kotlinx.coroutines.launch
 
 class UserViewModel(
-    private val userRepository: UserRepository
+    private val userRepository: IUserRepository
 ) : ViewModel() {
 
     var isLoggedIn = false
@@ -40,7 +40,9 @@ class UserViewModel(
         TODO()
     }
 
-    fun deleteUser(userId: String) {
-        TODO()
+    fun deleteUser(userId: Int) {
+        viewModelScope.launch {
+            userRepository.delete(userId)
+        }
     }
 }
