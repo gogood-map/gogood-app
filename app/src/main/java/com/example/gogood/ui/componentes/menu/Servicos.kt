@@ -1,4 +1,4 @@
-package com.example.gogood.ui.telas.menu
+package com.example.gogood.ui.componentes.menu
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
