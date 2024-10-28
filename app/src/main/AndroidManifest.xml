@@ -5,6 +5,8 @@
     <uses-permission android:name="android.permission.INTERNET" />
 
     <application
+        android:usesCleartextTraffic="true"
+
         android:allowBackup="true"
         android:dataExtractionRules="@xml/data_extraction_rules"
         android:fullBackupContent="@xml/backup_rules"
@@ -19,7 +21,7 @@
             android:value="AIzaSyBUyVsucIFZtw301NuH6CHHkEMnYdVMzJY" />
 
         <activity
-            android:name="MainActivity"
+            android:name=".home.presentation.composables.MainActivity"
             android:exported="true"
             android:label="@string/app_name"
             android:theme="@style/Theme.GoGood">
@@ -30,5 +32,6 @@
             </intent-filter>
         </activity>
     </application>
+
     <uses-permission android:name="android.permission.INTERNET" />
 </manifest>

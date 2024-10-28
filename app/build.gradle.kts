@@ -8,11 +8,11 @@ plugins {
 }
 
 android {
-    namespace = "com.example.gogood"
+    namespace = "com.gogood.mobile"
     compileSdk = 34
 
     defaultConfig {
-        applicationId = "com.example.gogood"
+        applicationId = "com.gogood.mobile"
         minSdk = 30
         targetSdk = 34
         versionCode = 1
@@ -110,4 +110,5 @@ dependencies {
     implementation(libs.androidx.datastore.preferences)
     implementation(libs.koin.android)
     implementation(libs.koin.compose.viewmodel)
+    implementation ("com.google.accompanist:accompanist-permissions:0.24.13-rc")
 }
