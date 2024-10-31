@@ -1,12 +1,9 @@
 package com.gogood.mobile.auth.apresentation.composables.cadastro
 
 import androidx.compose.foundation.background
-import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.CircleShape
-import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.ArrowForward
@@ -21,8 +18,6 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.input.PasswordVisualTransformation
-import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.text.withStyle
@@ -30,16 +25,13 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.gogood.mobile.auth.apresentation.composables.GoogleIcon
 import com.gogood.mobile.auth.apresentation.viewmodels.CadastroViewModel
-import com.gogood.mobile.auth.apresentation.viewmodels.SectionViewModel
 import com.gogood.mobile.ui.theme.GogoodGray
 import com.gogood.mobile.ui.theme.GogoodGreen
 import org.koin.compose.viewmodel.koinViewModel
 
 @Composable
-fun CadastroSection(viewModelSection: SectionViewModel = koinViewModel(),
-                    cadastroViewModel: CadastroViewModel = koinViewModel()
-) {
-
+fun EtapaCadastroCredenciais() {
+    val cadastroViewModel: CadastroViewModel = koinViewModel()
     val nomeState = remember {
         mutableStateOf(cadastroViewModel.usuarioCadastro.nome)
     }
@@ -49,20 +41,41 @@ fun CadastroSection(viewModelSection: SectionViewModel = koinViewModel(),
     val exibirSenhaState = remember {
         mutableStateOf(false)
     }
+    var habilitarProximo by remember {
+        mutableStateOf(false)
+    }
+
+    val emailValido: (String) -> Boolean = {email->
+        email.contains('@') && email.contains('.')
+    }
+
+    val senhaValida: (String) -> Boolean = {senha->
+       senha.length >= 6 && senha.isNotBlank()
+    }
+
+    val nomeValido: (String) -> Boolean = {nome->
+        nome.length >= 4 && nome.isNotBlank()
+    }
+
+    if(emailValido(emailState.value) && senhaValida(senhaState.value) && nomeValido(nomeState.value)){
+        habilitarProximo = true
+    }
+
     Column(
         modifier = Modifier.fillMaxSize(),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
         TitleText("Cadastre-se")
         Spacer(modifier = Modifier.height(14.dp))
-        InputField("Nome *", nomeState)
+        Campo("Nome", nomeState, nomeValido)
         Spacer(modifier = Modifier.height(14.dp))
-        InputField("Email *", emailState)
+        Campo("Email", emailState, emailValido)
         Spacer(modifier = Modifier.height(14.dp))
-        PasswordInputField("Senha *",  senhaState, exibirSenhaState)
+        CampoSenha("Senha",  senhaState, exibirSenhaState, senhaValida)
         Spacer(modifier = Modifier.height(14.dp))
 
-        PasswordInputField("Confirmar senha *", confirmarSenhaState, exibirSenhaState)
+        CampoSenha("Confirmar senha", confirmarSenhaState, exibirSenhaState, senhaValida)
+
         Column (modifier = Modifier.width(250.dp)){
             Text(text = "Exibir Senha",
                 fontSize = 16.sp, fontWeight = FontWeight.Bold,
@@ -88,26 +101,13 @@ fun CadastroSection(viewModelSection: SectionViewModel = koinViewModel(),
             }
 
         }
-        else if(!emailState.value.contains('@') || !emailState.value.contains('.')){
-            Row(
-                horizontalArrangement = Arrangement.Center,
-                verticalAlignment = Alignment.CenterVertically,
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(top = 16.dp),
-            ) {
-                Text(text = "Email inválido.", color = Color.Red)
-            }
-        }
         else{
             cadastroViewModel.usuarioCadastro.nome = nomeState.value
             cadastroViewModel.usuarioCadastro.email = emailState.value
             cadastroViewModel.usuarioCadastro.senha = senhaState.value
-            NavigationButtons(viewModelSection, nextSection = "DadosPessoaisSection"){
-
-            }
+            NavigationButtons(nextSection = "DadosPessoaisSection", enableNext = habilitarProximo)
         }
-       
+
         Spacer(modifier = Modifier.height(18.dp))
         SocialLogin()
         Spacer(modifier = Modifier.height(10.dp))
@@ -132,105 +132,6 @@ fun TitleText(text: String) {
     }
 }
 
-@Composable
-fun InputField(label: String, state: MutableState<String>) {
-
-    Column {
-        Text(
-            text = label,
-            fontSize = 12.sp,
-            fontWeight = FontWeight.Bold
-        )
-
-        BasicTextField(
-            value = state.value,
-            onValueChange = {  state.value = it },
-            modifier = Modifier
-                .width(250.dp)
-                .height(45.dp)
-                .border(1.dp, Color.Black, RoundedCornerShape(8.dp))
-                .background(Color.White, RoundedCornerShape(8.dp))
-                .padding(start = 15.dp, top = 15.dp),
-            singleLine = true,
-        )
-    }
-}
-@Composable
-fun PasswordInputField(label: String, state: MutableState<String>, exibirSenha: MutableState<Boolean>) {
-
-    Column {
-        Text(
-            text = label,
-            fontSize = 12.sp,
-            fontWeight = FontWeight.Bold
-        )
-
-        BasicTextField(
-
-            value = state.value,
-            onValueChange = {  state.value = it },
-            visualTransformation = if (!exibirSenha.value) PasswordVisualTransformation() else VisualTransformation.None,
-
-            modifier = Modifier
-                .width(250.dp)
-                .height(45.dp)
-                .border(1.dp, Color.Black, RoundedCornerShape(8.dp))
-                .background(Color.White, RoundedCornerShape(8.dp))
-                .padding(start = 15.dp, top = 15.dp),
-            singleLine = true,
-
-            )
-
-    }
-}
-
-
-@Composable
-fun NavigationButtons(sectionViewModel: SectionViewModel = koinViewModel(), nextSection: String, lastSection: String? = null,
-                      click: ()-> Unit) {
-    Row(
-        horizontalArrangement = Arrangement.Center,
-        verticalAlignment = Alignment.CenterVertically,
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(top = 16.dp),
-    ) {
-        if (lastSection != null) {
-            IconButton(
-                onClick = {
-                    sectionViewModel.currentSection.value = lastSection
-                },
-                modifier = Modifier
-                    .size(50.dp)
-                    .shadow(8.dp, CircleShape)
-                    .background(GogoodGray, CircleShape)
-            ) {
-                Icon(
-                    imageVector = Icons.Default.ArrowBack,
-                    contentDescription = "Back",
-                    tint = Color.White
-                )
-            }
-            Spacer(modifier = Modifier.width(16.dp))
-        }
-        IconButton(
-            onClick = {
-                sectionViewModel.currentSection.value = nextSection
-                click()
-            },
-            modifier = Modifier
-                .size(50.dp)
-                .shadow(8.dp, CircleShape)
-                .background(GogoodGray, CircleShape)
-        ) {
-            Icon(
-                imageVector = Icons.Default.ArrowForward,
-                contentDescription = "Next",
-                tint = Color.White
-            )
-        }
-    }
-}
 
 @Composable
 fun SocialLogin() {

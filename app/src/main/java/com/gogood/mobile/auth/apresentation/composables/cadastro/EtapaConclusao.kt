@@ -20,15 +20,14 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.gogood.mobile.auth.apresentation.viewmodels.CadastroViewModel
-import com.gogood.mobile.auth.apresentation.viewmodels.SectionViewModel
 import com.gogood.mobile.auth.domain.models.UsuarioCadastroRequest
 import com.gogood.mobile.ui.theme.GogoodGray
 import com.gogood.mobile.ui.theme.GogoodGreen
 import org.koin.compose.viewmodel.koinViewModel
 
 @Composable
-fun ConcluidoSection(viewModelSection: SectionViewModel = koinViewModel(), cadastroViewModel: CadastroViewModel = koinViewModel(),
-                     click: ()->Unit) {
+fun EtapaConclusao(click: ()->Unit) {
+    val cadastroViewModel: CadastroViewModel = koinViewModel()
     Column(
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Center,
@@ -45,7 +44,7 @@ fun ConcluidoSection(viewModelSection: SectionViewModel = koinViewModel(), cadas
             ConcluidoTitle()
             ConcluidoMessage()
             ConcluidoArt()
-            ConcluidoNavigationButtons(viewModelSection){
+            ConcluidoNavigationButtons(cadastroViewModel){
                 click()
             }
         }
@@ -54,7 +53,7 @@ fun ConcluidoSection(viewModelSection: SectionViewModel = koinViewModel(), cadas
             ErrorTitle()
             Button(onClick = {
                 cadastroViewModel.usuarioCadastro = UsuarioCadastroRequest()
-                viewModelSection.currentSection.value = "CadastroSection"
+                cadastroViewModel.currentSection.value = "CadastroSection"
             }) {
                 Text(text = "Tentar novamente")
             }
@@ -111,7 +110,7 @@ fun ConcluidoArt() {
 }
 
 @Composable
-fun ConcluidoNavigationButtons(viewModel: SectionViewModel, click: () -> Unit) {
+fun ConcluidoNavigationButtons(viewModel: CadastroViewModel, click: () -> Unit) {
     Spacer(modifier = Modifier.height(8.dp))
     Row(
         horizontalArrangement = Arrangement.Center,

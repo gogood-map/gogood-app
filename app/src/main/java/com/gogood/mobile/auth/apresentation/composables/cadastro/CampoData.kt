@@ -90,7 +90,7 @@ fun DatePickerInput(
 }
 
 @Composable
-fun MyApp() {
+fun CampoData() {
     var selectedDate by remember { mutableStateOf("") }
 
     Column(
@@ -107,5 +107,5 @@ fun MyApp() {
 @Preview(showBackground = true)
 @Composable
 fun DefaultPreview() {
-    MyApp()
+    CampoData()
 }

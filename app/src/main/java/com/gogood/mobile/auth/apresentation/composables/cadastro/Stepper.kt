@@ -1,4 +1,4 @@
-package com.gogood.mobile.auth.apresentation.composables
+package com.gogood.mobile.auth.apresentation.composables.cadastro
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*

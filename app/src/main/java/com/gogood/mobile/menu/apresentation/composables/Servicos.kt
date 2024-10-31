@@ -32,7 +32,7 @@ import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
-import com.gogood.mobile.auth.apresentation.composables.SolicitacaoLogin
+import com.gogood.mobile.auth.apresentation.composables.SolicitacaoEntrada
 import com.gogood.mobile.menu.apresentation.viewmodels.MenuViewModel
 import org.koin.compose.viewmodel.koinViewModel
 
@@ -62,7 +62,7 @@ fun Servicos(navController: NavController, menuViewModel: MenuViewModel = koinVi
             onDismissRequest = { showBottomSheet = false }
         ) {
             if( menuViewModel.usuario!!.userId == null){
-                SolicitacaoLogin(
+                SolicitacaoEntrada(
                     navController = navController,
                     modifier = Modifier.padding(bottom = 64.dp)
                 )

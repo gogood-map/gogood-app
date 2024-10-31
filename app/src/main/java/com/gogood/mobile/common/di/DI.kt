@@ -5,7 +5,6 @@ import androidx.datastore.core.DataStore
 import androidx.datastore.preferences.core.Preferences
 import androidx.datastore.preferences.preferencesDataStore
 import com.gogood.mobile.auth.apresentation.viewmodels.CadastroViewModel
-import com.gogood.mobile.auth.apresentation.viewmodels.SectionViewModel
 import com.gogood.mobile.auth.apresentation.viewmodels.LoginViewModel
 import com.gogood.mobile.auth.data.repository.IUserRepository
 import com.gogood.mobile.auth.data.repository.remote.UserRepository
@@ -59,9 +58,6 @@ val appModule = module {
     }
     viewModel {
         LoginViewModel(get())
-    }
-    viewModel {
-        SectionViewModel()
     }
     viewModel {
         CadastroViewModel(get())

@@ -32,7 +32,7 @@ import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
-import com.gogood.mobile.auth.apresentation.composables.cadastro.InputField
+import com.gogood.mobile.auth.apresentation.composables.cadastro.Campo
 import com.gogood.mobile.auth.apresentation.composables.cadastro.SocialLogin
 import com.gogood.mobile.auth.apresentation.composables.cadastro.TitleText
 import com.gogood.mobile.auth.apresentation.viewmodels.LoginViewModel
@@ -41,10 +41,17 @@ import com.gogood.mobile.ui.theme.GogoodGreen
 import org.koin.compose.viewmodel.koinViewModel
 
 @Composable
-fun LoginSection(navController: NavController, loginViewModel: LoginViewModel = koinViewModel()) {
-
+fun LoginSection(navController: NavController, ) {
+    val loginViewModel: LoginViewModel = koinViewModel()
     val emailState = remember { mutableStateOf( loginViewModel.usuarioLogin.email) }
     val senhaState = remember { mutableStateOf( loginViewModel.usuarioLogin.senha) }
+    val emailValido: (String) -> Boolean = {email->
+        email.contains('@') && email.contains('.')
+    }
+
+    val senhaValida: (String) -> Boolean = {senha->
+        senha.length >= 6 && senha.isNotBlank()
+    }
 
     Column(
         modifier = Modifier.fillMaxSize(),
@@ -53,9 +60,9 @@ fun LoginSection(navController: NavController, loginViewModel: LoginViewModel = 
     ) {
         TitleText("Login")
         Spacer(modifier = Modifier.height(14.dp))
-        InputField("Email", emailState)
+        Campo("Email", emailState, emailValido)
         Spacer(modifier = Modifier.height(14.dp))
-        InputField("Senha", senhaState)
+        Campo("Senha", senhaState, senhaValida)
         Spacer(modifier = Modifier.height(8.dp))
         LoginButton(){
             loginViewModel.login(emailState.value, senhaState.value)

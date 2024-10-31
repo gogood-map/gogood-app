@@ -23,7 +23,7 @@ import androidx.navigation.compose.rememberNavController
 import com.gogood.mobile.ui.theme.GoGoodTheme
 
 @Composable
-fun SolicitacaoLogin(
+fun SolicitacaoEntrada(
     modifier: Modifier = Modifier,
     navController: NavController
 ) {
@@ -94,6 +94,6 @@ fun TextoNavegacao(
 @Composable
 fun SolicitacaoLoginPreview(modifier: Modifier = Modifier) {
     GoGoodTheme {
-        SolicitacaoLogin(modifier = modifier, navController = rememberNavController())
+        SolicitacaoEntrada(modifier = modifier, navController = rememberNavController())
     }
 }

@@ -25,13 +25,13 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.gogood.mobile.auth.apresentation.viewmodels.CadastroViewModel
-import com.gogood.mobile.auth.apresentation.viewmodels.SectionViewModel
 import com.gogood.mobile.ui.theme.GoGoodTheme
 import com.gogood.mobile.ui.theme.GogoodGreen
 import org.koin.compose.viewmodel.koinViewModel
 
 @Composable
-fun DadosPessoaisSection(modifier: Modifier = Modifier, viewModelSection: SectionViewModel = koinViewModel(), cadastroViewModel: CadastroViewModel = koinViewModel()) {
+fun EtapaDadosPessoais(modifier: Modifier = Modifier) {
+    val cadastroViewModel: CadastroViewModel = koinViewModel()
     val genderState = remember { mutableStateOf(cadastroViewModel.usuarioCadastro.genero) }
     val birthDateState = remember { mutableStateOf(cadastroViewModel.usuarioCadastro.dt_Nascimento) }
 
@@ -74,9 +74,9 @@ fun DadosPessoaisSection(modifier: Modifier = Modifier, viewModelSection: Sectio
             cadastroViewModel.usuarioCadastro.genero = genderState.value
             cadastroViewModel.usuarioCadastro.dt_Nascimento = birthDateState.value
 
-            NavigationButtons(viewModelSection, "ConcluidoSection", "CadastroSection"
+            NavigationButtons("ConcluidoSection", "CadastroSection"
             ) {
-                cadastroViewModel.registrar()
+                cadastroViewModel.cadastrar()
             }
         }
 
@@ -166,6 +166,6 @@ fun BirthDateField(
 @Composable
 fun DadosPessoaisSectionPreview(modifier: Modifier = Modifier) {
     GoGoodTheme {
-        DadosPessoaisSection(modifier = modifier, viewModelSection = SectionViewModel())
+        EtapaDadosPessoais(modifier = modifier)
     }
 }

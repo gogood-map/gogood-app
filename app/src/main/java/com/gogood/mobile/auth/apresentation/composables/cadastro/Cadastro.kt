@@ -20,16 +20,13 @@ import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import com.gogood.mobile.ui.theme.GogoodWhite
 import androidx.navigation.compose.rememberNavController
-import com.gogood.mobile.auth.apresentation.composables.Stepper
 import com.gogood.mobile.auth.apresentation.viewmodels.CadastroViewModel
-import com.gogood.mobile.auth.apresentation.viewmodels.SectionViewModel
 import com.gogood.mobile.ui.theme.GoGoodTheme
 import org.koin.compose.viewmodel.koinViewModel
 
 @Composable
 fun CadastroTela(navController: NavController, modifier: Modifier = Modifier) {
-    val viewModelSection = koinViewModel<SectionViewModel>()
-    val cadastroViewModel = koinViewModel<CadastroViewModel>()
+    val viewModelSection = koinViewModel<CadastroViewModel>()
     val currentSection by viewModelSection.currentSection.collectAsState()
     val boxHeight by viewModelSection.boxHeight.collectAsState()
 
@@ -81,17 +78,17 @@ fun CadastroTela(navController: NavController, modifier: Modifier = Modifier) {
                         "CadastroSection" -> {
                             Stepper("Cadastro")
                             Spacer(modifier = Modifier.height(28.dp))
-                            CadastroSection(viewModelSection)
+                            EtapaCadastroCredenciais()
                         }
                         "DadosPessoaisSection" -> {
                             Stepper("Dados Pessoais")
                             Spacer(modifier = Modifier.height(28.dp))
-                            DadosPessoaisSection(viewModelSection = viewModelSection)
+                            EtapaDadosPessoais()
                         }
                         "ConcluidoSection" -> {
                             Stepper("Finalização")
                             Spacer(modifier = Modifier.height(28.dp))
-                            ConcluidoSection(viewModelSection){
+                            EtapaConclusao(){
                                 navController.navigate("Mapa")
                             }
                         }

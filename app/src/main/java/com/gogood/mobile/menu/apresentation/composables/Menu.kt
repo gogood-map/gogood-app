@@ -21,7 +21,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import coil.compose.AsyncImage
-import com.gogood.mobile.auth.apresentation.composables.SolicitacaoLogin
+import com.gogood.mobile.auth.apresentation.composables.SolicitacaoEntrada
 import com.gogood.mobile.menu.apresentation.viewmodels.MenuViewModel
 import com.gogood.mobile.ui.theme.GogoodGray
 import com.gogood.mobile.ui.theme.GogoodGraySubTitle
@@ -62,7 +62,7 @@ fun Menu(
                     )
                 }
             }
-            SolicitacaoLogin(navController = navController)
+            SolicitacaoEntrada(navController = navController)
 
         }
     }else{
