@@ -1,19 +1,11 @@
 package com.gogood.mobile.auth.apresentation.composables.cadastro
 
-import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.shape.CircleShape
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.ArrowBack
-import androidx.compose.material.icons.filled.ArrowForward
-import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
 import androidx.compose.material3.Text
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.buildAnnotatedString
@@ -23,14 +15,14 @@ import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.navigation.NavController
 import com.gogood.mobile.auth.apresentation.composables.GoogleIcon
 import com.gogood.mobile.auth.apresentation.viewmodels.CadastroViewModel
-import com.gogood.mobile.ui.theme.GogoodGray
 import com.gogood.mobile.ui.theme.GogoodGreen
 import org.koin.compose.viewmodel.koinViewModel
 
 @Composable
-fun EtapaCadastroCredenciais() {
+fun EtapaCadastroCredenciais(navController: NavController) {
     val cadastroViewModel: CadastroViewModel = koinViewModel()
     val nomeState = remember {
         mutableStateOf(cadastroViewModel.usuarioCadastro.nome)
@@ -58,7 +50,13 @@ fun EtapaCadastroCredenciais() {
     }
 
     if(emailValido(emailState.value) && senhaValida(senhaState.value) && nomeValido(nomeState.value)){
+        cadastroViewModel.usuarioCadastro.nome = nomeState.value
+        cadastroViewModel.usuarioCadastro.email = emailState.value
+        cadastroViewModel.usuarioCadastro.senha = senhaState.value
         habilitarProximo = true
+
+    }else{
+        habilitarProximo = false
     }
 
     Column(
@@ -67,14 +65,23 @@ fun EtapaCadastroCredenciais() {
     ) {
         TitleText("Cadastre-se")
         Spacer(modifier = Modifier.height(14.dp))
+
         Campo("Nome", nomeState, nomeValido)
         Spacer(modifier = Modifier.height(14.dp))
+
         Campo("Email", emailState, emailValido)
         Spacer(modifier = Modifier.height(14.dp))
+
         CampoSenha("Senha",  senhaState, exibirSenhaState, senhaValida)
         Spacer(modifier = Modifier.height(14.dp))
 
-        CampoSenha("Confirmar senha", confirmarSenhaState, exibirSenhaState, senhaValida)
+        CampoConfirmarSenha(label = "Confirmar senha",
+            stateConfirmar = confirmarSenhaState,
+            exibirSenha =  exibirSenhaState,
+            stateSenha = senhaState,
+            regraValida =  senhaValida)
+        Spacer(modifier = Modifier.height(8.dp))
+
 
         Column (modifier = Modifier.width(250.dp)){
             Text(text = "Exibir Senha",
@@ -88,30 +95,12 @@ fun EtapaCadastroCredenciais() {
                     }
             )
         }
-        Spacer(modifier = Modifier.height(8.dp))
-        if(senhaState.value != confirmarSenhaState.value){
-            Row(
-                horizontalArrangement = Arrangement.Center,
-                verticalAlignment = Alignment.CenterVertically,
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(top = 16.dp),
-            ) {
-                Text(text = "Senhas não coincindem.", color = Color.Red)
-            }
-
-        }
-        else{
-            cadastroViewModel.usuarioCadastro.nome = nomeState.value
-            cadastroViewModel.usuarioCadastro.email = emailState.value
-            cadastroViewModel.usuarioCadastro.senha = senhaState.value
-            NavigationButtons(nextSection = "DadosPessoaisSection", enableNext = habilitarProximo)
-        }
+        NavigationButtons(nextSection = "DadosPessoaisSection", enableNext = habilitarProximo)
 
         Spacer(modifier = Modifier.height(18.dp))
         SocialLogin()
         Spacer(modifier = Modifier.height(10.dp))
-        LoginLink()
+        LoginLink(navController)
     }
 }
 
@@ -153,7 +142,7 @@ fun SocialLogin() {
 }
 
 @Composable
-fun LoginLink() {
+fun LoginLink(navController: NavController) {
     Row(
         horizontalArrangement = Arrangement.Center,
         verticalAlignment = Alignment.Bottom,
@@ -171,6 +160,9 @@ fun LoginLink() {
                 ) {
                     append("Login")
                 }
+            },
+            modifier = Modifier.clickable {
+                navController.navigate("Login")
             },
             fontSize = 12.sp,
             textAlign = TextAlign.Center,

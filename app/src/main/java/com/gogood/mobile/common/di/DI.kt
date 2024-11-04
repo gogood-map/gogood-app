@@ -13,11 +13,14 @@ import com.gogood.mobile.common.ApiClient
 import com.gogood.mobile.home.domain.services.MapsService
 import com.gogood.mobile.home.data.repository.remote.MapRepository
 import com.gogood.mobile.home.data.repository.IMapRepository
+import com.gogood.mobile.home.presentation.viewmodels.MainViewModel
 import com.gogood.mobile.home.presentation.viewmodels.MapaViewModel
 import com.gogood.mobile.menu.apresentation.viewmodels.MenuViewModel
 import com.gogood.mobile.menu.data.repository.IEnderecoRepository
 import com.gogood.mobile.menu.data.repository.remote.EnderecoRepository
 import com.gogood.mobile.menu.domain.services.EnderecoService
+import com.gogood.mobile.utils.ConexaoInternetObserver
+import com.gogood.mobile.utils.LocalizacaoObserver
 import org.koin.android.ext.koin.androidContext
 import org.koin.core.module.dsl.viewModel
 import org.koin.dsl.module
@@ -25,6 +28,13 @@ import org.koin.dsl.module
 val appModule = module {
     single<DataStore<Preferences>> {
         provideDataStore(androidContext())
+    }
+    single<ConexaoInternetObserver>{
+        ConexaoInternetObserver(androidContext())
+    }
+    single<LocalizacaoObserver>
+    {
+        LocalizacaoObserver(androidContext())
     }
 
     single<MapsService> {
@@ -50,8 +60,11 @@ val appModule = module {
 
 
 
+    viewModel{
+        MainViewModel(get())
+    }
     viewModel {
-        MapaViewModel(get())
+        MapaViewModel(get(), get())
     }
     viewModel {
         MenuViewModel(get(), get())

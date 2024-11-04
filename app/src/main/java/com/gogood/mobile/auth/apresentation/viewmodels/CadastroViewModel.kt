@@ -14,9 +14,10 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
+import java.util.Locale
 
 class CadastroViewModel(private val userRepository: IUserRepository) : ViewModel() {
-    private val _boxHeight = MutableStateFlow(440.dp)
+    private val _boxHeight = MutableStateFlow(480.dp)
     val boxHeight: StateFlow<Dp> = _boxHeight
     val currentSection = MutableStateFlow("CadastroSection")
     var usuarioCadastro by mutableStateOf(UsuarioCadastroRequest())
@@ -29,7 +30,7 @@ class CadastroViewModel(private val userRepository: IUserRepository) : ViewModel
         viewModelScope.launch {
             currentSection.collect { section ->
                 _boxHeight.value = when (section) {
-                    "CadastroSection" -> 620.dp
+                    "CadastroSection" -> 640.dp
                     "DadosPessoaisSection" -> 600.dp
                     "ConcluidoSection" -> 550.dp
                     else -> 400.dp
@@ -43,7 +44,7 @@ class CadastroViewModel(private val userRepository: IUserRepository) : ViewModel
 
             usuarioCadastro.dt_Nascimento =  LocalDate.parse(usuarioCadastro.dt_Nascimento, DateTimeFormatter
                 .ofPattern("dd/MM/yyyy")).toString()
-            usuarioCadastro.genero = usuarioCadastro.genero.toLowerCase()
+            usuarioCadastro.genero = usuarioCadastro.genero.lowercase(Locale.getDefault())
 
             if(usuarioCadastro.genero == "Prefiro não dizer"){
                 usuarioCadastro.genero = "não especificado"

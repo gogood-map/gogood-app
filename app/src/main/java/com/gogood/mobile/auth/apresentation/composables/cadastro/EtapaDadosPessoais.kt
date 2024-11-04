@@ -15,8 +15,10 @@ import androidx.compose.material3.RadioButtonDefaults
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.MutableState
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -34,7 +36,9 @@ fun EtapaDadosPessoais(modifier: Modifier = Modifier) {
     val cadastroViewModel: CadastroViewModel = koinViewModel()
     val genderState = remember { mutableStateOf(cadastroViewModel.usuarioCadastro.genero) }
     val birthDateState = remember { mutableStateOf(cadastroViewModel.usuarioCadastro.dt_Nascimento) }
-
+    var habilitarProximo by remember{
+        mutableStateOf(false)
+    }
     Column(
         modifier = modifier.fillMaxSize()
     ) {
@@ -73,17 +77,15 @@ fun EtapaDadosPessoais(modifier: Modifier = Modifier) {
         if(birthDateState.value.isNotEmpty() && genderState.value.isNotEmpty()){
             cadastroViewModel.usuarioCadastro.genero = genderState.value
             cadastroViewModel.usuarioCadastro.dt_Nascimento = birthDateState.value
-
-            NavigationButtons("ConcluidoSection", "CadastroSection"
-            ) {
-                cadastroViewModel.cadastrar()
-            }
+            habilitarProximo = true
+        }else{
+            habilitarProximo = false
         }
 
-        Spacer(modifier = Modifier.height(18.dp))
-        SocialLogin()
-        Spacer(modifier = Modifier.height(10.dp))
-        LoginLink()
+        NavigationButtons("ConcluidoSection", "CadastroSection",habilitarProximo
+        ) {
+            cadastroViewModel.cadastrar()
+        }
     }
 }
 

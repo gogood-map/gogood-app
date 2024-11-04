@@ -40,7 +40,7 @@ fun CampoSenha(label: String, state: MutableState<String>, exibirSenha: MutableS
     Column {
         Text(
             color = corInput,
-            text = "$label *",
+            text = label,
             fontSize = 12.sp,
             fontWeight = FontWeight.Bold
         )
@@ -49,7 +49,8 @@ fun CampoSenha(label: String, state: MutableState<String>, exibirSenha: MutableS
 
             value = state.value,
             onValueChange = {
-                state.value = it
+                it.trim()
+                state.value = it.trim()
                 valido = regraValida(state.value)
             },
             visualTransformation = if (!exibirSenha.value) PasswordVisualTransformation() else VisualTransformation.None,
@@ -72,6 +73,71 @@ fun CampoSenha(label: String, state: MutableState<String>, exibirSenha: MutableS
             }
             Text(text = textoErro, color = corInput, fontSize = 10.sp)
         }else{
+            corInput = Color.Black
+        }
+    }
+}
+
+
+@Composable
+fun CampoConfirmarSenha(label: String,
+                        stateSenha: MutableState<String>,
+                        stateConfirmar: MutableState<String>,
+                        exibirSenha: MutableState<Boolean>,
+                        regraValida: (String)->Boolean,
+                        validoParam: Boolean = true) {
+    var valido by remember {
+        mutableStateOf(validoParam)
+    }
+    var corInput by remember {
+        mutableStateOf(Color.Black)
+    }
+    var textoErro by remember {
+        mutableStateOf("")
+    }
+    Column {
+        Text(
+            color = corInput,
+            text = label,
+            fontSize = 12.sp,
+            fontWeight = FontWeight.Bold
+        )
+
+        BasicTextField(
+
+            value = stateConfirmar.value,
+            onValueChange = {
+                it.trim()
+                stateConfirmar.value = it.trim()
+                valido = regraValida(stateConfirmar.value)
+            },
+            visualTransformation = if (!exibirSenha.value) PasswordVisualTransformation() else VisualTransformation.None,
+
+            modifier = Modifier
+                .width(250.dp)
+                .height(45.dp)
+                .border(1.dp, corInput, RoundedCornerShape(8.dp))
+                .background(Color.White, RoundedCornerShape(8.dp))
+                .padding(start = 15.dp, top = 15.dp),
+            singleLine = true,
+
+            )
+        if(!valido || (stateSenha.value != stateConfirmar.value)){
+            corInput = GogoodOptionRed
+            if(!valido){
+                if(stateConfirmar.value.isBlank()){
+                    textoErro = "Campo obrigatório"
+                }
+                if(stateConfirmar.value.length < 6){
+                    textoErro = "Utilize 6 ou mais caracteres"
+                }
+            }
+            if(stateConfirmar.value.isNotEmpty() &&(stateSenha.value != stateConfirmar.value)){
+                textoErro = "Senhas diferentes"
+            }
+            Text(text = textoErro, color = corInput, fontSize = 10.sp)
+        }
+        else{
             corInput = Color.Black
         }
     }

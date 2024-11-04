@@ -1,4 +1,4 @@
-package com.gogood.mobile.common.bandeja
+package com.gogood.mobile.bandeja.presentation.composables
 
 import androidx.compose.foundation.layout.Column
 import androidx.compose.runtime.Composable

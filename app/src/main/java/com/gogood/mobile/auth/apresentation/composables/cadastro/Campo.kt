@@ -34,10 +34,12 @@ fun Campo(label: String, state: MutableState<String>, regraValida: (String)->Boo
     var textoErro by remember {
         mutableStateOf("")
     }
+
+
     Column {
         Text(
             color = corInput,
-            text = "$label *",
+            text = label,
             fontSize = 12.sp,
             fontWeight = FontWeight.Bold
         )
@@ -46,6 +48,10 @@ fun Campo(label: String, state: MutableState<String>, regraValida: (String)->Boo
             value = state.value,
             onValueChange = {
                 state.value = it
+                if(label == "Email"){
+                    it.trim()
+                    state.value = state.value.trim()
+                }
                 valido = regraValida(state.value)
             },
             modifier = Modifier

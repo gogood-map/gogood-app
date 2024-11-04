@@ -1,4 +1,4 @@
-package com.gogood.mobile.common.bandeja
+package com.gogood.mobile.bandeja.presentation.composables
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Row
@@ -6,10 +6,10 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.DirectionsBike
+import androidx.compose.material.icons.automirrored.filled.DirectionsBike
+import androidx.compose.material.icons.automirrored.filled.DirectionsWalk
 import androidx.compose.material.icons.filled.DirectionsBus
 import androidx.compose.material.icons.filled.DirectionsCar
-import androidx.compose.material.icons.filled.DirectionsWalk
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Icon
@@ -61,10 +61,10 @@ fun MeiosTransporte() {
     }
 
     Row(modifier = Modifier.fillMaxWidth(), Arrangement.SpaceAround) {
-        BotaoMeioTransporte(icone = Icons.Filled.DirectionsWalk, selecionado = foiAPe) {
+        BotaoMeioTransporte(icone = Icons.AutoMirrored.Filled.DirectionsWalk, selecionado = foiAPe) {
             meioSelecionado = "A pé"
         }
-        BotaoMeioTransporte(icone = Icons.Filled.DirectionsBike, selecionado = foiBike) {
+        BotaoMeioTransporte(icone = Icons.AutoMirrored.Filled.DirectionsBike, selecionado = foiBike) {
             meioSelecionado = "Bike"
         }
         BotaoMeioTransporte(icone = Icons.Filled.DirectionsCar, selecionado = foiCarro) {

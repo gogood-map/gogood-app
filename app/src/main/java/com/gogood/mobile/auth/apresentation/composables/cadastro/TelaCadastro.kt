@@ -78,7 +78,7 @@ fun CadastroTela(navController: NavController, modifier: Modifier = Modifier) {
                         "CadastroSection" -> {
                             Stepper("Cadastro")
                             Spacer(modifier = Modifier.height(28.dp))
-                            EtapaCadastroCredenciais()
+                            EtapaCadastroCredenciais(navController)
                         }
                         "DadosPessoaisSection" -> {
                             Stepper("Dados Pessoais")
@@ -88,7 +88,7 @@ fun CadastroTela(navController: NavController, modifier: Modifier = Modifier) {
                         "ConcluidoSection" -> {
                             Stepper("Finalização")
                             Spacer(modifier = Modifier.height(28.dp))
-                            EtapaConclusao(){
+                            EtapaConclusao {
                                 navController.navigate("Mapa")
                             }
                         }
