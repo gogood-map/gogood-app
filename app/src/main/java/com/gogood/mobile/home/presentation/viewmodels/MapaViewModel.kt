@@ -24,7 +24,8 @@ class MapaViewModel (private val mapRepository: IMapRepository,
     : ViewModel() {
     var isLoading by mutableStateOf(true)
     var showMenu by mutableStateOf(false)
-
+    var isSearch by mutableStateOf(true)
+    var isRoute by mutableStateOf(false)
 
     private val _localizacao = MutableStateFlow(LatLng(-23.557984712431196, -46.661776750487476))
     val localizacao: StateFlow<LatLng> = _localizacao

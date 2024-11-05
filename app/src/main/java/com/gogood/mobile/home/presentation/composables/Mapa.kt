@@ -4,7 +4,9 @@ import android.annotation.SuppressLint
 import android.graphics.Color
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.slideInHorizontally
+import androidx.compose.animation.slideInVertically
 import androidx.compose.animation.slideOutHorizontally
+import androidx.compose.animation.slideOutVertically
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -76,11 +78,7 @@ fun Mapa(navController: NavController) {
         mutableStateOf("")
     }
 
-
     var showMenu by remember { mutableStateOf(false) }
-
-
-
 
     val mapView = remember { MapView(context) }
 
@@ -113,8 +111,9 @@ fun Mapa(navController: NavController) {
                     }
 
                 }
-                mapInstance.uiSettings.isMyLocationButtonEnabled= true
+                mapInstance.uiSettings.isMyLocationButtonEnabled= false
                 mapInstance.isMyLocationEnabled = true
+
 
                 if(mapaViewModel.coordenadasOcorrenciasMapaDeCalor.value.isNotEmpty()){
                     atualizarMapaDeCalor(mapInstance, mapaViewModel.coordenadasOcorrenciasMapaDeCalor.value)
@@ -127,24 +126,49 @@ fun Mapa(navController: NavController) {
 
         Row(
             modifier = Modifier
-                .padding(16.dp)
+                .padding(top = 20.dp, start = 16.dp, end = 16.dp)
                 .fillMaxWidth(),
-            verticalAlignment = Alignment.CenterVertically
+
         ) {
 
-            BotaoMenu {
+            BotaoMenu(modifier = Modifier.padding(top = 8.dp)) {
+
                 showMenu = true
             }
             Spacer(modifier = Modifier.width(24.dp))
-            CaixaPesquisaEndereco(
-                searchState = searchState,
-                onValueChange = { searchState = it },
-                onDone = { }
-            )
+
+            AnimatedVisibility(
+                visible = mapaViewModel.isSearch,
+                enter = slideInVertically(initialOffsetY = { it }),
+                exit = slideOutVertically(targetOffsetY = { it })
+            ) {
+                CaixaPesquisaEndereco(
+                    searchState = searchState,
+                    onValueChange = { searchState = it },
+                    onDone = { }
+                )
+            }
+
+            AnimatedVisibility(
+                visible = mapaViewModel.isRoute,
+                enter = slideInVertically(initialOffsetY = { -it }),
+                exit = slideOutVertically(targetOffsetY = { -it })
+            ) {
+                CaixaPesquisaRota(
+                    searchState = searchState,
+                    onValueChange = { searchState = it },
+                    onDone = { }
+                )
+            }
+
+
         }
 
         FloatingActionButton(
-            onClick = {  },
+            onClick = {
+                mapaViewModel.isRoute = !mapaViewModel.isRoute
+                mapaViewModel.isSearch = !mapaViewModel.isRoute
+            },
             containerColor = GogoodGray,
             contentColor = GogoodWhite,
             shape = CircleShape,
@@ -194,10 +218,10 @@ private fun atualizarMapaDeCalor(googleMap: GoogleMap?, weightedLatLngs: List<We
 fun BotaoMenu(modifier: Modifier = Modifier, click: ()->Unit){
     IconButton(
         onClick = click,
-        modifier = Modifier
+        modifier = modifier
             .size(32.dp)
             .shadow(8.dp, CircleShape)
-            .background(shape = CircleShape, color = GogoodGreen)
+            .background(shape = CircleShape, color = GogoodGray)
     ) {
         Icon(
             imageVector = Icons.Default.Menu,
