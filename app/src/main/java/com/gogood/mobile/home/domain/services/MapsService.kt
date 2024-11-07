@@ -1,5 +1,8 @@
 package com.gogood.mobile.home.domain.services
 
+import com.gogood.mobile.BuildConfig
+import com.gogood.mobile.home.domain.models.BuscaEnderecoResponse
+import com.gogood.mobile.home.domain.models.OcorrenciasRaioResponse
 import retrofit2.Response
 import retrofit2.http.GET
 import retrofit2.http.Path
@@ -11,35 +14,13 @@ interface MapsService {
         @Path("lat") lat: Double,
         @Path("lng") lng: Double,
         @Query("raio") raio: Double
-    ):Response<RaioOcorrenciasResponse>
+    ):Response<OcorrenciasRaioResponse>
+
+
+
 }
 
 
-data class RaioOcorrenciasResponse(
-    val qtdOcorrencias: Int,
-    val coordenadasOcorrencias: List<List<Double>>
-)
 
 
-data class RelatorioOcorrenciasResponse(
-    val top5Ocorrencias: List<CrimeQtd>,
-    val qtdMes: QtdMes,
-    val qtdOcorrencias: Int
-)
 
-
-data class CrimeQtd(
-    val crime: String,
-    val qtd: Int
-)
-
-data class QtdMes(
-    val janeiro: Int,
-    val fevereiro: Int,
-    val marco: Int,
-    val abril: Int,
-    val maio: Int,
-    val junho: Int,
-    val julho: Int,
-    val agosto: Int
-)

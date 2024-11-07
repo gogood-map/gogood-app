@@ -29,6 +29,18 @@ android {
             value = properties.getProperty("API_BASE_URL")
         )
 
+        buildConfigField(
+            type = "String",
+            name = "API_BASE_GOOGLE_PLACES",
+            value = properties.getProperty("API_BASE_GOOGLE_PLACES")
+        )
+
+        buildConfigField(
+            type = "String",
+            name = "GOOGLE_KEY",
+            value = properties.getProperty("GOOGLE_KEY")
+        )
+
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
         vectorDrawables {
             useSupportLibrary = true

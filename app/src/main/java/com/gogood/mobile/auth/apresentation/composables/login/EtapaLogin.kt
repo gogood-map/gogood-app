@@ -36,8 +36,8 @@ import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
-import com.gogood.mobile.auth.apresentation.composables.cadastro.Campo
-import com.gogood.mobile.auth.apresentation.composables.cadastro.CampoSenha
+import com.gogood.mobile.auth.apresentation.composables.Campo
+import com.gogood.mobile.auth.apresentation.composables.CampoSenha
 import com.gogood.mobile.auth.apresentation.composables.cadastro.SocialLogin
 import com.gogood.mobile.auth.apresentation.composables.cadastro.TitleText
 import com.gogood.mobile.auth.apresentation.viewmodels.LoginViewModel

@@ -13,6 +13,7 @@ import com.gogood.mobile.common.ApiClient
 import com.gogood.mobile.home.domain.services.MapsService
 import com.gogood.mobile.home.data.repository.remote.MapRepository
 import com.gogood.mobile.home.data.repository.IMapRepository
+import com.gogood.mobile.home.domain.services.GooglePlacesService
 import com.gogood.mobile.home.presentation.viewmodels.MainViewModel
 import com.gogood.mobile.home.presentation.viewmodels.MapaViewModel
 import com.gogood.mobile.menu.apresentation.viewmodels.MenuViewModel
@@ -46,13 +47,16 @@ val appModule = module {
     single<EnderecoService> {
         ApiClient.enderecoService
     }
+    single<GooglePlacesService> {
+        ApiClient.googlePlacesService
+    }
 
 
     single <IEnderecoRepository>{
         EnderecoRepository(get())
     }
     single<IMapRepository>{
-        MapRepository(get())
+        MapRepository(get(), get())
     }
     single<IUserRepository>{
         UserRepository(get(), get())

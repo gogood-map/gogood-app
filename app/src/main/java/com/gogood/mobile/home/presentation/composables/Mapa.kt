@@ -20,6 +20,7 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Menu
+import androidx.compose.material.icons.filled.NearMe
 import androidx.compose.material.icons.filled.RoundaboutRight
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FloatingActionButton
@@ -45,12 +46,13 @@ import com.gogood.mobile.home.presentation.viewmodels.MainViewModel
 import com.gogood.mobile.home.presentation.viewmodels.MapaViewModel
 import com.gogood.mobile.menu.apresentation.composables.Menu
 import com.gogood.mobile.ui.theme.GogoodGray
-import com.gogood.mobile.ui.theme.GogoodGreen
 import com.gogood.mobile.ui.theme.GogoodWhite
 import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.GoogleMap
 import com.google.android.gms.maps.MapView
 import com.google.android.gms.maps.MapsInitializer
+import com.google.android.gms.maps.model.LatLng
+import com.google.android.gms.maps.model.MarkerOptions
 import com.google.android.gms.maps.model.TileOverlayOptions
 import com.google.maps.android.heatmaps.Gradient
 import com.google.maps.android.heatmaps.HeatmapTileProvider
@@ -68,19 +70,13 @@ fun Mapa(navController: NavController) {
 
 
 
-    var searchState by remember {
-        mutableStateOf("")
-    }
-    var origem by remember {
-        mutableStateOf("")
-    }
-    var destino by remember {
-        mutableStateOf("")
-    }
+    var buscaEnderecoState = mapaViewModel.entradaBuscaEndereco
+    var origemState = mapaViewModel.entradaOrigemRota
+    var destinoState =  mapaViewModel.entradaDestinoRota
 
     var showMenu by remember { mutableStateOf(false) }
 
-    val mapView = remember { MapView(context) }
+    val mapView = remember {  MapView(context) }
 
 
     DisposableEffect(mapView) {
@@ -93,19 +89,17 @@ fun Mapa(navController: NavController) {
         }
     }
     if(isConnected){
+
+
         AndroidView(
 
             factory = { mapView },
             modifier = Modifier.fillMaxSize(),
         ){map->
             map.getMapAsync { mapInstance ->
-
-                mapInstance.moveCamera(CameraUpdateFactory.newCameraPosition(
-                    mapaViewModel.posicaoCamera
-                ))
                 mapInstance.setOnCameraIdleListener {
                     mapaViewModel.atualizarPosicaoCamera(mapInstance.cameraPosition)
-                    mapaViewModel.buscarOcorrenciasRaio()
+
                     if(mapaViewModel.coordenadasOcorrenciasMapaDeCalor.value.isNotEmpty()){
                         atualizarMapaDeCalor(mapInstance, mapaViewModel.coordenadasOcorrenciasMapaDeCalor.value)
                     }
@@ -114,10 +108,11 @@ fun Mapa(navController: NavController) {
                 mapInstance.uiSettings.isMyLocationButtonEnabled= false
                 mapInstance.isMyLocationEnabled = true
 
-
                 if(mapaViewModel.coordenadasOcorrenciasMapaDeCalor.value.isNotEmpty()){
                     atualizarMapaDeCalor(mapInstance, mapaViewModel.coordenadasOcorrenciasMapaDeCalor.value)
                 }
+                mapaViewModel.mapa = mapInstance
+
             }
         }
     }
@@ -132,33 +127,35 @@ fun Mapa(navController: NavController) {
         ) {
 
             BotaoMenu(modifier = Modifier.padding(top = 8.dp)) {
-
                 showMenu = true
             }
+
             Spacer(modifier = Modifier.width(24.dp))
 
             AnimatedVisibility(
-                visible = mapaViewModel.isSearch,
+                visible = mapaViewModel.isSearchAddress,
                 enter = slideInVertically(initialOffsetY = { it }),
                 exit = slideOutVertically(targetOffsetY = { it })
             ) {
-                CaixaPesquisaEndereco(
-                    searchState = searchState,
-                    onValueChange = { searchState = it },
-                    onDone = { }
-                )
+                CaixaPesquisaEndereco(searchState = buscaEnderecoState){
+                    mapaViewModel.buscarEndereco(buscaEnderecoState.value)
+                    buscaEnderecoState.value = ""
+
+                }
             }
 
             AnimatedVisibility(
-                visible = mapaViewModel.isRoute,
+                visible = mapaViewModel.isSearchRoute,
                 enter = slideInVertically(initialOffsetY = { -it }),
                 exit = slideOutVertically(targetOffsetY = { -it })
             ) {
                 CaixaPesquisaRota(
-                    searchState = searchState,
-                    onValueChange = { searchState = it },
-                    onDone = { }
-                )
+                    destino = destinoState,
+                    origem = origemState,
+                ){
+                    destinoState.value = ""
+                    origemState.value = ""
+                }
             }
 
 
@@ -166,8 +163,8 @@ fun Mapa(navController: NavController) {
 
         FloatingActionButton(
             onClick = {
-                mapaViewModel.isRoute = !mapaViewModel.isRoute
-                mapaViewModel.isSearch = !mapaViewModel.isRoute
+                mapaViewModel.isSearchRoute = !mapaViewModel.isSearchRoute
+                mapaViewModel.isSearchAddress = !mapaViewModel.isSearchRoute
             },
             containerColor = GogoodGray,
             contentColor = GogoodWhite,
@@ -177,7 +174,10 @@ fun Mapa(navController: NavController) {
                 .size(64.dp)
                 .align(Alignment.End),
         ) {
-            Icon(Icons.Filled.RoundaboutRight, "Small floating action button.")
+            Icon(if (!mapaViewModel.isSearchRoute)
+                    Icons.Filled.RoundaboutRight
+                else
+                    Icons.Default.NearMe, "Small floating action button.")
         }
     }
 

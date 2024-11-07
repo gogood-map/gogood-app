@@ -3,6 +3,7 @@ package com.gogood.mobile.common
 import com.gogood.mobile.BuildConfig
 import com.gogood.mobile.home.domain.services.MapsService
 import com.gogood.mobile.auth.domain.services.UserService
+import com.gogood.mobile.home.domain.services.GooglePlacesService
 import com.gogood.mobile.menu.domain.services.EnderecoService
 import okhttp3.Interceptor
 import okhttp3.OkHttpClient
@@ -19,13 +20,20 @@ object ApiClient {
             val newRequest = Request.Builder()
                 .url(request.url)
                 .method(request.method, request.body)
-//                .header("Authorization", "")
                 .build()
             return chain.proceed(newRequest)
         }
     }
 
+
     private val client by lazy {
+        OkHttpClient.Builder()
+            .addInterceptor(apiInterceptor())
+            .addInterceptor(logInterceptor())
+            .build()
+    }
+
+    private val clientGooglePlaces by lazy {
         OkHttpClient.Builder()
             .addInterceptor(apiInterceptor())
             .addInterceptor(logInterceptor())
@@ -39,6 +47,18 @@ object ApiClient {
             .addConverterFactory(GsonConverterFactory.create())
             .build()
     }
+
+    private val apiGooglePlaces by lazy {
+        Retrofit.Builder()
+            .client(clientGooglePlaces)
+            .baseUrl(BuildConfig.API_BASE_GOOGLE_PLACES)
+            .addConverterFactory(GsonConverterFactory.create())
+            .build()
+    }
+
+
+
+
 
     fun logInterceptor(): HttpLoggingInterceptor {
         return HttpLoggingInterceptor().apply {
@@ -56,6 +76,10 @@ object ApiClient {
 
     val enderecoService by lazy {
         api.create(EnderecoService::class.java)
+    }
+
+    val googlePlacesService by lazy {
+        apiGooglePlaces.create(GooglePlacesService::class.java)
     }
 
 //    fun <T> createService(service: Class<T>): T {

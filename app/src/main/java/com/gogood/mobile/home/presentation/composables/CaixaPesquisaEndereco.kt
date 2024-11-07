@@ -17,6 +17,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material3.Icon
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.MutableState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -26,10 +27,9 @@ import com.gogood.mobile.ui.theme.GogoodGray
 
 @Composable
 fun CaixaPesquisaEndereco(
-    searchState: String,
-    onValueChange: (String) -> Unit,
+    modifier: Modifier = Modifier,
+    searchState: MutableState<String>,
     onDone: () -> Unit,
-    modifier: Modifier = Modifier
 ) {
     Row (
         verticalAlignment = Alignment.CenterVertically,
@@ -41,8 +41,10 @@ fun CaixaPesquisaEndereco(
             .border(.50.dp, GogoodGray, RoundedCornerShape(32.dp))
     ){
         BasicTextField(
-            value = searchState,
-            onValueChange = onValueChange,
+            value = searchState.value,
+            onValueChange = {
+                searchState.value = it
+            },
             modifier = modifier
                 .fillMaxWidth(.85f)
                 .height(45.dp)
@@ -57,6 +59,7 @@ fun CaixaPesquisaEndereco(
         )
         Icon(
             modifier = Modifier.clickable {
+                onDone()
 
             },
             imageVector = Icons.Default.Search, contentDescription = "Pesquisar endereço")

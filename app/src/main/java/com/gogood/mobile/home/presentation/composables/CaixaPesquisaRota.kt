@@ -30,10 +30,10 @@ import com.gogood.mobile.ui.theme.GogoodGray
 
 @Composable
 fun CaixaPesquisaRota(
+    modifier: Modifier = Modifier,
     origem: MutableState<String>,
     destino: MutableState<String>,
     onDone: () -> Unit,
-    modifier: Modifier = Modifier
 ) {
     Column(Modifier.fillMaxWidth()) {
         BasicTextField(
