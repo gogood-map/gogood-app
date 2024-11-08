@@ -6,6 +6,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.gogood.mobile.home.data.repository.IMapRepository
+import com.gogood.mobile.utils.ConexaoInternetObserver
 import com.gogood.mobile.utils.LocalizacaoObserver
 import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.GoogleMap
@@ -21,14 +22,19 @@ import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
 
 class MapaViewModel (private val mapRepository: IMapRepository,
-    private val localizacaoObserver: LocalizacaoObserver)
-    : ViewModel() {
+        private val localizacaoObserver: LocalizacaoObserver,
+        private val conexaoObserver: ConexaoInternetObserver) : ViewModel() {
     var isLoading by mutableStateOf(true)
+
+
     var showMenu by mutableStateOf(false)
     var isSearchAddress by mutableStateOf(true)
     var isSearchRoute by mutableStateOf(false)
-    var localizouUsuario by mutableStateOf(false)
+    private var localizouUsuario by mutableStateOf(false)
     var mapa: GoogleMap? by mutableStateOf(null)
+    private val _conectado = MutableStateFlow(false)
+    val contectado: StateFlow<Boolean> = _conectado
+
 
     var entradaBuscaEndereco = mutableStateOf("")
     var entradaOrigemRota = mutableStateOf("")
@@ -60,20 +66,31 @@ class MapaViewModel (private val mapRepository: IMapRepository,
     var coordenadasOcorrenciasMapaDeCalor = MutableStateFlow<List<WeightedLatLng>>(emptyList())
 
     init {
+        viewModelScope.launch {
 
-        localizacaoObserver.observeLocation().onEach { novaLocalizacao->
-            _localizacao.value = novaLocalizacao
-            if(!localizouUsuario){
-                moverCamera(localizacao.value)
-                localizouUsuario = true
+            conexaoObserver.isConnected.collect{
+                _conectado.value = it
+                isLoading = false
             }
+        }
 
-
-        }.launchIn(viewModelScope)
       //  buscarOcorrenciasRaio()
 
     }
 
+    fun observarUsuario(){
+        if(localizacaoObserver.permissaoLocalizacao.value){
+            localizacaoObserver.observeLocation().onEach { novaLocalizacao->
+                _localizacao.value = novaLocalizacao
+                if(!localizouUsuario){
+                    moverCamera(localizacao.value)
+                    localizouUsuario = true
+                }
+
+
+            }.launchIn(viewModelScope)
+        }
+    }
     fun moverCamera(latLng: LatLng){
         mapa?.moveCamera( CameraUpdateFactory.newCameraPosition(
             CameraPosition.builder().target(latLng).zoom(16f).build()
