@@ -14,7 +14,6 @@ import com.gogood.mobile.home.domain.services.MapsService
 import com.gogood.mobile.home.data.repository.remote.MapRepository
 import com.gogood.mobile.home.data.repository.IMapRepository
 import com.gogood.mobile.home.domain.services.GooglePlacesService
-import com.gogood.mobile.home.presentation.viewmodels.MainViewModel
 import com.gogood.mobile.home.presentation.viewmodels.MapaViewModel
 import com.gogood.mobile.menu.apresentation.viewmodels.MenuViewModel
 import com.gogood.mobile.menu.data.repository.IEnderecoRepository
@@ -64,11 +63,9 @@ val appModule = module {
 
 
 
-    viewModel{
-        MainViewModel(get())
-    }
+
     viewModel {
-        MapaViewModel(get(), get())
+        MapaViewModel(get(), get(), get())
     }
     viewModel {
         MenuViewModel(get(), get())

@@ -2,6 +2,7 @@ package com.gogood.mobile.utils
 
 import android.annotation.SuppressLint
 import android.content.Context
+import androidx.compose.runtime.MutableState
 import com.google.android.gms.location.FusedLocationProviderClient
 import com.google.android.gms.location.LocationCallback
 import com.google.android.gms.location.LocationRequest
@@ -11,11 +12,14 @@ import com.google.android.gms.location.Priority
 import com.google.android.gms.maps.model.LatLng
 import kotlinx.coroutines.channels.awaitClose
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.callbackFlow
 
 class LocalizacaoObserver(context: Context) {
     private val fusedLocationClient: FusedLocationProviderClient =
         LocationServices.getFusedLocationProviderClient(context)
+
+    var permissaoLocalizacao = MutableStateFlow(false)
 
     private val locationRequest = LocationRequest.Builder(
         Priority.PRIORITY_HIGH_ACCURACY, 1000L

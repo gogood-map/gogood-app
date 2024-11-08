@@ -1,7 +1,11 @@
 package com.gogood.mobile.home.presentation.composables
 
+import android.Manifest
 import android.annotation.SuppressLint
 import android.graphics.Color
+import android.util.Log
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.slideInHorizontally
 import androidx.compose.animation.slideInVertically
@@ -28,6 +32,8 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.SideEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -42,11 +48,12 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.viewinterop.AndroidView
 import androidx.navigation.NavController
 import androidx.navigation.NavHostController
-import com.gogood.mobile.home.presentation.viewmodels.MainViewModel
 import com.gogood.mobile.home.presentation.viewmodels.MapaViewModel
 import com.gogood.mobile.menu.apresentation.composables.Menu
 import com.gogood.mobile.ui.theme.GogoodGray
 import com.gogood.mobile.ui.theme.GogoodWhite
+import com.gogood.mobile.utils.ConexaoInternetObserver
+import com.gogood.mobile.utils.LocalizacaoObserver
 import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.GoogleMap
 import com.google.android.gms.maps.MapView
@@ -57,6 +64,7 @@ import com.google.android.gms.maps.model.TileOverlayOptions
 import com.google.maps.android.heatmaps.Gradient
 import com.google.maps.android.heatmaps.HeatmapTileProvider
 import com.google.maps.android.heatmaps.WeightedLatLng
+import org.koin.compose.koinInject
 import org.koin.compose.viewmodel.koinViewModel
 
 @SuppressLint("MissingPermission")
@@ -64,19 +72,31 @@ import org.koin.compose.viewmodel.koinViewModel
 @Composable
 fun Mapa(navController: NavController) {
     val context = LocalContext.current
+    val localizacaoObserver = koinInject<LocalizacaoObserver>()
+
+    val getPermission = rememberLauncherForActivityResult(
+        ActivityResultContracts.RequestPermission()
+    ) { isGranted ->
+        if (isGranted) {
+            localizacaoObserver.permissaoLocalizacao.value = true
+        }
+    }
+    SideEffect {
+        getPermission.launch(Manifest.permission.ACCESS_FINE_LOCATION)
+    }
+
     val mapaViewModel: MapaViewModel = koinViewModel()
-    val mainViewModel = koinViewModel<MainViewModel>()
-    val isConnected by mainViewModel.contectado.collectAsState()
 
-
+    val isConnected by mapaViewModel.contectado.collectAsState()
+    val isLoading = mapaViewModel.isLoading
 
     var buscaEnderecoState = mapaViewModel.entradaBuscaEndereco
     var origemState = mapaViewModel.entradaOrigemRota
-    var destinoState =  mapaViewModel.entradaDestinoRota
+    var destinoState = mapaViewModel.entradaDestinoRota
 
     var showMenu by remember { mutableStateOf(false) }
 
-    val mapView = remember {  MapView(context) }
+    val mapView = remember { MapView(context) }
 
 
     DisposableEffect(mapView) {
@@ -88,108 +108,131 @@ fun Mapa(navController: NavController) {
             mapView.onDestroy()
         }
     }
-    if(isConnected){
-
-
+    if (isLoading){
+       Loading()
+    }
+    else if (isConnected) {
+        LaunchedEffect(localizacaoObserver.permissaoLocalizacao.collectAsState()) {
+            mapaViewModel.observarUsuario()
+        }
         AndroidView(
-
             factory = { mapView },
             modifier = Modifier.fillMaxSize(),
-        ){map->
+        ) { map ->
             map.getMapAsync { mapInstance ->
                 mapInstance.setOnCameraIdleListener {
                     mapaViewModel.atualizarPosicaoCamera(mapInstance.cameraPosition)
 
-                    if(mapaViewModel.coordenadasOcorrenciasMapaDeCalor.value.isNotEmpty()){
-                        atualizarMapaDeCalor(mapInstance, mapaViewModel.coordenadasOcorrenciasMapaDeCalor.value)
+                    if (mapaViewModel.coordenadasOcorrenciasMapaDeCalor.value.isNotEmpty()) {
+                        atualizarMapaDeCalor(
+                            mapInstance,
+                            mapaViewModel.coordenadasOcorrenciasMapaDeCalor.value
+                        )
                     }
 
                 }
-                mapInstance.uiSettings.isMyLocationButtonEnabled= false
-                mapInstance.isMyLocationEnabled = true
 
-                if(mapaViewModel.coordenadasOcorrenciasMapaDeCalor.value.isNotEmpty()){
-                    atualizarMapaDeCalor(mapInstance, mapaViewModel.coordenadasOcorrenciasMapaDeCalor.value)
+                if(localizacaoObserver.permissaoLocalizacao.value){
+                    mapInstance.uiSettings.isMyLocationButtonEnabled = false
+                    mapInstance.isMyLocationEnabled = true
+                }else{
+                    mapInstance.isMyLocationEnabled = false
+                }
+
+                if (mapaViewModel.coordenadasOcorrenciasMapaDeCalor.value.isNotEmpty()) {
+                    atualizarMapaDeCalor(
+                        mapInstance,
+                        mapaViewModel.coordenadasOcorrenciasMapaDeCalor.value
+                    )
                 }
                 mapaViewModel.mapa = mapInstance
 
             }
         }
-    }
-    Column(modifier = Modifier.fillMaxSize(),
-        verticalArrangement = Arrangement.SpaceBetween){
 
-        Row(
-            modifier = Modifier
-                .padding(top = 20.dp, start = 16.dp, end = 16.dp)
-                .fillMaxWidth(),
-
+        Column(
+            modifier = Modifier.fillMaxSize(),
+            verticalArrangement = Arrangement.SpaceBetween
         ) {
 
-            BotaoMenu(modifier = Modifier.padding(top = 8.dp)) {
-                showMenu = true
-            }
+            Row(
+                modifier = Modifier
+                    .padding(top = 20.dp, start = 16.dp, end = 16.dp)
+                    .fillMaxWidth(),
 
-            Spacer(modifier = Modifier.width(24.dp))
+                ) {
 
-            AnimatedVisibility(
-                visible = mapaViewModel.isSearchAddress,
-                enter = slideInVertically(initialOffsetY = { it }),
-                exit = slideOutVertically(targetOffsetY = { it })
-            ) {
-                CaixaPesquisaEndereco(searchState = buscaEnderecoState){
-                    mapaViewModel.buscarEndereco(buscaEnderecoState.value)
-                    buscaEnderecoState.value = ""
-
+                BotaoMenu(modifier = Modifier.padding(top = 8.dp)) {
+                    showMenu = true
                 }
-            }
 
-            AnimatedVisibility(
-                visible = mapaViewModel.isSearchRoute,
-                enter = slideInVertically(initialOffsetY = { -it }),
-                exit = slideOutVertically(targetOffsetY = { -it })
-            ) {
-                CaixaPesquisaRota(
-                    destino = destinoState,
-                    origem = origemState,
-                ){
-                    destinoState.value = ""
-                    origemState.value = ""
+                Spacer(modifier = Modifier.width(24.dp))
+
+                AnimatedVisibility(
+                    visible = mapaViewModel.isSearchAddress,
+                    enter = slideInVertically(initialOffsetY = { it }),
+                    exit = slideOutVertically(targetOffsetY = { it })
+                ) {
+                    CaixaPesquisaEndereco(searchState = buscaEnderecoState) {
+                        mapaViewModel.buscarEndereco(buscaEnderecoState.value)
+                        buscaEnderecoState.value = ""
+
+                    }
                 }
+
+                AnimatedVisibility(
+                    visible = mapaViewModel.isSearchRoute,
+                    enter = slideInVertically(initialOffsetY = { -it }),
+                    exit = slideOutVertically(targetOffsetY = { -it })
+                ) {
+                    CaixaPesquisaRota(
+                        destino = destinoState,
+                        origem = origemState,
+                    ) {
+                        destinoState.value = ""
+                        origemState.value = ""
+                    }
+                }
+
+
             }
 
-
+            FloatingActionButton(
+                onClick = {
+                    mapaViewModel.isSearchRoute = !mapaViewModel.isSearchRoute
+                    mapaViewModel.isSearchAddress = !mapaViewModel.isSearchRoute
+                },
+                containerColor = GogoodGray,
+                contentColor = GogoodWhite,
+                shape = CircleShape,
+                modifier = Modifier
+                    .padding(bottom = 48.dp, end = 16.dp)
+                    .size(64.dp)
+                    .align(Alignment.End),
+            ) {
+                Icon(
+                    if (!mapaViewModel.isSearchRoute)
+                        Icons.Filled.RoundaboutRight
+                    else
+                        Icons.Default.NearMe, "Small floating action button."
+                )
+            }
         }
 
-        FloatingActionButton(
-            onClick = {
-                mapaViewModel.isSearchRoute = !mapaViewModel.isSearchRoute
-                mapaViewModel.isSearchAddress = !mapaViewModel.isSearchRoute
-            },
-            containerColor = GogoodGray,
-            contentColor = GogoodWhite,
-            shape = CircleShape,
-            modifier = Modifier
-                .padding(bottom = 48.dp, end = 16.dp)
-                .size(64.dp)
-                .align(Alignment.End),
+        AnimatedVisibility(
+            visible = showMenu,
+            enter = slideInHorizontally(initialOffsetX = { -it }),
+            exit = slideOutHorizontally(targetOffsetX = { -it })
         ) {
-            Icon(if (!mapaViewModel.isSearchRoute)
-                    Icons.Filled.RoundaboutRight
-                else
-                    Icons.Default.NearMe, "Small floating action button.")
+            Menu(
+                navController = navController,
+                onClose = { showMenu = false },
+            )
         }
-    }
 
-    AnimatedVisibility(
-        visible = showMenu,
-        enter = slideInHorizontally(initialOffsetX = { -it }),
-        exit = slideOutHorizontally(targetOffsetX = { -it })
-    ) {
-        Menu(
-            navController = navController,
-            onClose = { showMenu = false },
-        )
+    }
+    else{
+        AvisoSemConexao()
     }
 }
 
@@ -214,22 +257,7 @@ private fun atualizarMapaDeCalor(googleMap: GoogleMap?, weightedLatLngs: List<We
 }
 
 
-@Composable
-fun BotaoMenu(modifier: Modifier = Modifier, click: ()->Unit){
-    IconButton(
-        onClick = click,
-        modifier = modifier
-            .size(32.dp)
-            .shadow(8.dp, CircleShape)
-            .background(shape = CircleShape, color = GogoodGray)
-    ) {
-        Icon(
-            imageVector = Icons.Default.Menu,
-            contentDescription = "Pesquisar",
-            tint = androidx.compose.ui.graphics.Color.White
-        )
-    }
-}
+
 
 @Preview
 @Composable
