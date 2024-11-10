@@ -1,5 +1,8 @@
 package com.gogood.mobile.menu.apresentation.composables
 
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.slideInHorizontally
+import androidx.compose.animation.slideOutHorizontally
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
@@ -10,6 +13,10 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -21,6 +28,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import coil.compose.AsyncImage
+import com.gogood.mobile.address.presentation.composables.AddressForm
 import com.gogood.mobile.auth.apresentation.composables.SolicitacaoEntrada
 import com.gogood.mobile.menu.apresentation.viewmodels.MenuViewModel
 import com.gogood.mobile.ui.theme.GogoodGray
@@ -36,6 +44,7 @@ fun Menu(
     menuViewModel: MenuViewModel = koinViewModel()
 ) {
     val mensagem = gerarBoasVindas()
+    var showAddressForm by remember { mutableStateOf(false) }
 
     if(menuViewModel.usuario == null){
         Column(
@@ -98,17 +107,27 @@ fun Menu(
                 CardBoasVindas(menuViewModel.usuario!!.nome!!, mensagem)
             }
             item{
-                Favoritos()
+                Favoritos(openAddressForm = {
+                    showAddressForm = true
+                })
             }
             item{
                 Servicos(navController)
             }
 
         }
+        AnimatedVisibility(
+            visible = showAddressForm,
+            enter = slideInHorizontally(initialOffsetX = { -it }),
+            exit = slideOutHorizontally(targetOffsetX = { -it })
+        ) {
+            AddressForm(
+                onSubmit = {
+                    showAddressForm = false
+                }
+            )
+        }
     }
-
-
-
 }
 
 @Composable

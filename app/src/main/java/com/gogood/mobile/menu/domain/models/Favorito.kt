@@ -14,5 +14,3 @@ data class Endereco(
     val bairro: String,
     val createdAt: String,
 )
-
-
