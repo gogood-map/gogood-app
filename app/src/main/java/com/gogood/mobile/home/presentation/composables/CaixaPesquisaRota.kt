@@ -93,7 +93,7 @@ fun CaixaPesquisaRota(
             )
             Icon(
                 modifier = Modifier.clickable {
-
+                    onDone()
                 },
                 imageVector = Icons.Default.Search, contentDescription = "Pesquisar endereço")
         }

@@ -21,11 +21,15 @@ class LocalizacaoObserver(context: Context) {
 
     var permissaoLocalizacao = MutableStateFlow(false)
 
+
+
     private val locationRequest = LocationRequest.Builder(
+
         Priority.PRIORITY_HIGH_ACCURACY, 1000L
     ).apply {
-        setMinUpdateIntervalMillis(5000L)
-        setWaitForAccurateLocation(false)
+
+        setMinUpdateIntervalMillis(500L)
+        setWaitForAccurateLocation(true)
     }.build()
 
     @SuppressLint("MissingPermission")

@@ -2,8 +2,6 @@ package com.gogood.mobile.home.presentation.composables
 
 import android.Manifest
 import android.annotation.SuppressLint
-import android.graphics.Color
-import android.util.Log
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.animation.AnimatedVisibility
@@ -11,11 +9,11 @@ import androidx.compose.animation.slideInHorizontally
 import androidx.compose.animation.slideInVertically
 import androidx.compose.animation.slideOutHorizontally
 import androidx.compose.animation.slideOutVertically
-import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
@@ -23,13 +21,13 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Menu
 import androidx.compose.material.icons.filled.NearMe
 import androidx.compose.material.icons.filled.RoundaboutRight
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
+import androidx.compose.material3.ModalBottomSheet
+import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
@@ -41,7 +39,6 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -52,18 +49,10 @@ import com.gogood.mobile.home.presentation.viewmodels.MapaViewModel
 import com.gogood.mobile.menu.apresentation.composables.Menu
 import com.gogood.mobile.ui.theme.GogoodGray
 import com.gogood.mobile.ui.theme.GogoodWhite
-import com.gogood.mobile.utils.ConexaoInternetObserver
 import com.gogood.mobile.utils.LocalizacaoObserver
-import com.google.android.gms.maps.CameraUpdateFactory
-import com.google.android.gms.maps.GoogleMap
 import com.google.android.gms.maps.MapView
 import com.google.android.gms.maps.MapsInitializer
-import com.google.android.gms.maps.model.LatLng
-import com.google.android.gms.maps.model.MarkerOptions
-import com.google.android.gms.maps.model.TileOverlayOptions
-import com.google.maps.android.heatmaps.Gradient
-import com.google.maps.android.heatmaps.HeatmapTileProvider
-import com.google.maps.android.heatmaps.WeightedLatLng
+import kotlinx.coroutines.delay
 import org.koin.compose.koinInject
 import org.koin.compose.viewmodel.koinViewModel
 
@@ -98,6 +87,10 @@ fun Mapa(navController: NavController) {
 
     val mapView = remember { MapView(context) }
 
+    val sheetState = rememberModalBottomSheetState(
+        skipPartiallyExpanded = false,
+    )
+
 
     DisposableEffect(mapView) {
         mapView.onCreate(null)
@@ -123,15 +116,10 @@ fun Mapa(navController: NavController) {
                 mapInstance.setOnCameraIdleListener {
                     mapaViewModel.atualizarPosicaoCamera(mapInstance.cameraPosition)
 
-                    if (mapaViewModel.coordenadasOcorrenciasMapaDeCalor.value.isNotEmpty()) {
-                        atualizarMapaDeCalor(
-                            mapInstance,
-                            mapaViewModel.coordenadasOcorrenciasMapaDeCalor.value
-                        )
-                    }
+                    mapaViewModel.buscarOcorrenciasRaio()
 
                 }
-
+                mapInstance.isBuildingsEnabled = false
                 if(localizacaoObserver.permissaoLocalizacao.value){
                     mapInstance.uiSettings.isMyLocationButtonEnabled = false
                     mapInstance.isMyLocationEnabled = true
@@ -139,14 +127,8 @@ fun Mapa(navController: NavController) {
                     mapInstance.isMyLocationEnabled = false
                 }
 
-                if (mapaViewModel.coordenadasOcorrenciasMapaDeCalor.value.isNotEmpty()) {
-                    atualizarMapaDeCalor(
-                        mapInstance,
-                        mapaViewModel.coordenadasOcorrenciasMapaDeCalor.value
-                    )
-                }
                 mapaViewModel.mapa = mapInstance
-
+                mapaViewModel.buscarOcorrenciasRaio()
             }
         }
 
@@ -189,8 +171,7 @@ fun Mapa(navController: NavController) {
                         destino = destinoState,
                         origem = origemState,
                     ) {
-                        destinoState.value = ""
-                        origemState.value = ""
+                        mapaViewModel.showBottomSheet = !mapaViewModel.showBottomSheet
                     }
                 }
 
@@ -201,6 +182,9 @@ fun Mapa(navController: NavController) {
                 onClick = {
                     mapaViewModel.isSearchRoute = !mapaViewModel.isSearchRoute
                     mapaViewModel.isSearchAddress = !mapaViewModel.isSearchRoute
+                    if(mapaViewModel.isSearchAddress){
+                        mapaViewModel.alterarAnguloCamera()
+                    }
                 },
                 containerColor = GogoodGray,
                 contentColor = GogoodWhite,
@@ -213,8 +197,10 @@ fun Mapa(navController: NavController) {
                 Icon(
                     if (!mapaViewModel.isSearchRoute)
                         Icons.Filled.RoundaboutRight
+
                     else
                         Icons.Default.NearMe, "Small floating action button."
+
                 )
             }
         }
@@ -230,31 +216,21 @@ fun Mapa(navController: NavController) {
             )
         }
 
+        if(mapaViewModel.showBottomSheet){
+            ModalBottomSheet(modifier = Modifier.fillMaxHeight(),
+                sheetState = sheetState,
+                onDismissRequest = { mapaViewModel.showBottomSheet = false }) {
+                Bandeja()
+            }
+        }
+
     }
     else{
         AvisoSemConexao()
     }
 }
 
-private fun atualizarMapaDeCalor(googleMap: GoogleMap?, weightedLatLngs: List<WeightedLatLng>) {
-    googleMap?.clear()
 
-    val cores = intArrayOf(
-        Color.YELLOW,
-        Color.rgb(255, 165, 0),
-
-        Color.RED,
-    )
-    val pontosIntensidade = floatArrayOf(0.1f,  0.3f, 1f)
-    val heatmapTileProvider = HeatmapTileProvider.Builder()
-        .weightedData(weightedLatLngs)
-        .gradient(Gradient(cores, pontosIntensidade))
-        .maxIntensity(7.0)
-        .build()
-
-    googleMap?.addTileOverlay(TileOverlayOptions().tileProvider(heatmapTileProvider))
-
-}
 
 
 

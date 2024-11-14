@@ -20,4 +20,4 @@ val CinzaFont = Color(0xFF334049)
 val GogoodOptionRed = Color(0xFFF11D00)
 val GogoodOptionYellow = Color(0xFFFFDB0F)
 val GogoodOptionGreen = Color(0xFF10C200)
-
+val coresPolyline = listOf(GogoodOptionRed, GogoodOptionYellow, GogoodGreen)

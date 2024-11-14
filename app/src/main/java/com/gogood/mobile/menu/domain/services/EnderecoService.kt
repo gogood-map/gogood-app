@@ -7,6 +7,6 @@ import retrofit2.http.Path
 
 interface EnderecoService {
 
-    @GET("api/enderecos/{id}")
+    @GET("/enderecos/{id}")
     suspend fun obter(@Path("id")id:Int):Response<List<EnderecoResponse>>
 }

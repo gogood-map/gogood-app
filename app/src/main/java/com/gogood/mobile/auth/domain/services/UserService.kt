@@ -12,12 +12,12 @@ import retrofit2.http.Path
 
 interface UserService {
 
-    @POST("api/usuarios/login")
+    @POST("/usuarios/login")
     suspend fun login(
         @Body request: LoginRequest
     ): Response<UsuarioResponse>
 
-    @POST("api/usuarios/cadastro")
+    @POST("/usuarios/cadastro")
     suspend fun register(
         @Body usuarioCadastro: UsuarioCadastroRequest
     ): Response<UsuarioResponse>

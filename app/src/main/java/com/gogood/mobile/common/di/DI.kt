@@ -13,6 +13,7 @@ import com.gogood.mobile.common.ApiClient
 import com.gogood.mobile.home.domain.services.MapsService
 import com.gogood.mobile.home.data.repository.remote.MapRepository
 import com.gogood.mobile.home.data.repository.IMapRepository
+import com.gogood.mobile.home.data.repository.local.MapRepositoryLocal
 import com.gogood.mobile.home.domain.services.GooglePlacesService
 import com.gogood.mobile.home.presentation.viewmodels.MapaViewModel
 import com.gogood.mobile.menu.apresentation.viewmodels.MenuViewModel
@@ -56,6 +57,7 @@ val appModule = module {
     }
     single<IMapRepository>{
         MapRepository(get(), get())
+       // MapRepositoryLocal()
     }
     single<IUserRepository>{
         UserRepository(get(), get())

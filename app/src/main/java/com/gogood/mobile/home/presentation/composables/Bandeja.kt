@@ -1,4 +1,4 @@
-package com.gogood.mobile.bandeja.presentation.composables
+package com.gogood.mobile.home.presentation.composables
 
 import androidx.compose.foundation.layout.Column
 import androidx.compose.runtime.Composable
@@ -7,18 +7,12 @@ import androidx.navigation.NavController
 
 @Composable
 fun Bandeja(
-    abrir: Boolean,
-    navController: NavController,
-    modifier: Modifier = Modifier,
-    opcoesRota: List<OpcaoRota>
+    modifier: Modifier = Modifier
 ) {
-    if (!abrir) {
-        return
-    }
+
 
     Column(modifier = modifier) {
-        PesquisaRotas(opcoesRota)
-        Analise()
+        PesquisaRotas()
     }
 }
 
