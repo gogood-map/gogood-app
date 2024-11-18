@@ -9,7 +9,7 @@ data class RelatorioOcorrenciasResponse(
 
 data class CrimeQtd(
     val crime: String,
-    val qtd: Int
+    val qtdOcorrido: Int
 )
 
 data class QtdMes(

@@ -36,7 +36,7 @@ class MapRepository(private val service: MapsService,
         lng: Double,
         raio: Double
     ): Response<RelatorioOcorrenciasResponse> {
-        TODO("Not yet implemented")
+        return service.obterRelatorioRaio(lat, lng, raio)
     }
 
 

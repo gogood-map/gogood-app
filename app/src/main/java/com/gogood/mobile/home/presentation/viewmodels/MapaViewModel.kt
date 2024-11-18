@@ -78,7 +78,7 @@ class MapaViewModel (private val mapRepository: IMapRepository,
 
     var abaBandeja by mutableIntStateOf(0)
 
-    val relatorioOcorrenciasResponse = MutableLiveData<RelatorioOcorrenciasResponse>()
+    var relatorioOcorrenciasResponse = MutableLiveData<RelatorioOcorrenciasResponse>()
 
     var posicaoCameraBusca by mutableStateOf(
         CameraPosition.
@@ -138,7 +138,23 @@ class MapaViewModel (private val mapRepository: IMapRepository,
 
             }
         }
+    }
+    fun buscarRelatorioRaio(){
 
+        val lat = posicaoCameraBusca.target.latitude
+        val lng = posicaoCameraBusca.target.longitude
+        val raio = definirRaioBusca()
+
+        viewModelScope.launch {
+            delay(1500)
+            val resposta = mapRepository.buscarRelatorioRaio(lat, lng, raio)
+            if(resposta.isSuccessful){
+                resposta.body()?.let {
+                   relatorioOcorrenciasResponse.value = it
+                }
+
+            }
+        }
     }
     fun atualizarPosicaoCamera(latLng: LatLng, angulo: Float, zoom: Float = 18f){
         posicaoCameraBusca =CameraPosition.builder()
@@ -235,7 +251,7 @@ class MapaViewModel (private val mapRepository: IMapRepository,
         exibirPolyline(rotaEscolhida.value!!, corPolyline)
         atualizarPosicaoCamera(
             latLng = coordenadasTrajetoRota.value!![0],
-            angulo = 45f
+            angulo = 30f
         )
 
     }

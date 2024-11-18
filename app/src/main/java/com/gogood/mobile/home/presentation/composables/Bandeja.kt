@@ -37,7 +37,7 @@ fun Bandeja(
     LaunchedEffect(pagerState.currentPage) {
         mapaViewModel.abaBandeja = pagerState.currentPage
     }
-    Column(verticalArrangement = Arrangement.Center){
+    Column(verticalArrangement = Arrangement.Center, horizontalAlignment = Alignment.CenterHorizontally){
         HorizontalPager(state = pagerState,
             modifier = Modifier.
             fillMaxWidth().
@@ -54,7 +54,7 @@ fun Bandeja(
             
         }
         TabRow(
-            modifier = Modifier.fillMaxHeight(0.25F),
+            modifier = Modifier.fillMaxHeight(0.25F).width(100.dp),
             selectedTabIndex = mapaViewModel.abaBandeja,
             indicator = {
 

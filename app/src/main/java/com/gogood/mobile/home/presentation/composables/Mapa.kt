@@ -140,6 +140,7 @@ fun Mapa(navController: NavController) {
                     mapaViewModel.atualizarPosicaoCamera(mapInstance.cameraPosition)
 
                     mapaViewModel.buscarOcorrenciasRaio()
+                    mapaViewModel.buscarRelatorioRaio()
 
                 }
                 if(localizacaoObserver.permissaoLocalizacao.value){
@@ -150,6 +151,7 @@ fun Mapa(navController: NavController) {
 
                 mapaViewModel.mapa = mapInstance
                 mapaViewModel.buscarOcorrenciasRaio()
+                mapaViewModel.buscarRelatorioRaio()
             }
         }
 
@@ -286,7 +288,7 @@ fun Mapa(navController: NavController) {
         }
 
         if(mapaViewModel.showBottomSheet){
-            ModalBottomSheet(modifier = Modifier.height(320.dp),
+            ModalBottomSheet(modifier = Modifier.height(412.dp),
                 sheetState = sheetState,
                 onDismissRequest = { mapaViewModel.showBottomSheet = false }) {
                 Bandeja()
