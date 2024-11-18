@@ -1,23 +1,23 @@
 package com.gogood.mobile.home.presentation.viewmodels
 
-import android.graphics.Color
+import android.annotation.SuppressLint
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.setValue
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.toArgb
+import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.gogood.mobile.home.data.repository.IMapRepository
-import com.gogood.mobile.home.domain.models.MeioTransporteEnum
+import com.gogood.mobile.home.domain.models.RelatorioOcorrenciasResponse
 import com.gogood.mobile.home.domain.models.RotaResponse
-import com.gogood.mobile.ui.theme.GogoodGreen
-import com.gogood.mobile.ui.theme.GogoodOptionRed
-import com.gogood.mobile.ui.theme.GogoodOptionYellow
-import com.gogood.mobile.ui.theme.coresPolyline
+import com.gogood.mobile.ui.theme.GogoodOrange
+import com.gogood.mobile.ui.theme.GogoodPolylines
 import com.gogood.mobile.utils.ConexaoInternetObserver
 import com.gogood.mobile.utils.LocalizacaoObserver
-import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.GoogleMap
 import com.google.android.gms.maps.model.CameraPosition
 import com.google.android.gms.maps.model.LatLng
@@ -30,7 +30,6 @@ import com.google.android.gms.maps.model.TileOverlayOptions
 import com.google.maps.android.PolyUtil
 import com.google.maps.android.heatmaps.Gradient
 import com.google.maps.android.heatmaps.HeatmapTileProvider
-import com.google.maps.android.heatmaps.WeightedLatLng
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -42,16 +41,19 @@ class MapaViewModel (private val mapRepository: IMapRepository,
         private val localizacaoObserver: LocalizacaoObserver,
         private val conexaoObserver: ConexaoInternetObserver) : ViewModel() {
 
-    var coordenadasOcorrenciasMapaDeCalor = MutableStateFlow<List<WeightedLatLng>>(emptyList())
+    var coordenadasOcorrenciasMapaDeCalor = MutableStateFlow<List<LatLng>>(emptyList())
+    var modoRota = MutableLiveData(false)
 
     private val _rotas = MutableStateFlow<List<RotaResponse>>(emptyList())
     val rotas: StateFlow<List<RotaResponse>> = _rotas
+
+    var rotaEscolhida = MutableLiveData<RotaResponse>()
+    var coordenadasTrajetoRota = MutableLiveData<List<LatLng>>()
 
     private val _conectado = MutableStateFlow(false)
     val contectado: StateFlow<Boolean> = _conectado
 
     var isLoading by mutableStateOf(true)
-    var showMenu by mutableStateOf(false)
     var isSearchAddress by mutableStateOf(true)
     var isSearchRoute by mutableStateOf(false)
     private var localizouUsuario by mutableStateOf(false)
@@ -59,7 +61,6 @@ class MapaViewModel (private val mapRepository: IMapRepository,
 
     var mapa: GoogleMap? by mutableStateOf(null)
     var mapaCalorCamada: TileOverlay? by mutableStateOf(null)
-
 
     var entradaBuscaEndereco = mutableStateOf("")
     var entradaOrigemRota = mutableStateOf("")
@@ -71,8 +72,13 @@ class MapaViewModel (private val mapRepository: IMapRepository,
 
     var showBottomSheet by  mutableStateOf(false)
 
-    private var _localizacao = MutableStateFlow(LatLng(-23.557984712431196, -46.661776750487476))
+    private var _localizacao = MutableStateFlow(LatLng(-23.550395929666593, -46.63396345499372))
     val localizacao: StateFlow<LatLng> = _localizacao
+
+
+    var abaBandeja by mutableIntStateOf(0)
+
+    val relatorioOcorrenciasResponse = MutableLiveData<RelatorioOcorrenciasResponse>()
 
     var posicaoCameraBusca by mutableStateOf(
         CameraPosition.
@@ -88,50 +94,30 @@ class MapaViewModel (private val mapRepository: IMapRepository,
 
     init {
         viewModelScope.launch {
-
             conexaoObserver.isConnected.collect{
                 _conectado.value = it
                 isLoading = false
             }
         }
-
-
-
     }
 
+
+    @SuppressLint("MissingPermission")
     fun observarUsuario(){
         if(localizacaoObserver.permissaoLocalizacao.value){
-            localizacaoObserver.observeLocation().onEach { novaLocalizacao->
+            localizacaoObserver.observerLocalizacao().onEach { novaLocalizacao->
                 _localizacao.value = novaLocalizacao
                 if(!localizouUsuario){
-                    moverCamera(localizacao.value)
+                    atualizarPosicaoCamera(localizacao.value)
                     localizouUsuario = true
                 }
-
-
             }.launchIn(viewModelScope)
         }
     }
-    fun moverCamera(latLng: LatLng){
-        mapa?.moveCamera(CameraUpdateFactory.newCameraPosition(
-            CameraPosition.builder().target(latLng).zoom(16f).build()
-        ))
-    }
 
-    fun alterarAnguloCamera(){
-        val inclinacao = mapa?.cameraPosition?.tilt
-        if (inclinacao != null) {
-            mapa?.moveCamera(CameraUpdateFactory.newCameraPosition(
-                CameraPosition.builder()
-                    .target(_localizacao.value)
-                    .tilt(
-                        if (inclinacao > 0) 0f else 90f
-                    )
-                    .zoom(19f)
-                    .build()
-            ))
-        }
-    }
+
+
+
 
     fun buscarOcorrenciasRaio(){
 
@@ -142,26 +128,33 @@ class MapaViewModel (private val mapRepository: IMapRepository,
         viewModelScope.launch {
             delay(1500)
             val resposta = mapRepository.obterOcorrenciasRaio(lat, lng, raio)
-
             if(resposta.isSuccessful){
-
                 resposta.body()?.let {
                     coordenadasOcorrenciasMapaDeCalor.value = it.coordenadasOcorrencias.map {
-                        WeightedLatLng(
-                            LatLng(it[1], it[0]),
-                            1.0
-                        )
+                        LatLng(it[1], it[0])
                     }
-                    if(coordenadasOcorrenciasMapaDeCalor.value.isNotEmpty()){
-                       atualizarMapaCalor()
-                    }
+                    atualizarMapaCalor()
                 }
 
             }
         }
 
     }
-
+    fun atualizarPosicaoCamera(latLng: LatLng, angulo: Float, zoom: Float = 18f){
+        posicaoCameraBusca =CameraPosition.builder()
+            .target(latLng)
+            .tilt(
+               angulo
+            )
+            .zoom(zoom)
+            .build()
+    }
+    fun atualizarPosicaoCamera(latLng: LatLng, zoom: Float = 18f){
+        posicaoCameraBusca =CameraPosition.builder()
+            .target(latLng)
+            .zoom(zoom)
+            .build()
+    }
     fun atualizarPosicaoCamera(novaPosicao: CameraPosition){
         posicaoCameraBusca = novaPosicao
     }
@@ -188,87 +181,105 @@ class MapaViewModel (private val mapRepository: IMapRepository,
                 markerBusca?.isVisible = true
                 markerBusca?.position = latLng
 
-                moverCamera(latLng)
+                atualizarPosicaoCamera(latLng)
             }
         }
    }
 
     private fun atualizarMapaCalor() {
         mapaCalorCamada?.remove()
+        if(coordenadasOcorrenciasMapaDeCalor.value.isNotEmpty()){
+            val cores = intArrayOf(
+                Color.Yellow.toArgb(),
+                GogoodOrange.toArgb(),
+                Color.Red.toArgb(),
+            )
+            val pontosIntensidade = floatArrayOf(0.1f,  0.3f, 1f)
+            val heatmapTileProvider = HeatmapTileProvider.Builder()
+                .gradient(Gradient(cores, pontosIntensidade))
+                .maxIntensity(7.0)
+                .data(coordenadasOcorrenciasMapaDeCalor.value)
+                .build()
 
-        val cores = intArrayOf(
-            Color.YELLOW,
-            Color.rgb(255, 165, 0),
-            Color.RED,
-        )
-        val pontosIntensidade = floatArrayOf(0.1f,  0.3f, 1f)
-        val heatmapTileProvider = HeatmapTileProvider.Builder()
-            .weightedData(coordenadasOcorrenciasMapaDeCalor.value)
-            .gradient(Gradient(cores, pontosIntensidade))
-            .maxIntensity(7.0)
+            var opcoes =  TileOverlayOptions().tileProvider(heatmapTileProvider)
 
-            .build()
+            mapaCalorCamada = mapa?.addTileOverlay(opcoes)
+        }
 
-        var opcoes =  TileOverlayOptions().tileProvider(heatmapTileProvider)
-
-        mapaCalorCamada = mapa?.addTileOverlay(opcoes)
     }
-
-
-    fun buscarRota(){
-
+    fun limparRotas(){
+        _rotas.value = emptyList()
+    }
+    fun limparPolylinesRotas(){
+        polylines.forEach {
+            it.remove()
+        }
+    }
+    fun buscarRotas(){
         viewModelScope.launch {
             val requisicao = mapRepository.buscarRota(meioRota.value,
                 entradaOrigemRota.value,
                 entradaDestinoRota.value)
             if(requisicao.isSuccessful){
                 _rotas.value = requisicao.body()!!
-
-                alterarAnguloCamera()
-                exibirPolylines()
+                exibirPolylinesOpcoes()
             }
 
         }
+    }
+    fun definirRotaEscolhida(rota: RotaResponse, corPolyline: Color){
+        showBottomSheet = false
+        limparPolylinesRotas()
+        rotaEscolhida.value = rota
+        coordenadasTrajetoRota.value = PolyUtil.decode(rotaEscolhida.value!!.polyline)
+        exibirPolyline(rotaEscolhida.value!!, corPolyline)
+        atualizarPosicaoCamera(
+            latLng = coordenadasTrajetoRota.value!![0],
+            angulo = 45f
+        )
 
     }
+    fun exibirPolyline(rotaResponse: RotaResponse, corPolyline: Color){
+        val polylineDecodificada = PolyUtil.decode(rotaResponse.polyline)
 
-    private fun exibirPolylines() {
+        val polylineOptions = PolylineOptions().apply {
+            width(10f)
+            color(corPolyline.toArgb())
+            addAll(polylineDecodificada)
+        }
+        val polyline = mapa?.addPolyline(polylineOptions)
+        polylines.add(polyline!!)
+    }
+
+    fun exibirPolylinesOpcoes() {
         polylines.forEach {
             it.remove()
         }
-
-
         _rotas.value.sortedBy {
             it.qtdOcorrenciasTotais
         }.forEachIndexed { i, rota ->
-            val polylineDecodificada = PolyUtil.decode(rota.polyline)
-
-            val polylineOptions = PolylineOptions().apply {
-                width(10f)
-                color(coresPolyline[i].toArgb())
-                addAll(polylineDecodificada)
-            }
-            val polyline = mapa?.addPolyline(polylineOptions)
-
-            polylines.add(polyline!!)
+            exibirPolyline(rota, GogoodPolylines[i])
 
 
         }
     }
 
-        private fun definirRaioBusca(): Double {
+    private fun definirRaioBusca(): Double {
 
-            val zoom = posicaoCameraBusca.zoom
-            var radius = 5.0
-            if (zoom <= 13) {
-                return radius
-            } else if (zoom <= 15) {
-                radius = 2.5
-            } else if (zoom <= 17) {
-                radius = 1.25
-            } else {
-                radius = 0.575
-            }
+        val zoom = posicaoCameraBusca.zoom
+        var radius = 5.0
+        if (zoom <= 13) {
             return radius
+        } else if (zoom <= 15) {
+            radius = 2.5
+        } else if (zoom <= 17) {
+            radius = 1.25
+        } else {
+            radius = 0.575
         }
+        return radius
+    }
+
+
+
 }

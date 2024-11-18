@@ -2,10 +2,14 @@ package com.gogood.mobile.home.data.repository.local
 
 import com.gogood.mobile.home.data.repository.IMapRepository
 import com.gogood.mobile.home.domain.models.BuscaEnderecoResponse
+import com.gogood.mobile.home.domain.models.CrimeQtd
 import com.gogood.mobile.home.domain.models.Etapa
 
 import com.gogood.mobile.home.domain.models.OcorrenciasRaioResponse
+import com.gogood.mobile.home.domain.models.QtdMes
+import com.gogood.mobile.home.domain.models.RelatorioOcorrenciasResponse
 import com.gogood.mobile.home.domain.models.RotaResponse
+import com.google.maps.android.ktx.model.markerOptions
 import retrofit2.Response
 
 class MapRepositoryLocal(): IMapRepository {
@@ -21,25 +25,74 @@ class MapRepositoryLocal(): IMapRepository {
         destino: String
     ): Response<List<RotaResponse>> {
 
-        val rota = RotaResponse(
-            origem = "R. Cachoeira das Garças, 509 - Conj. Hab. Sitio Conceicao, São Paulo - SP, 08473-010, Brasil",
-            destino = "R. Cachoeira das Garças, 7A - Conj. Hab. Sitio Conceicao, São Paulo - SP, 08473-010, Brasil",
-            distancia = 0.477,
-            duracao = "1 min",
-            horarioSaida = "13/11/2024 17:22:45",
-            horarioChegada = "13/11/2024 17:23:44",
-            qtdOcorrenciasTotais = 0,
-            polyline = "r}|nCd_dzGmEJoAC_Da@iC[cAOq@EU@uBj@",
-            etapas = listOf(
-                Etapa(instrucao = "Siga na direção <b>norte</b> na <b>R. Cachoeira das Garças</b> em direção a <b>R. Velho Tema</b><div style=\"font-size:0.9em\">O destino estará à direita</div>")
-            ),
-        )
 
         val resposta = Response.success(
-           listOf(rota)
+           listOf(
+               RotaResponse(
+                   origem = "Rua Haddock Lobo, 595 - Cerqueira César, São Paulo - SP, 01414-001, Brasil",
+                   destino = "Parque Ibirapuera - Av. Pedro Álvares Cabral - Vila Mariana, São Paulo - SP, 04094-050, Brasil",
+                   distancia = 3.696,
+                   duracao = "12 minutos",
+                   horarioChegada = "16/11/2024 18:11:15",
+                   horarioSaida = "16/11/2024 18:22:54",
+                   qtdOcorrenciasTotais = 300,
+                   polyline = "ldxnC`sx{Gt@v@l@s@`BqBnGsHfBsB`AmAl@y@hByB`EqE`EkFvCsD`EzDvKjKfJ|InM`MvApAn@l@KJuA~AzBnDtAtBv@}@hAqAPSz@~@hD`ExBbCPT`@e@lAqAv@y@xCcDpGeHvA}Ad@[jAm@z@]t@i@f@g@NUNFBBC\\IAIDMVCB",
+                   etapas = emptyList()
+               ),
+               RotaResponse(
+                   origem = "Rua Haddock Lobo, 595 - Cerqueira César, São Paulo - SP, 01414-001, Brasil",
+                   destino = "Parque Ibirapuera - Av. Pedro Álvares Cabral - Vila Mariana, São Paulo - SP, 04094-050, Brasil",
+                   distancia = 3.605,
+                   duracao = "12 minutos",
+                   horarioChegada = "16/11/2024 18:11:15",
+                   horarioSaida = "16/11/2024 18:23:05",
+                   qtdOcorrenciasTotais = 350,
+                   polyline = "ldxnC`sx{GhJzJfDnDp@n@jEvEhGrGhBnBd@h@h@m@pBaCrBeCrA}A~AkBzCqD~E}FtA_BV[t@x@rArAj@n@jBjBf@n@j@v@xBjD|@pApHxLFJ`@e@X[~BgCdGuGnF{FlMoN~@{@vA{@XIx@a@l@e@RQV]DGHDFB@BEZIAGFQV?@",
+                   etapas = emptyList()
+               ),
+               RotaResponse(
+                   origem = "Rua Haddock Lobo, 595 - Cerqueira César, São Paulo - SP, 01414-001, Brasil",
+                   destino = "Parque Ibirapuera - Av. Pedro Álvares Cabral - Vila Mariana, São Paulo - SP, 04094-050, Brasil",
+                   distancia = 3.875,
+                   duracao = "12 minutos",
+                   horarioChegada = "16/11/2024 18:11:15",
+                   horarioSaida = "16/11/2024 18:23:05",
+                   qtdOcorrenciasTotais = 150,
+                   polyline = "ldxnC`sx{Gw@{@}@cARUf@k@\\a@jB{B`CqCvFwGbDuDxAgBr@y@rBiCfF{Gf@o@b@b@nChCrJjJtKfKlL|KxEtEvApAn@l@KJuA~AzBnDtAtBv@}@hAqAPSz@~@hD`ExBbCPT`@e@lAqAv@y@xCcDpGeHvA}Ad@[jAm@z@]jA{@PUNUNFBBC\\IAIDGJIN",
+                   etapas = emptyList()
+               )
+           )
         )
 
+
         return resposta
+    }
+
+    override suspend fun buscarRelatorioRaio(
+        lat: Double,
+        lng: Double,
+        raio: Double
+    ): Response<RelatorioOcorrenciasResponse> {
+        return Response.success(
+            RelatorioOcorrenciasResponse(
+                listOf(
+                    CrimeQtd("Furto", 50),
+                    CrimeQtd("Roubo", 50),
+                    CrimeQtd("Agressão", 50)
+                ),
+                qtdOcorrencias = 150,
+                qtdMes = QtdMes(
+                    janeiro = 0,
+                    fevereiro = 0,
+                    marco = 0,
+                    abril = 0,
+                    maio = 150,
+                    junho = 0,
+                    julho = 0,
+                    agosto = 0,
+                )
+            )
+        )
     }
 
 

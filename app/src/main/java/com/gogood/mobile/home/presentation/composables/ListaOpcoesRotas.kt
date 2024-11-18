@@ -9,7 +9,7 @@ import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.unit.dp
 import com.gogood.mobile.home.presentation.viewmodels.MapaViewModel
-import com.gogood.mobile.ui.theme.coresPolyline
+import com.gogood.mobile.ui.theme.GogoodPolylines
 import org.koin.compose.viewmodel.koinViewModel
 
 
@@ -20,7 +20,7 @@ fun ListaOpcoesRotas() {
 
     val textos = listOf("Risco Baixo", "Risco Médio", "Risco Alto")
     Column(verticalArrangement = Arrangement.spacedBy(10.dp)) {
-        TituloBandeja("Selecione uma opção")
+        TituloBandeja("Selecione uma opção:")
         rotas.sortedBy {
             it.qtdOcorrenciasTotais
         }.forEachIndexed { i, rota->
@@ -29,8 +29,8 @@ fun ListaOpcoesRotas() {
                 distancia = rota.distancia,
                 duracao = rota.duracao
             )
-            BotaoOpcaoRota(opcao = opcaoRota, coresPolyline[i], textos[i]) {
-
+            BotaoOpcaoRota(opcao = opcaoRota, GogoodPolylines[i], textos[i]) {
+                mapaViewModel.definirRotaEscolhida(rota, GogoodPolylines[i])
             }
         }
     }

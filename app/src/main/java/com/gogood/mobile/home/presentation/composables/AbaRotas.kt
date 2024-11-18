@@ -19,38 +19,41 @@ import com.gogood.mobile.ui.theme.GogoodGreen
 import org.koin.compose.viewmodel.koinViewModel
 
 @Composable
-fun PesquisaRotas() {
+fun AbaRotas() {
     val mapaViewModel = koinViewModel<MapaViewModel>()
     val rotas by mapaViewModel.rotas.collectAsState()
 
     Column(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(16.dp)
+            .padding(end=16.dp, start = 16.dp)
     ) {
-        MeiosTransporte()
-        Spacer(modifier = Modifier.height(16.dp))
-        if(rotas.isNotEmpty()){
-            ListaOpcoesRotas()
+            MeiosTransporte()
+
+            if(rotas.isNotEmpty()){
+                Spacer(modifier = Modifier.height(16.dp))
+                ListaOpcoesRotas()
+            }
+
             Spacer(modifier = Modifier.height(16.dp))
-        }
-        Button(
-            onClick = {
-                mapaViewModel.buscarRota()
-            },
-            shape = RoundedCornerShape(30),
-            modifier = Modifier.fillMaxWidth(), colors = ButtonDefaults.buttonColors(
-                containerColor = GogoodGreen
-            )
-        ) {
-            Row(verticalAlignment = Alignment.CenterVertically) {
-                Icon(
-                    imageVector = Icons.Filled.Search,
-                    contentDescription = "Botão de Pesquisar Rota"
+            Button(
+                onClick = {
+                    mapaViewModel.buscarRotas()
+                },
+                shape = RoundedCornerShape(30),
+                modifier = Modifier.fillMaxWidth(), colors = ButtonDefaults.buttonColors(
+                    containerColor = GogoodGreen
                 )
-                Text(text = "Buscar rota")
+            ) {
+                Row(verticalAlignment = Alignment.CenterVertically) {
+                    Icon(
+                        imageVector = Icons.Filled.Search,
+                        contentDescription = "Botão de Pesquisar Rota"
+                    )
+                    Text(text = "Buscar rota")
+                }
             }
         }
     }
-}
+
 

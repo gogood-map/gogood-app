@@ -56,8 +56,8 @@ val appModule = module {
         EnderecoRepository(get())
     }
     single<IMapRepository>{
-        MapRepository(get(), get())
-       // MapRepositoryLocal()
+        //MapRepository(get(), get())
+        MapRepositoryLocal()
     }
     single<IUserRepository>{
         UserRepository(get(), get())
