@@ -1,6 +1,8 @@
 package com.gogood.mobile.home.presentation.viewmodels
 
 import android.annotation.SuppressLint
+import androidx.compose.runtime.MutableState
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateListOf
@@ -8,12 +10,16 @@ import androidx.compose.runtime.setValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.toArgb
+import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.asLiveData
 import androidx.lifecycle.viewModelScope
 import com.gogood.mobile.home.data.repository.IMapRepository
 import com.gogood.mobile.home.domain.models.RelatorioOcorrenciasResponse
 import com.gogood.mobile.home.domain.models.RotaResponse
+import com.gogood.mobile.home.domain.usecases.IObterCoordenadasOcorrenciaRaioUseCase
+import com.gogood.mobile.home.presentation.stateholders.MainStateHolder
 import com.gogood.mobile.ui.theme.GogoodOrange
 import com.gogood.mobile.ui.theme.GogoodPolylines
 import com.gogood.mobile.utils.ConexaoInternetObserver
@@ -32,17 +38,26 @@ import com.google.maps.android.heatmaps.Gradient
 import com.google.maps.android.heatmaps.HeatmapTileProvider
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.collect
+import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
+import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
+import okhttp3.internal.notify
+import okhttp3.internal.notifyAll
 
 class MapaViewModel (private val mapRepository: IMapRepository,
         private val localizacaoObserver: LocalizacaoObserver,
-        private val conexaoObserver: ConexaoInternetObserver) : ViewModel() {
+        private val conexaoObserver: ConexaoInternetObserver,
+        private val obterCoordenadasOcorrenciasRaioUseCase: IObterCoordenadasOcorrenciaRaioUseCase
+) : ViewModel() {
 
-    var coordenadasOcorrenciasMapaDeCalor = MutableStateFlow<List<LatLng>>(emptyList())
-    var modoRota = MutableLiveData(false)
+    var uiState = MutableLiveData<MainStateHolder>(MainStateHolder.Loading)
+
+
 
     private val _rotas = MutableStateFlow<List<RotaResponse>>(emptyList())
     val rotas: StateFlow<List<RotaResponse>> = _rotas
@@ -50,10 +65,7 @@ class MapaViewModel (private val mapRepository: IMapRepository,
     var rotaEscolhida = MutableLiveData<RotaResponse>()
     var coordenadasTrajetoRota = MutableLiveData<List<LatLng>>()
 
-    private val _conectado = MutableStateFlow(false)
-    val contectado: StateFlow<Boolean> = _conectado
 
-    var isLoading by mutableStateOf(true)
     var isSearchAddress by mutableStateOf(true)
     var isSearchRoute by mutableStateOf(false)
     private var localizouUsuario by mutableStateOf(false)
@@ -89,17 +101,20 @@ class MapaViewModel (private val mapRepository: IMapRepository,
     )
     private set
 
+    private val _conectado = MutableStateFlow(false)
+    var conectado: StateFlow<Boolean> = _conectado
 
 
 
     init {
         viewModelScope.launch {
-            conexaoObserver.isConnected.collect{
+            conexaoObserver.observarConexao.collect{
                 _conectado.value = it
-                isLoading = false
+                conectado = _conectado
             }
         }
     }
+
 
 
     @SuppressLint("MissingPermission")
@@ -126,16 +141,10 @@ class MapaViewModel (private val mapRepository: IMapRepository,
         val raio = definirRaioBusca()
 
         viewModelScope.launch {
-            delay(1500)
-            val resposta = mapRepository.obterOcorrenciasRaio(lat, lng, raio)
-            if(resposta.isSuccessful){
-                resposta.body()?.let {
-                    coordenadasOcorrenciasMapaDeCalor.value = it.coordenadasOcorrencias.map {
-                        LatLng(it[1], it[0])
-                    }
-                    atualizarMapaCalor()
-                }
-
+            val resposta = obterCoordenadasOcorrenciasRaioUseCase(LatLng(lat, lng), raio)
+            if(resposta.isSuccess){
+                uiState.value = MainStateHolder.Content(resposta.getOrNull()!!)
+                atualizarMapaCalor()
             }
         }
     }
@@ -204,7 +213,9 @@ class MapaViewModel (private val mapRepository: IMapRepository,
 
     private fun atualizarMapaCalor() {
         mapaCalorCamada?.remove()
-        if(coordenadasOcorrenciasMapaDeCalor.value.isNotEmpty()){
+        val content = uiState.value as MainStateHolder.Content
+
+        if(content.coordenadasOcorrenciasMapaDeCalor.isNotEmpty()){
             val cores = intArrayOf(
                 Color.Yellow.toArgb(),
                 GogoodOrange.toArgb(),
@@ -214,7 +225,7 @@ class MapaViewModel (private val mapRepository: IMapRepository,
             val heatmapTileProvider = HeatmapTileProvider.Builder()
                 .gradient(Gradient(cores, pontosIntensidade))
                 .maxIntensity(7.0)
-                .data(coordenadasOcorrenciasMapaDeCalor.value)
+                .data(content.coordenadasOcorrenciasMapaDeCalor)
                 .build()
 
             var opcoes =  TileOverlayOptions().tileProvider(heatmapTileProvider)
