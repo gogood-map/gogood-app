@@ -37,7 +37,7 @@ fun CardRelatorioLista(modifier: Modifier = Modifier,
         var listaCrimes = relatorio.top5Ocorrencias
 
         if(listaCrimes.size > 3){
-            listaCrimes.dropLast(listaCrimes.size-3)
+            listaCrimes=  listaCrimes.dropLast(listaCrimes.size-3)
         }
         listaCrimes = listaCrimes.sortedBy {
             it.qtdOcorrido
