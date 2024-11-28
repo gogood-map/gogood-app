@@ -19,9 +19,7 @@ fun AbaRelatorioOcorrencias(modifier: Modifier = Modifier){
     val brush = Brush.horizontalGradient(listOf(GogoodGreen, Color(0xFF0B9970)))
     val mapaViewModel = koinViewModel<MapaViewModel>()
     val relatorio = mapaViewModel.relatorioOcorrenciasResponse.value
-    val crimeMaiorQtd =  relatorio?.top5Ocorrencias?.sortedByDescending {
-        it.qtdOcorrido
-    }?.get(0)
+
 
     LazyColumn (
         modifier = modifier
@@ -29,15 +27,24 @@ fun AbaRelatorioOcorrencias(modifier: Modifier = Modifier){
             .padding(end = 16.dp, start = 16.dp)
     ){
         item {
-            CardRelatorio(
-                    titulo="${relatorio?.qtdOcorrencias}",
+            if(relatorio != null){
+                val crimeMaiorQtd =  relatorio?.top5Ocorrencias?.sortedByDescending {
+                    it.qtdOcorrido
+                }?.get(0)
+
+                CardRelatorio(
+                    titulo="${relatorio.qtdOcorrencias}",
                     subTitulo = "Total de Ocorrências", corFundo = brush)
-            Spacer(modifier = Modifier.height(16.dp))
-            CardRelatorio(
-                titulo="${crimeMaiorQtd?.crime?.replace(" - OUTROS", "")}",
-                subTitulo = "Crime + Ocorrências")
-            Spacer(modifier = Modifier.height(16.dp))
-            CardRelatorioLista()
+                Spacer(modifier = Modifier.height(16.dp))
+                CardRelatorio(
+                    titulo="${crimeMaiorQtd?.crime?.replace(" - OUTROS", "")}",
+                    subTitulo = "Crime + Ocorrências")
+                Spacer(modifier = Modifier.height(16.dp))
+                CardRelatorioLista()
+            }else{
+
+            }
+
         }
     }
 }
