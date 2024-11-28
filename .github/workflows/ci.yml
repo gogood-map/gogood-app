@@ -17,9 +17,18 @@ jobs:
       uses: actions/setup-java@v4
       with:
         java-version: '17'
-        distribution: 'temurin'
-        cache: gradle
-
+        distribution: 'zulu'
+      
+        
+    - uses: actions/cache@v2
+      with:
+        path: |
+          ~/.gradle/caches
+          ~/.gradle/wrapper
+        key: ${{ runner.os }}-gradle-${{ hashFiles('**/*.gradle*', '**/gradle-wrapper.properties') }}
+        restore-keys: |
+          ${{ runner.os }}-gradle-
+            
     - name: Garantir permissões ao gradlew
       run: chmod +x gradlew
     - name: Build
@@ -33,9 +42,18 @@ jobs:
        uses: actions/setup-java@v4
        with:
          java-version: '17'
-         distribution: 'temurin'
+         distribution: 'zulu'
          cache: gradle
-
+         
+     - uses: actions/cache@v2
+       with:
+        path: |
+          ~/.gradle/caches
+          ~/.gradle/wrapper
+        key: ${{ runner.os }}-gradle-${{ hashFiles('**/*.gradle*', '**/gradle-wrapper.properties') }}
+        restore-keys: |
+          ${{ runner.os }}-gradle-
+          
      - name: Garantir permissões ao gradlew
        run: chmod +x gradlew
      - name: Execução dos Testes
