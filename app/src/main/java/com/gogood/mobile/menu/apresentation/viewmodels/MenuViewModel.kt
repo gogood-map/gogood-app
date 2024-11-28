@@ -21,7 +21,6 @@ class MenuViewModel(private val userRepository: IUserRepository, private val end
             userRepository.obterUsuarioSalvo().collect {
                 usuario = it
 
-
                 usuario?.let {dadosUsuario->
                    var resposta =  enderecoRepository.obterEnderecosFavoritos(dadosUsuario.userId!!)
                     if(resposta.isSuccessful){
@@ -30,17 +29,7 @@ class MenuViewModel(private val userRepository: IUserRepository, private val end
                         }
                     }
                 }
-
             }
-
         }
-
-
     }
-
-    fun buscarEnderecosFavoritos(){
-
-    }
-
-
 }

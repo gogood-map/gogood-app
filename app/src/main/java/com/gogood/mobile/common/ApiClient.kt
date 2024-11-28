@@ -86,6 +86,10 @@ object ApiClient {
         apiGooglePlaces.create(GooglePlacesService::class.java)
     }
 
+    val addressService by lazy {
+        api.create(EnderecoService::class.java)
+    }
+
 //    fun <T> createService(service: Class<T>): T {
 //        return api.create(service)
 //    }

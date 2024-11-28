@@ -13,7 +13,6 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.gogood.mobile.auth.apresentation.composables.cadastro.CadastroTela
 import com.gogood.mobile.auth.apresentation.composables.login.LoginTela
-import com.gogood.mobile.home.presentation.viewmodels.MapaViewModel
 import com.gogood.mobile.ui.theme.GoGoodTheme
 import org.koin.compose.viewmodel.koinViewModel
 

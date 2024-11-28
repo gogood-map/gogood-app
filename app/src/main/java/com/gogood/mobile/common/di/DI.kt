@@ -4,6 +4,10 @@ import android.content.Context
 import androidx.datastore.core.DataStore
 import androidx.datastore.preferences.core.Preferences
 import androidx.datastore.preferences.preferencesDataStore
+import com.gogood.mobile.address.data.repository.IAddressRepository
+import com.gogood.mobile.address.data.repository.remote.AddressRepository
+import com.gogood.mobile.address.domain.services.AddressService
+import com.gogood.mobile.address.presentation.viewModel.AddressViewModel
 import com.gogood.mobile.auth.apresentation.viewmodels.CadastroViewModel
 import com.gogood.mobile.auth.apresentation.viewmodels.LoginViewModel
 import com.gogood.mobile.auth.data.repository.IUserRepository
@@ -58,6 +62,11 @@ val appModule = module {
         ApiClient.googlePlacesService
     }
 
+    single<AddressService> { ApiClient.addressService }
+
+
+    single<IAddressRepository> { AddressRepository(get()) }
+
 
     single <IEnderecoRepository>{
         EnderecoRepository(get())
@@ -90,6 +99,9 @@ val appModule = module {
     viewModel {
         CadastroViewModel(get())
     }
+
+    viewModel { AddressViewModel(get()) }
+
 }
 val Context.dataStore by preferencesDataStore("user_preferences")
 fun provideDataStore(context: Context): DataStore<Preferences> {

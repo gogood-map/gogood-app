@@ -34,15 +34,18 @@ import com.gogood.mobile.ui.theme.GogoodHeartFavoriteRed
 import org.koin.compose.viewmodel.koinViewModel
 
 @Composable
-fun Favoritos() {
+fun Favoritos(openAddressForm: () -> Unit) {
     Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
         Titulo(texto = "Favoritos")
-        ListaFavoritos()
+        ListaFavoritos(openAddressForm = openAddressForm)
     }
 }
 
 @Composable
-fun ListaFavoritos(menuViewModel: MenuViewModel = koinViewModel()) {
+fun ListaFavoritos(
+    menuViewModel: MenuViewModel = koinViewModel(),
+    openAddressForm: () -> Unit
+    ) {
 
 
     val (showDialog, setShowDialog) = remember { mutableStateOf(false) }
@@ -68,7 +71,7 @@ fun ListaFavoritos(menuViewModel: MenuViewModel = koinViewModel()) {
                 .padding(top = 10.dp)
                 .padding(horizontal = 16.dp)
                 .clickable {
-                    setShowDialog(true)
+                    openAddressForm()
                 }
         ) {
             Icon(
