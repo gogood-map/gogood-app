@@ -24,6 +24,12 @@ import com.gogood.mobile.ui.theme.GogoodOptionRed
 
 @Composable
 fun Campo(label: String, state: MutableState<String>, regraValida: (String)->Boolean,
+          modifier : Modifier = Modifier
+              .width(250.dp)
+              .height(45.dp)
+              .background(Color.White, RoundedCornerShape(8.dp))
+              .padding(start = 15.dp, top = 15.dp),
+
           validoParam: Boolean = true) {
     var valido by remember {
         mutableStateOf(validoParam)
@@ -54,12 +60,7 @@ fun Campo(label: String, state: MutableState<String>, regraValida: (String)->Boo
                 }
                 valido = regraValida(state.value)
             },
-            modifier = Modifier
-                .width(250.dp)
-                .height(45.dp)
-                .border(1.dp, corInput, RoundedCornerShape(8.dp))
-                .background(Color.White, RoundedCornerShape(8.dp))
-                .padding(start = 15.dp, top = 15.dp),
+            modifier = modifier.border(1.dp, corInput, RoundedCornerShape(8.dp)),
             singleLine = true,
         )
         if(!valido){
