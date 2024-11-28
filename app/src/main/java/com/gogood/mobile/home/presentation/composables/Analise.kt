@@ -1,4 +1,4 @@
-package com.gogood.mobile.bandeja.presentation.composables
+package com.gogood.mobile.home.presentation.composables
 
 import androidx.compose.foundation.layout.*
 import androidx.compose.runtime.Composable

@@ -1,4 +1,4 @@
-package com.gogood.mobile.bandeja.presentation.composables
+package com.gogood.mobile.home.presentation.composables
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Row
@@ -22,11 +22,15 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.unit.dp
+import com.gogood.mobile.home.domain.models.MeioTransporteEnum
+import com.gogood.mobile.home.presentation.viewmodels.MapaViewModel
 import com.gogood.mobile.ui.theme.GogoodGray
 import com.gogood.mobile.ui.theme.GogoodWhite
+import org.koin.compose.viewmodel.koinViewModel
 
 @Composable
 fun MeiosTransporte() {
+    val mapaViewModel = koinViewModel<MapaViewModel>()
     var meioSelecionado by remember { mutableStateOf("") }
     var foiTransportePublico by remember { mutableStateOf(false) }
     var foiCarro by remember { mutableStateOf(false) }
@@ -63,33 +67,20 @@ fun MeiosTransporte() {
     Row(modifier = Modifier.fillMaxWidth(), Arrangement.SpaceAround) {
         BotaoMeioTransporte(icone = Icons.AutoMirrored.Filled.DirectionsWalk, selecionado = foiAPe) {
             meioSelecionado = "A pé"
+            mapaViewModel.meioRota.value = MeioTransporteEnum.A_PE.meio
         }
         BotaoMeioTransporte(icone = Icons.AutoMirrored.Filled.DirectionsBike, selecionado = foiBike) {
             meioSelecionado = "Bike"
+            mapaViewModel.meioRota.value = MeioTransporteEnum.BIKE.meio
         }
         BotaoMeioTransporte(icone = Icons.Filled.DirectionsCar, selecionado = foiCarro) {
             meioSelecionado = "Carro"
+            mapaViewModel.meioRota.value = MeioTransporteEnum.VEICULO.meio
         }
         BotaoMeioTransporte(icone = Icons.Filled.DirectionsBus, selecionado = foiTransportePublico) {
             meioSelecionado = "Transporte Público"
+            mapaViewModel.meioRota.value = MeioTransporteEnum.TRANSPORTE_PUBLICO.meio
         }
     }
 }
 
-@Composable
-fun BotaoMeioTransporte(
-    icone: ImageVector,
-    ativo: Boolean = true,
-    selecionado: Boolean = false,
-    onClick: () -> Unit
-) {
-    Button(
-        onClick = onClick, shape = RoundedCornerShape(30), colors = ButtonDefaults.buttonColors(
-            containerColor = if (selecionado) GogoodGray else Color(0xFFCFCFCF),
-            contentColor = if (selecionado) Color.White else Color(0xFF7C7C7C),
-        ),
-        modifier = Modifier.padding(8.dp)
-    ) {
-        Icon(icone, contentDescription = "Botão de opção de pedestre na rota", tint = GogoodWhite)
-    }
-}
