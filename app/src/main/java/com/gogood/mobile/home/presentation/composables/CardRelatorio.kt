@@ -25,7 +25,7 @@ fun CardRelatorio(modifier:Modifier=Modifier, titulo: String, subTitulo:String, 
         verticalArrangement = Arrangement.SpaceBetween,
         modifier= modifier
             .background(corFundo, RoundedCornerShape(16))
-            .height(108.dp)
+            .height(104.dp)
             .padding(16.dp)
             .fillMaxWidth()
     ) {

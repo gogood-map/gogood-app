@@ -1,5 +1,6 @@
 package com.gogood.mobile.home.presentation.composables
 
+import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -27,6 +28,7 @@ import com.gogood.mobile.ui.theme.GogoodOptionYellow
 import com.gogood.mobile.ui.theme.GogoodOrange
 import org.koin.compose.viewmodel.koinViewModel
 
+@OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun CardRelatorioLista(modifier: Modifier = Modifier,
                        corFundo: Color= GogoodBorderWhite,
@@ -44,10 +46,10 @@ fun CardRelatorioLista(modifier: Modifier = Modifier,
         }
 
         LazyColumn(
-            verticalArrangement = Arrangement.SpaceBetween,
+            verticalArrangement = Arrangement.spacedBy(10.dp),
             modifier= modifier
                 .background(corFundo, RoundedCornerShape(16))
-                .height(108.dp)
+                .height(140.dp)
                 .padding(16.dp)
                 .fillMaxWidth()
         ) {
@@ -56,8 +58,15 @@ fun CardRelatorioLista(modifier: Modifier = Modifier,
                 GogoodOrange,
                 GogoodOptionYellow
             )
+            item {
+                Text(text = "Quantidade de Ocorrências por crime",
+                    fontSize = 22.sp,
+                    color = GogoodGray,
+                    fontWeight = FontWeight.SemiBold)
+            }
 
             itemsIndexed(listaCrimes){i, item ->
+
                 ItemListaCardRelatorio(cor = cores[i], crime = item)
             }
         }

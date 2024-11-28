@@ -12,6 +12,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import com.gogood.mobile.home.presentation.viewmodels.MapaViewModel
 import com.gogood.mobile.ui.theme.GogoodGreen
+import com.gogood.mobile.utils.extensions.sentenceCase
 import org.koin.compose.viewmodel.koinViewModel
 
 @Composable
@@ -28,17 +29,21 @@ fun AbaRelatorioOcorrencias(modifier: Modifier = Modifier){
     ){
         item {
             if(relatorio != null){
-                val crimeMaiorQtd =  relatorio?.top5Ocorrencias?.sortedByDescending {
-                    it.qtdOcorrido
-                }?.get(0)
+                var crimeMaiorQtd = ""
+                if(relatorio.top5Ocorrencias.isNotEmpty()){
+                    crimeMaiorQtd =  relatorio.top5Ocorrencias.sortedByDescending {
+                        it.qtdOcorrido
+                    }[0].crime
+                }
+
 
                 CardRelatorio(
                     titulo="${relatorio.qtdOcorrencias}",
                     subTitulo = "Total de Ocorrências", corFundo = brush)
                 Spacer(modifier = Modifier.height(16.dp))
                 CardRelatorio(
-                    titulo="${crimeMaiorQtd?.crime?.replace(" - OUTROS", "")}",
-                    subTitulo = "Crime + Ocorrências")
+                    titulo= crimeMaiorQtd.replace(" - OUTROS", "").sentenceCase(),
+                    subTitulo = "Crime com mais ocorrências")
                 Spacer(modifier = Modifier.height(16.dp))
                 CardRelatorioLista()
             }else{
