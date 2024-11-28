@@ -219,6 +219,7 @@ class MapaViewModel (private val mapRepository: IMapRepository,
    }
 
     fun atualizarMapaCalor() {
+
         mapaCalorCamada?.remove()
         val content = uiState.value as MainStateHolder.Content
 
