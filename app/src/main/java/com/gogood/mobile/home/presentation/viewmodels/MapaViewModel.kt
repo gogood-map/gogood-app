@@ -2,7 +2,6 @@ package com.gogood.mobile.home.presentation.viewmodels
 
 import android.annotation.SuppressLint
 import androidx.compose.runtime.MutableState
-import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateListOf
@@ -10,20 +9,19 @@ import androidx.compose.runtime.setValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.toArgb
-import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
-import androidx.lifecycle.asLiveData
 import androidx.lifecycle.viewModelScope
 import com.gogood.mobile.home.data.repository.IMapRepository
 import com.gogood.mobile.home.domain.models.RelatorioOcorrenciasResponse
 import com.gogood.mobile.home.domain.models.RotaResponse
 import com.gogood.mobile.home.domain.usecases.IObterCoordenadasOcorrenciaRaioUseCase
+import com.gogood.mobile.home.domain.usecases.IObterRelatorioRaioUseCase
 import com.gogood.mobile.home.presentation.stateholders.MainStateHolder
 import com.gogood.mobile.ui.theme.GogoodOrange
 import com.gogood.mobile.ui.theme.GogoodPolylines
-import com.gogood.mobile.utils.ConexaoInternetObserver
-import com.gogood.mobile.utils.LocalizacaoObserver
+import com.gogood.mobile.utils.IConexaoUtils
+import com.gogood.mobile.utils.ILocalizacaoUtils
 import com.google.android.gms.maps.GoogleMap
 import com.google.android.gms.maps.model.CameraPosition
 import com.google.android.gms.maps.model.LatLng
@@ -36,28 +34,37 @@ import com.google.android.gms.maps.model.TileOverlayOptions
 import com.google.maps.android.PolyUtil
 import com.google.maps.android.heatmaps.Gradient
 import com.google.maps.android.heatmaps.HeatmapTileProvider
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.collect
-import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
-import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
-import okhttp3.internal.notify
-import okhttp3.internal.notifyAll
 
 class MapaViewModel (private val mapRepository: IMapRepository,
-        private val localizacaoObserver: LocalizacaoObserver,
-        private val conexaoObserver: ConexaoInternetObserver,
-        private val obterCoordenadasOcorrenciasRaioUseCase: IObterCoordenadasOcorrenciaRaioUseCase
+                     private val localizacaoUtils: ILocalizacaoUtils,
+                     private val conexaoUtils: IConexaoUtils,
+                     private val obterCoordenadasOcorrenciasRaioUseCase: IObterCoordenadasOcorrenciaRaioUseCase,
+                     private val obterRelatorioRaioUseCase: IObterRelatorioRaioUseCase
 ) : ViewModel() {
 
-    var uiState = MutableLiveData<MainStateHolder>(MainStateHolder.Loading)
 
+    val _uiState: MutableLiveData<MainStateHolder> by lazy{
+        MutableLiveData(MainStateHolder.Loading)
+    }
+    val uiState: MutableState<MainStateHolder> = mutableStateOf(MainStateHolder.Loading)
+    init {
+        viewModelScope.launch() {
+            conexaoUtils.observarConexao.collect{
+                if(it){
+                    atualizarUiState(MainStateHolder.Content())
+                }else{
+                    _uiState.value = MainStateHolder.NoConnection
+                    uiState.value = _uiState.value!!
+                }
+            }
+        }
 
+    }
 
     private val _rotas = MutableStateFlow<List<RotaResponse>>(emptyList())
     val rotas: StateFlow<List<RotaResponse>> = _rotas
@@ -101,26 +108,12 @@ class MapaViewModel (private val mapRepository: IMapRepository,
     )
     private set
 
-    private val _conectado = MutableStateFlow(false)
-    var conectado: StateFlow<Boolean> = _conectado
-
-
-
-    init {
-        viewModelScope.launch {
-            conexaoObserver.observarConexao.collect{
-                _conectado.value = it
-                conectado = _conectado
-            }
-        }
-    }
-
 
 
     @SuppressLint("MissingPermission")
     fun observarUsuario(){
-        if(localizacaoObserver.permissaoLocalizacao.value){
-            localizacaoObserver.observerLocalizacao().onEach { novaLocalizacao->
+        if(localizacaoUtils.permissaoLocalizacao.value){
+            localizacaoUtils.observerLocalizacao().onEach { novaLocalizacao->
                 _localizacao.value = novaLocalizacao
                 if(!localizouUsuario){
                     atualizarPosicaoCamera(localizacao.value)
@@ -131,7 +124,10 @@ class MapaViewModel (private val mapRepository: IMapRepository,
     }
 
 
-
+    fun atualizarUiState(novoEstado: MainStateHolder){
+        _uiState.value = novoEstado
+        uiState.value = _uiState.value!!
+    }
 
 
     fun buscarOcorrenciasRaio(){
@@ -142,27 +138,38 @@ class MapaViewModel (private val mapRepository: IMapRepository,
 
         viewModelScope.launch {
             val resposta = obterCoordenadasOcorrenciasRaioUseCase(LatLng(lat, lng), raio)
-            if(resposta.isSuccess){
-                uiState.value = MainStateHolder.Content(resposta.getOrNull()!!)
-                atualizarMapaCalor()
+
+            resposta.onSuccess {
+                atualizarUiState(MainStateHolder.Content(resposta.getOrNull()!!))
+
+
             }
+
+
+            resposta.onFailure {
+                atualizarUiState(MainStateHolder.Error("Mapa de Calor", it.message!!))
+            }
+
+
         }
     }
+
     fun buscarRelatorioRaio(){
 
         val lat = posicaoCameraBusca.target.latitude
         val lng = posicaoCameraBusca.target.longitude
+
+        val latLng = LatLng(lat, lng)
         val raio = definirRaioBusca()
-
         viewModelScope.launch {
-            delay(1500)
-            val resposta = mapRepository.buscarRelatorioRaio(lat, lng, raio)
-            if(resposta.isSuccessful){
-                resposta.body()?.let {
-                   relatorioOcorrenciasResponse.value = it
-                }
-
+            val resposta = obterRelatorioRaioUseCase(latLng, raio)
+            resposta.onSuccess {
+                relatorioOcorrenciasResponse.value = resposta.getOrNull()!!
             }
+            resposta.onFailure {
+                atualizarUiState(MainStateHolder.Error("Mapa de Calor", "Erro ao buscar ocorrências"))
+            }
+
         }
     }
     fun atualizarPosicaoCamera(latLng: LatLng, angulo: Float, zoom: Float = 18f){
@@ -211,7 +218,7 @@ class MapaViewModel (private val mapRepository: IMapRepository,
         }
    }
 
-    private fun atualizarMapaCalor() {
+    fun atualizarMapaCalor() {
         mapaCalorCamada?.remove()
         val content = uiState.value as MainStateHolder.Content
 
@@ -262,7 +269,7 @@ class MapaViewModel (private val mapRepository: IMapRepository,
         exibirPolyline(rotaEscolhida.value!!, corPolyline)
         atualizarPosicaoCamera(
             latLng = coordenadasTrajetoRota.value!![0],
-            angulo = 30f
+            angulo = 90f
         )
 
     }

@@ -8,5 +8,5 @@ sealed class MainStateHolder {
     data object Loading: MainStateHolder()
     data class Content(val coordenadasOcorrenciasMapaDeCalor: List<LatLng> = emptyList()): MainStateHolder()
     data object NoConnection: MainStateHolder()
-    data class Error(val message: String): MainStateHolder()
+    data class Error(val titulo: String, val message: String): MainStateHolder()
 }
