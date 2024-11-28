@@ -47,7 +47,7 @@ import com.gogood.mobile.menu.apresentation.composables.Menu
 import com.gogood.mobile.ui.theme.GogoodGray
 import com.gogood.mobile.ui.theme.GogoodGreen
 import com.gogood.mobile.ui.theme.GogoodWhite
-import com.gogood.mobile.utils.LocalizacaoObserver
+import com.gogood.mobile.utils.ILocalizacaoUtils
 import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.MapView
 import com.google.android.gms.maps.MapsInitializer
@@ -61,11 +61,13 @@ fun Mapa(navController: NavController) {
     val context = LocalContext.current
 
     val mapaViewModel: MapaViewModel = koinViewModel()
+
+
     val buscaEnderecoState = mapaViewModel.entradaBuscaEndereco
     val origemState = mapaViewModel.entradaOrigemRota
     val destinoState = mapaViewModel.entradaDestinoRota
 
-    val localizacaoObserver = koinInject<LocalizacaoObserver>()
+    val localizacaoObserver = koinInject<ILocalizacaoUtils>()
 
     var showMenu by remember { mutableStateOf(false) }
 
@@ -106,7 +108,7 @@ fun Mapa(navController: NavController) {
 
                 mapaViewModel.buscarOcorrenciasRaio()
                 mapaViewModel.buscarRelatorioRaio()
-
+                mapaViewModel.atualizarMapaCalor()
             }
             if(localizacaoObserver.permissaoLocalizacao.value){
                 mapInstance.isMyLocationEnabled = true
@@ -117,6 +119,7 @@ fun Mapa(navController: NavController) {
             mapaViewModel.mapa = mapInstance
             mapaViewModel.buscarOcorrenciasRaio()
             mapaViewModel.buscarRelatorioRaio()
+            mapaViewModel.atualizarMapaCalor()
         }
     }
 

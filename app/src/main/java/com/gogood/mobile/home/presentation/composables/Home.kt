@@ -4,31 +4,22 @@ import android.Manifest
 import android.annotation.SuppressLint
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
-import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.SideEffect
-import androidx.compose.runtime.collectAsState
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.platform.LocalContext
-import androidx.lifecycle.LiveData
-import androidx.lifecycle.asLiveData
-import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavController
+import com.gogood.mobile.common.apresentation.composables.Erro
 import com.gogood.mobile.home.presentation.stateholders.MainStateHolder
 import com.gogood.mobile.home.presentation.viewmodels.MapaViewModel
-import com.gogood.mobile.utils.ConexaoInternetObserver
-import com.gogood.mobile.utils.LocalizacaoObserver
+import com.gogood.mobile.utils.ILocalizacaoUtils
 import org.koin.compose.koinInject
 import org.koin.compose.viewmodel.koinViewModel
 
 @SuppressLint("MissingPermission")
 @Composable
 fun Home(navController: NavController) {
-    val localizacaoObserver = koinInject<LocalizacaoObserver>()
+    val contexto = LocalContext.current
+    val localizacaoObserver = koinInject<ILocalizacaoUtils>()
 
     val mapaViewModel: MapaViewModel = koinViewModel()
 
@@ -42,36 +33,41 @@ fun Home(navController: NavController) {
     SideEffect {
         getPermission.launch(Manifest.permission.ACCESS_FINE_LOCATION)
     }
-    val conectado =mapaViewModel.conectado.collectAsState()
 
-    if(conectado.value){
-        mapaViewModel.uiState.value = MainStateHolder.Content()
-    }else{
-        mapaViewModel.uiState.value = (MainStateHolder.NoConnection)
-    }
+
 
     val uiState = mapaViewModel.uiState.value
 
 
-
-
     when(uiState){
-        is MainStateHolder.Loading->{
-            Loading()
-        }
-        is MainStateHolder.NoConnection->{
-            AvisoSemConexao()
-        }
-        is MainStateHolder.Content ->{
-            Mapa(navController= navController)
-        }
+            is MainStateHolder.Loading->{
+                Loading()
+            }
+            is MainStateHolder.NoConnection->{
+                AvisoSemConexao()
+            }
+            is MainStateHolder.Content ->{
+                Mapa(navController= navController)
+            }
 
-        is MainStateHolder.Error, null -> {
+            is MainStateHolder.Error, null -> {
+                var tituloErro = "Houve um erro."
+                var descricaoErro = "Tente novamente mais tarde."
+                if(uiState is MainStateHolder.Error){
+                    descricaoErro = uiState.message
+                    tituloErro = uiState.titulo
+                }
+                Erro(titulo = tituloErro, descricao = descricaoErro) {
+                    mapaViewModel.uiState.value = MainStateHolder.Content()
+                }
+            }
 
         }
     }
 
-}
+
+
+
 
 
 

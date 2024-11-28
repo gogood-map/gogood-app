@@ -10,34 +10,38 @@ import com.gogood.mobile.auth.data.repository.IUserRepository
 import com.gogood.mobile.auth.data.repository.remote.UserRepository
 import com.gogood.mobile.auth.domain.services.UserService
 import com.gogood.mobile.common.ApiClient
-import com.gogood.mobile.home.domain.services.MapsService
-import com.gogood.mobile.home.data.repository.remote.MapRepository
 import com.gogood.mobile.home.data.repository.IMapRepository
-import com.gogood.mobile.home.data.repository.local.MapRepositoryLocal
+import com.gogood.mobile.home.data.repository.remote.MapRepository
 import com.gogood.mobile.home.domain.services.GooglePlacesService
+import com.gogood.mobile.home.domain.services.MapsService
 import com.gogood.mobile.home.domain.usecases.IObterCoordenadasOcorrenciaRaioUseCase
+import com.gogood.mobile.home.domain.usecases.IObterRelatorioRaioUseCase
 import com.gogood.mobile.home.domain.usecases.ObterCoordenadasOcorrenciasRaioUseCase
+import com.gogood.mobile.home.domain.usecases.ObterRelatorioRaioUseCase
 import com.gogood.mobile.home.presentation.viewmodels.MapaViewModel
 import com.gogood.mobile.menu.apresentation.viewmodels.MenuViewModel
 import com.gogood.mobile.menu.data.repository.IEnderecoRepository
 import com.gogood.mobile.menu.data.repository.remote.EnderecoRepository
 import com.gogood.mobile.menu.domain.services.EnderecoService
-import com.gogood.mobile.utils.ConexaoInternetObserver
-import com.gogood.mobile.utils.LocalizacaoObserver
-import org.koin.android.ext.koin.androidContext
+import com.gogood.mobile.utils.ConexaoUtils
+import com.gogood.mobile.utils.IConexaoUtils
+import com.gogood.mobile.utils.ILocalizacaoUtils
+import com.gogood.mobile.utils.LocalizacaoUtils
+import org.koin.android.ext.koin.androidApplication
 import org.koin.core.module.dsl.viewModel
 import org.koin.dsl.module
 
 val appModule = module {
     single<DataStore<Preferences>> {
-        provideDataStore(androidContext())
+        provideDataStore(androidApplication())
     }
-    single<ConexaoInternetObserver>{
-        ConexaoInternetObserver(androidContext())
-    }
-    single<LocalizacaoObserver>
+
+    single<ILocalizacaoUtils>
     {
-        LocalizacaoObserver(androidContext())
+        LocalizacaoUtils(androidApplication())
+    }
+    single<IConexaoUtils>{
+        ConexaoUtils(androidApplication())
     }
 
     single<MapsService> {
@@ -58,8 +62,8 @@ val appModule = module {
         EnderecoRepository(get())
     }
     single<IMapRepository>{
-        //MapRepository(get(), get())
-        MapRepositoryLocal()
+        MapRepository(get(), get())
+        //MapRepositoryLocal()
     }
     single<IUserRepository>{
         UserRepository(get(), get())
@@ -68,10 +72,13 @@ val appModule = module {
     single <IObterCoordenadasOcorrenciaRaioUseCase>{
         ObterCoordenadasOcorrenciasRaioUseCase(get())
     }
+    single<IObterRelatorioRaioUseCase> {
+        ObterRelatorioRaioUseCase(get())
+    }
 
 
     viewModel {
-        MapaViewModel(get(), get(), get(), get())
+        MapaViewModel(get(), get(), get(), get(), get())
     }
     viewModel {
         MenuViewModel(get(), get())
