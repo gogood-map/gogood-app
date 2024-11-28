@@ -6,6 +6,7 @@ fun String.sentenceCase(): String {
     palavraSeparada.forEach { palavraSeparadaAtual ->
         palavraSentenceCase +=
             palavraSeparadaAtual[0].toString() + palavraSeparadaAtual.substring(1).lowercase()
+        palavraSentenceCase+=" "
 
     }
     return palavraSentenceCase
