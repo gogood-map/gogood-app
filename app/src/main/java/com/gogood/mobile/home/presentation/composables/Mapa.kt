@@ -164,6 +164,7 @@ fun Mapa(navController: NavController) {
                     mapaViewModel.limparRotas()
                     mapaViewModel.limparPolylinesRotas()
                     mapaViewModel.showBottomSheet = !mapaViewModel.showBottomSheet
+                    mapaViewModel.abaBandeja = 1
                 }
             }
 

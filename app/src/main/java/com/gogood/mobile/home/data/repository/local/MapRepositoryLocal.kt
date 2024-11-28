@@ -76,9 +76,10 @@ class MapRepositoryLocal(): IMapRepository {
         return Response.success(
             RelatorioOcorrenciasResponse(
                 listOf(
-                    CrimeQtd("Furto", 50),
-                    CrimeQtd("Roubo", 50),
-                    CrimeQtd("Agressão", 50)
+
+                    CrimeQtd("ROUBO", 50),
+                    CrimeQtd("FURTO", 150),
+                    CrimeQtd("AGRESSÃO", 20)
                 ),
                 qtdOcorrencias = 150,
                 qtdMes = QtdMes(

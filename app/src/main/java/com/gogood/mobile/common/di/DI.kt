@@ -11,6 +11,7 @@ import com.gogood.mobile.auth.data.repository.remote.UserRepository
 import com.gogood.mobile.auth.domain.services.UserService
 import com.gogood.mobile.common.ApiClient
 import com.gogood.mobile.home.data.repository.IMapRepository
+import com.gogood.mobile.home.data.repository.local.MapRepositoryLocal
 import com.gogood.mobile.home.data.repository.remote.MapRepository
 import com.gogood.mobile.home.domain.services.GooglePlacesService
 import com.gogood.mobile.home.domain.services.MapsService
@@ -62,8 +63,8 @@ val appModule = module {
         EnderecoRepository(get())
     }
     single<IMapRepository>{
-        MapRepository(get(), get())
-        //MapRepositoryLocal()
+        //MapRepository(get(), get())
+        MapRepositoryLocal()
     }
     single<IUserRepository>{
         UserRepository(get(), get())

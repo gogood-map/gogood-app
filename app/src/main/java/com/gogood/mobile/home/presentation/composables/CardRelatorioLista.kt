@@ -12,6 +12,7 @@ import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
@@ -31,25 +32,50 @@ fun CardRelatorioLista(modifier: Modifier = Modifier,
                        corFundo: Color= GogoodBorderWhite,
                        ) {
     val mapaViewModel = koinViewModel<MapaViewModel>()
-    val listaCrimesQtd = mapaViewModel.relatorioOcorrenciasResponse.value?.top5Ocorrencias
-    LazyColumn(
-        verticalArrangement = Arrangement.SpaceBetween,
-        modifier= modifier
-            .background(corFundo, RoundedCornerShape(16))
-            .height(108.dp)
-            .padding(16.dp)
-            .fillMaxWidth()
-    ) {
-        val cores = listOf(
-            GogoodOptionRed,
-            GogoodOrange,
-            GogoodOptionYellow
-        )
-        if(listaCrimesQtd != null){
-            itemsIndexed(listaCrimesQtd.drop(2).reversed()){i, it->
-                ItemListaCardRelatorio(crime=it ,cor = cores[i])
-            }
+    val relatorio = mapaViewModel.relatorioOcorrenciasResponse.value
+    if(relatorio != null){
+        var listaCrimes = relatorio.top5Ocorrencias
+
+        if(listaCrimes.size > 3){
+            listaCrimes.dropLast(listaCrimes.size-3)
+        }
+        listaCrimes = listaCrimes.sortedBy {
+            it.qtdOcorrido
         }
 
+        LazyColumn(
+            verticalArrangement = Arrangement.SpaceBetween,
+            modifier= modifier
+                .background(corFundo, RoundedCornerShape(16))
+                .height(108.dp)
+                .padding(16.dp)
+                .fillMaxWidth()
+        ) {
+            val cores = listOf(
+                GogoodOptionRed,
+                GogoodOrange,
+                GogoodOptionYellow
+            )
+
+            itemsIndexed(listaCrimes){i, item ->
+                ItemListaCardRelatorio(cor = cores[i], crime = item)
+            }
+        }
+    }else{
+        Column (
+            verticalArrangement = Arrangement.Center,
+            horizontalAlignment = Alignment.CenterHorizontally,
+            modifier= modifier
+                .background(corFundo, RoundedCornerShape(16))
+                .height(108.dp)
+                .padding(16.dp)
+                .fillMaxWidth()
+        ){
+            Text(text = "Sem informações para essa área nesse momento. Tente novamente mais tarde.",
+                fontWeight = FontWeight.SemiBold)
+        }
     }
+    
+
+    
 }
