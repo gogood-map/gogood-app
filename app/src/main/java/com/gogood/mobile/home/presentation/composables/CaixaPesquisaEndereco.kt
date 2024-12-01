@@ -6,6 +6,7 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
@@ -25,9 +26,11 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.focus.onFocusChanged
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.unit.dp
+import com.gogood.mobile.ui.theme.GogoodBorderWhite
 import com.gogood.mobile.ui.theme.GogoodGray
 import com.gogood.mobile.ui.theme.GogoodOptionRed
 
@@ -38,8 +41,13 @@ fun CaixaPesquisaEndereco(
     onDone: () -> Unit,
 ) {
     var corBorda by remember{
-        mutableStateOf(GogoodGray)
+        mutableStateOf(GogoodBorderWhite)
     }
+    var caixaAtiva by remember {
+        mutableStateOf(false)
+
+    }
+    Column {
         Row (
             verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.spacedBy(8.dp),
@@ -47,7 +55,7 @@ fun CaixaPesquisaEndereco(
                 .height(45.dp)
                 .fillMaxWidth()
                 .background(Color.White, RoundedCornerShape(32.dp))
-                .border(.50.dp, corBorda, RoundedCornerShape(32.dp))
+                .border(1.dp, corBorda, RoundedCornerShape(32.dp))
         ){
             BasicTextField(
                 value = searchState.value,
@@ -59,7 +67,11 @@ fun CaixaPesquisaEndereco(
                     .height(45.dp)
                     .border(.50.dp, Color.Transparent, RoundedCornerShape(32.dp))
                     .background(Color.White, RoundedCornerShape(32.dp))
-                    .padding(start = 15.dp, top = 15.dp),
+                    .padding(start = 15.dp, top = 15.dp)
+                    .onFocusChanged { estadoFoco ->
+                        caixaAtiva = estadoFoco.isFocused
+
+                    },
                 singleLine = true,
                 keyboardOptions = KeyboardOptions.Default.copy(imeAction = ImeAction.Done),
                 keyboardActions = KeyboardActions(
@@ -85,6 +97,15 @@ fun CaixaPesquisaEndereco(
                 },
                 imageVector = Icons.Default.Search, contentDescription = "Pesquisar endereço")
         }
+        if(caixaAtiva){
+            Spacer(modifier = Modifier.height(8.dp))
+            BuscasRecentes(tipo = TipoBuscaRecente.ENDERECO){
+                searchState.value = it
+            }
+        }
+
+    }
+
 
 
 

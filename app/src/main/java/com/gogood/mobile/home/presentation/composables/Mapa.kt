@@ -20,6 +20,7 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.AltRoute
 import androidx.compose.material.icons.filled.CrisisAlert
+import androidx.compose.material.icons.filled.MyLocation
 import androidx.compose.material.icons.sharp.Directions
 import androidx.compose.material.icons.sharp.LocationOn
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -39,6 +40,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.viewinterop.AndroidView
 import androidx.navigation.NavController
@@ -59,7 +61,7 @@ import org.koin.compose.viewmodel.koinViewModel
 @Composable
 fun Mapa(navController: NavController) {
     val context = LocalContext.current
-
+    val focusManager = LocalFocusManager.current
     val mapaViewModel: MapaViewModel = koinViewModel()
 
 
@@ -101,8 +103,9 @@ fun Mapa(navController: NavController) {
                 CameraUpdateFactory.newCameraPosition(
                 mapaViewModel.posicaoCameraBusca
             ))
-
-
+            mapInstance.setOnMapClickListener {
+                focusManager.clearFocus()
+            }
             mapInstance.setOnCameraIdleListener {
                 mapaViewModel.atualizarPosicaoCamera(mapInstance.cameraPosition)
 
@@ -110,6 +113,9 @@ fun Mapa(navController: NavController) {
                 mapaViewModel.buscarRelatorioRaio()
                 mapaViewModel.atualizarMapaCalor()
             }
+
+            mapInstance.uiSettings.isMyLocationButtonEnabled = false
+
             if(localizacaoObserver.permissaoLocalizacao.value){
                 mapInstance.isMyLocationEnabled = true
             }
@@ -147,7 +153,7 @@ fun Mapa(navController: NavController) {
             ) {
                 CaixaPesquisaEndereco(searchState = buscaEnderecoState) {
                     mapaViewModel.buscarEndereco(buscaEnderecoState.value)
-                    buscaEnderecoState.value = ""
+
 
                 }
             }
@@ -182,6 +188,23 @@ fun Mapa(navController: NavController) {
                 horizontalAlignment = Alignment.CenterHorizontally,
 
                 ){
+                SmallFloatingActionButton(
+                    onClick = {
+                        mapaViewModel.localizarUsuario()
+                    },
+                    containerColor = GogoodGreen,
+                    contentColor = GogoodWhite,
+                    shape = CircleShape,
+                    modifier = Modifier
+
+                        .size(48.dp)
+
+                ) {
+                    Icon(
+                        Icons.Default.MyLocation, "Botão de me localizar",
+                    )
+                }
+                Spacer(modifier = Modifier.height(16.dp))
                 if(rotas.isNotEmpty()){
                     SmallFloatingActionButton(
                         onClick = {
@@ -197,6 +220,7 @@ fun Mapa(navController: NavController) {
                     }
                     Spacer(modifier = Modifier.height(16.dp))
                 }
+
                 FloatingActionButton(
                     onClick = {
                         mapaViewModel.showBottomSheet = true
@@ -216,6 +240,8 @@ fun Mapa(navController: NavController) {
                     )
                 }
             }
+
+
 
             FloatingActionButton(
                 onClick = {
