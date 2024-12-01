@@ -12,6 +12,7 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Schedule
@@ -42,37 +43,43 @@ fun BuscasRecentes(modifier: Modifier = Modifier, tipo:TipoBuscaRecente, onClick
     if(tipo == TipoBuscaRecente.ENDERECO){
         mapaViewModel.obterEnderecosPesquisadosRecentes()
         val lista = mapaViewModel.enderecosRecentesPesquisados.collectAsState()
-        LazyColumn(modifier = modifier
-            .fillMaxWidth()
-            .height(160.dp)
+        if(lista.value.isNotEmpty()){
+            LazyColumn(modifier = modifier
+                .fillMaxWidth()
+                .height(152.dp)
 
-            .border(.75.dp, GogoodBorderWhite, RoundedCornerShape(28.dp))
-            .background(Color.White, RoundedCornerShape(28.dp))
-        )
-        {
-            items(lista.value){
-                Column (
-                    modifier= Modifier.padding(start = 16.dp, end = 16.dp).clickable {
-                        onClick(it)
-                    },
-                ){
-                    Spacer(modifier = Modifier.height(16.dp))
-                    Row (
-                        horizontalArrangement = Arrangement.spacedBy(8.dp),
-                        verticalAlignment = Alignment.CenterVertically,
+                .border(.75.dp, GogoodBorderWhite, RoundedCornerShape(28.dp))
+                .background(Color.White, RoundedCornerShape(28.dp))
+            )
+            {
+                itemsIndexed(lista.value){i, it->
+                    Column (
+                        modifier= Modifier.padding(start = 16.dp, end = 16.dp).clickable {
+                            onClick(it)
+                        },
                     ){
-                        Icon(imageVector = Icons.Default.Schedule, contentDescription = "Recente")
-                        Text(text = it)
+                        Spacer(modifier = Modifier.height(16.dp))
+                        Row (
+                            horizontalArrangement = Arrangement.spacedBy(8.dp),
+                            verticalAlignment = Alignment.CenterVertically,
+                        ){
+                            Icon(imageVector = Icons.Default.Schedule, contentDescription = "Recente")
+                            Text(text = it)
+
+                        }
+                        Spacer(modifier = Modifier.height(4.dp))
+                        if(i<lista.value.size-1){
+                            HorizontalDivider(thickness = 2.dp)
+                        }
 
                     }
-                    Spacer(modifier = Modifier.height(4.dp))
-                    HorizontalDivider(thickness = 2.dp)
+
+
+
                 }
-
-
-
             }
         }
+
     }
 }
 
