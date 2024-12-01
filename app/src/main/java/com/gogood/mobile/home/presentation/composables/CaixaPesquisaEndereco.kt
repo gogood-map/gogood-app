@@ -89,7 +89,7 @@ fun CaixaPesquisaEndereco(
             Icon(
                 modifier = Modifier.clickable {
                     if(searchState.value.isNotEmpty()){
-                        corBorda = GogoodGray
+                        corBorda = GogoodBorderWhite
                         onDone()
                     }else{
                         corBorda = GogoodOptionRed
