@@ -1,22 +1,48 @@
 package com.gogood.mobile.home.data.repository.local
 
+import androidx.datastore.core.DataStore
+import androidx.datastore.preferences.core.Preferences
+import androidx.datastore.preferences.core.edit
+import androidx.datastore.preferences.core.stringPreferencesKey
 import com.gogood.mobile.home.data.repository.IMapRepository
 import com.gogood.mobile.home.domain.models.BuscaEnderecoResponse
+import com.gogood.mobile.home.domain.models.Candidate
+import com.gogood.mobile.home.domain.models.Coordinates
 import com.gogood.mobile.home.domain.models.CrimeQtd
 import com.gogood.mobile.home.domain.models.Etapa
+import com.gogood.mobile.home.domain.models.Geometry
 import com.gogood.mobile.home.domain.models.LatLngOcorrencia
+import com.gogood.mobile.home.domain.models.Location
 import com.gogood.mobile.home.domain.models.QtdMes
 import com.gogood.mobile.home.domain.models.RelatorioOcorrenciasResponse
 import com.gogood.mobile.home.domain.models.RotaResponse
+import com.gogood.mobile.home.domain.models.Viewport
 import com.google.android.gms.maps.model.LatLng
 import com.google.maps.android.ktx.model.markerOptions
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.map
 import retrofit2.Response
 
-class MapRepositoryLocal(): IMapRepository {
-
+class MapRepositoryLocal(private val dataStore: DataStore<Preferences>): IMapRepository {
+    val enderecoPreferencesKey = stringPreferencesKey("endereco")
 
     override suspend fun buscarEndereco(entrada: String): Response<BuscaEnderecoResponse> {
-        TODO()
+        return Response.success(
+            BuscaEnderecoResponse(
+            candidates = listOf(
+                Candidate(
+                    geometry = Geometry(
+                        location = Location(lat = -23.5581213, lng = -46.661614),
+                        viewport = Viewport(
+                            northeast = Coordinates(lat = -23.55670402010727, lng = -46.66034207010728),
+                            southwest = Coordinates(lat = -23.55940367989271, lng = -46.66304172989272)
+                        )
+                    )
+                )
+            ),
+            status = "OK"
+        )
+        )
     }
 
     override suspend fun buscarRota(
@@ -94,6 +120,30 @@ class MapRepositoryLocal(): IMapRepository {
                 )
             )
         )
+    }
+
+    override suspend fun salvarEnderecoPesquisado(endereco: String){
+        dataStore.edit { preferences ->
+            val listaEnderecosPesquisados = preferences[enderecoPreferencesKey]
+                ?.split(";")
+                ?.toMutableList() ?: mutableListOf("")
+
+            if(listaEnderecosPesquisados.size > 10){
+                listaEnderecosPesquisados.removeFirst()
+            }
+            if(!listaEnderecosPesquisados.contains(endereco)){
+                listaEnderecosPesquisados.add(endereco.replace(";", ""))
+            }
+
+            preferences[enderecoPreferencesKey] = listaEnderecosPesquisados.joinToString(";")
+
+        }
+    }
+
+    override suspend fun obterEnderecosPesquisados(): Flow<List<String>>{
+        return dataStore.data.map { preferences ->
+            preferences[enderecoPreferencesKey]?.split(";")?.reversed() ?: emptyList()
+        }
     }
 
 

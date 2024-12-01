@@ -22,6 +22,7 @@ import com.gogood.mobile.ui.theme.GogoodOrange
 import com.gogood.mobile.ui.theme.GogoodPolylines
 import com.gogood.mobile.utils.IConexaoUtils
 import com.gogood.mobile.utils.ILocalizacaoUtils
+import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.GoogleMap
 import com.google.android.gms.maps.model.CameraPosition
 import com.google.android.gms.maps.model.LatLng
@@ -108,7 +109,7 @@ class MapaViewModel (private val mapRepository: IMapRepository,
     )
     private set
 
-
+    val enderecosRecentesPesquisados = MutableStateFlow<List<String>>(emptyList())
 
     @SuppressLint("MissingPermission")
     fun observarUsuario(){
@@ -187,14 +188,26 @@ class MapaViewModel (private val mapRepository: IMapRepository,
             .zoom(zoom)
             .build()
     }
+
     fun atualizarPosicaoCamera(novaPosicao: CameraPosition){
         posicaoCameraBusca = novaPosicao
+
     }
+    fun localizarUsuario(){
+        posicaoCameraBusca = CameraPosition.builder()
+            .target(_localizacao.value)
+            .zoom(16f)
+            .build()
+        mapa?.moveCamera(CameraUpdateFactory.newCameraPosition(
+            posicaoCameraBusca
+        ))
+    }
+
 
    fun buscarEndereco(entrada: String){
         viewModelScope.launch {
             val requisicao = mapRepository.buscarEndereco(entrada)
-
+            mapRepository.salvarEnderecoPesquisado(entrada)
             if(requisicao.isSuccessful && requisicao.body() != null){
                 markerBusca?.remove()
 
@@ -213,11 +226,19 @@ class MapaViewModel (private val mapRepository: IMapRepository,
                 markerBusca?.isVisible = true
                 markerBusca?.position = latLng
 
+
                 atualizarPosicaoCamera(latLng)
             }
         }
    }
+    fun obterEnderecosPesquisadosRecentes(){
+        viewModelScope.launch {
+            mapRepository.obterEnderecosPesquisados().collect{
+                enderecosRecentesPesquisados.value = it
+            }
+        }
 
+    }
     fun atualizarMapaCalor() {
 
         mapaCalorCamada?.remove()
