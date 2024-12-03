@@ -5,8 +5,6 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateListOf
-import androidx.compose.runtime.remember
 import androidx.compose.ui.unit.dp
 import com.gogood.mobile.home.presentation.viewmodels.MapaViewModel
 import com.gogood.mobile.ui.theme.GogoodPolylines
@@ -30,7 +28,7 @@ fun ListaOpcoesRotas() {
                 duracao = rota.duracao
             )
             BotaoOpcaoRota(opcao = opcaoRota, GogoodPolylines[i], textos[i]) {
-                mapaViewModel.definirRotaEscolhida(rota, GogoodPolylines[i])
+                mapaViewModel.iniciarRota(rota, GogoodPolylines[i])
             }
         }
     }

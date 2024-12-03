@@ -126,7 +126,7 @@ class MapRepositoryLocal(private val dataStore: DataStore<Preferences>): IMapRep
         dataStore.edit { preferences ->
             val listaEnderecosPesquisados = preferences[enderecoPreferencesKey]
                 ?.split(";")
-                ?.toMutableList() ?: mutableListOf("")
+                ?.toMutableList() ?: mutableListOf()
 
             if(listaEnderecosPesquisados.size > 10){
                 listaEnderecosPesquisados.removeFirst()

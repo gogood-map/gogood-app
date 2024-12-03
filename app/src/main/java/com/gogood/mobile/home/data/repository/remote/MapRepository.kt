@@ -52,8 +52,12 @@ class MapRepository(private val service: MapsService,
         dataStore.edit { preferences ->
             val listaEnderecosPesquisados = preferences[enderecoPreferencesKey]
                 ?.split(";")
-                ?.toMutableList() ?: mutableListOf("")
-            if(listaEnderecosPesquisados.contains(endereco)){
+                ?.toMutableList() ?: mutableListOf()
+
+            if(listaEnderecosPesquisados.size > 10){
+                listaEnderecosPesquisados.removeFirst()
+            }
+            if(!listaEnderecosPesquisados.contains(endereco)){
                 listaEnderecosPesquisados.add(endereco.replace(";", ""))
             }
 
@@ -64,7 +68,7 @@ class MapRepository(private val service: MapsService,
 
     override suspend fun obterEnderecosPesquisados(): Flow<List<String>>{
         return dataStore.data.map { preferences ->
-            preferences[enderecoPreferencesKey]?.split(";") ?: emptyList()
+            preferences[enderecoPreferencesKey]?.split(";")?.reversed() ?: emptyList()
         }
     }
 
