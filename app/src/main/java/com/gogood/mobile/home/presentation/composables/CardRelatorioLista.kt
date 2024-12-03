@@ -41,7 +41,7 @@ fun CardRelatorioLista(modifier: Modifier = Modifier,
         if(listaCrimes.size > 3){
             listaCrimes=  listaCrimes.dropLast(listaCrimes.size-3)
         }
-        listaCrimes = listaCrimes.sortedBy {
+        listaCrimes = listaCrimes.sortedByDescending {
             it.qtdOcorrido
         }
 

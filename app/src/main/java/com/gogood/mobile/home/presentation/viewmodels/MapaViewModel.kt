@@ -15,6 +15,7 @@ import androidx.lifecycle.viewModelScope
 import com.gogood.mobile.home.data.repository.IMapRepository
 import com.gogood.mobile.home.domain.models.RelatorioOcorrenciasResponse
 import com.gogood.mobile.home.domain.models.RotaResponse
+import com.gogood.mobile.home.domain.usecases.IBuscaEnderecoUseCase
 import com.gogood.mobile.home.domain.usecases.IObterCoordenadasOcorrenciaRaioUseCase
 import com.gogood.mobile.home.domain.usecases.IObterRelatorioRaioUseCase
 import com.gogood.mobile.home.presentation.stateholders.MainStateHolder
@@ -35,6 +36,7 @@ import com.google.android.gms.maps.model.TileOverlayOptions
 import com.google.maps.android.PolyUtil
 import com.google.maps.android.heatmaps.Gradient
 import com.google.maps.android.heatmaps.HeatmapTileProvider
+import com.google.maps.android.ktx.awaitAnimateCamera
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.launchIn
@@ -42,10 +44,11 @@ import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
 
 class MapaViewModel (private val mapRepository: IMapRepository,
-                     private val localizacaoUtils: ILocalizacaoUtils,
+                     val localizacaoUtils: ILocalizacaoUtils,
                      private val conexaoUtils: IConexaoUtils,
                      private val obterCoordenadasOcorrenciasRaioUseCase: IObterCoordenadasOcorrenciaRaioUseCase,
-                     private val obterRelatorioRaioUseCase: IObterRelatorioRaioUseCase
+                     private val obterRelatorioRaioUseCase: IObterRelatorioRaioUseCase,
+                     private val buscaEnderecoUseCase: IBuscaEnderecoUseCase
 ) : ViewModel() {
 
 
@@ -53,6 +56,46 @@ class MapaViewModel (private val mapRepository: IMapRepository,
         MutableLiveData(MainStateHolder.Loading)
     }
     val uiState: MutableState<MainStateHolder> = mutableStateOf(MainStateHolder.Loading)
+
+
+    private val _rotas = MutableStateFlow<List<RotaResponse>>(emptyList())
+    val rotas: StateFlow<List<RotaResponse>> = _rotas
+
+
+    var isSearchAddress by mutableStateOf(true)
+    var isSearchRoute by mutableStateOf(false)
+    var mapa: GoogleMap? by mutableStateOf(null)
+    var entradaBuscaEndereco = mutableStateOf("")
+    var entradaOrigemRota = mutableStateOf("")
+    var entradaDestinoRota = mutableStateOf("")
+    var meioRota = mutableStateOf("")
+    var showBottomSheet by  mutableStateOf(false)
+    var abaBandeja by mutableIntStateOf(0)
+    var relatorioOcorrenciasResponse = MutableLiveData<RelatorioOcorrenciasResponse>()
+    val enderecosRecentesPesquisados = MutableStateFlow<List<String>>(emptyList())
+
+
+    private var markerBusca by mutableStateOf<Marker?>(null)
+    private var polylines = mutableStateListOf<Polyline>()
+    private var localizacao = MutableStateFlow(LatLng(-23.550395929666593, -46.63396345499372))
+    private var mapaCalorCamada: TileOverlay? by mutableStateOf(null)
+    private var localizouUsuario by mutableStateOf(false)
+    private var rotaEscolhida = MutableLiveData<RotaResponse>()
+    private var coordenadasTrajetoRota = MutableLiveData<List<LatLng>>()
+
+
+    var posicaoCameraMapa by mutableStateOf(
+        CameraPosition.
+            builder()
+                .target(localizacao.value)
+                .zoom(16f)
+                .build()
+    )
+    var ultimaPosicaoBuscaMapa = mutableStateOf(LatLng(
+        posicaoCameraMapa.target.latitude, posicaoCameraMapa.target.longitude
+    ))
+
+
     init {
         viewModelScope.launch() {
             conexaoUtils.observarConexao.collect{
@@ -67,57 +110,15 @@ class MapaViewModel (private val mapRepository: IMapRepository,
 
     }
 
-    private val _rotas = MutableStateFlow<List<RotaResponse>>(emptyList())
-    val rotas: StateFlow<List<RotaResponse>> = _rotas
-
-    var rotaEscolhida = MutableLiveData<RotaResponse>()
-    var coordenadasTrajetoRota = MutableLiveData<List<LatLng>>()
-
-
-    var isSearchAddress by mutableStateOf(true)
-    var isSearchRoute by mutableStateOf(false)
-    private var localizouUsuario by mutableStateOf(false)
-
-
-    var mapa: GoogleMap? by mutableStateOf(null)
-    var mapaCalorCamada: TileOverlay? by mutableStateOf(null)
-
-    var entradaBuscaEndereco = mutableStateOf("")
-    var entradaOrigemRota = mutableStateOf("")
-    var entradaDestinoRota = mutableStateOf("")
-    var meioRota = mutableStateOf("")
-
-    var markerBusca by mutableStateOf<Marker?>(null)
-    var polylines = mutableStateListOf<Polyline>()
-
-    var showBottomSheet by  mutableStateOf(false)
-
-    private var _localizacao = MutableStateFlow(LatLng(-23.550395929666593, -46.63396345499372))
-    val localizacao: StateFlow<LatLng> = _localizacao
-
-
-    var abaBandeja by mutableIntStateOf(0)
-
-    var relatorioOcorrenciasResponse = MutableLiveData<RelatorioOcorrenciasResponse>()
-
-    var posicaoCameraBusca by mutableStateOf(
-        CameraPosition.
-            builder()
-                .target(_localizacao.value)
-                .zoom(16f)
-                .build()
-    )
-    private set
-
-    val enderecosRecentesPesquisados = MutableStateFlow<List<String>>(emptyList())
-
     @SuppressLint("MissingPermission")
     fun observarUsuario(){
         if(localizacaoUtils.permissaoLocalizacao.value){
             localizacaoUtils.observerLocalizacao().onEach { novaLocalizacao->
-                _localizacao.value = novaLocalizacao
+                localizacao.value = novaLocalizacao
                 if(!localizouUsuario){
                     atualizarPosicaoCamera(localizacao.value)
+                    buscarOcorrenciasRaio()
+                    buscarRelatorioRaio()
                     localizouUsuario = true
                 }
             }.launchIn(viewModelScope)
@@ -133,8 +134,8 @@ class MapaViewModel (private val mapRepository: IMapRepository,
 
     fun buscarOcorrenciasRaio(){
 
-        val lat = posicaoCameraBusca.target.latitude
-        val lng = posicaoCameraBusca.target.longitude
+        val lat = posicaoCameraMapa.target.latitude
+        val lng = posicaoCameraMapa.target.longitude
         val raio = definirRaioBusca()
 
         viewModelScope.launch {
@@ -142,7 +143,7 @@ class MapaViewModel (private val mapRepository: IMapRepository,
 
             resposta.onSuccess {
                 atualizarUiState(MainStateHolder.Content(resposta.getOrNull()!!))
-
+                atualizarMapaCalor()
 
             }
 
@@ -157,8 +158,8 @@ class MapaViewModel (private val mapRepository: IMapRepository,
 
     fun buscarRelatorioRaio(){
 
-        val lat = posicaoCameraBusca.target.latitude
-        val lng = posicaoCameraBusca.target.longitude
+        val lat = posicaoCameraMapa.target.latitude
+        val lng = posicaoCameraMapa.target.longitude
 
         val latLng = LatLng(lat, lng)
         val raio = definirRaioBusca()
@@ -173,72 +174,74 @@ class MapaViewModel (private val mapRepository: IMapRepository,
 
         }
     }
-    fun atualizarPosicaoCamera(latLng: LatLng, angulo: Float, zoom: Float = 18f){
-        posicaoCameraBusca =CameraPosition.builder()
+
+    //region Camera Mapa
+    fun atualizarPosicaoCamera(latLng: LatLng, angulo: Float=0f, zoom: Float = 18f){
+        posicaoCameraMapa =CameraPosition.builder()
             .target(latLng)
             .tilt(
                angulo
             )
             .zoom(zoom)
             .build()
+        viewModelScope.launch {
+            mapa?.awaitAnimateCamera(CameraUpdateFactory.newCameraPosition(posicaoCameraMapa),
+                durationMs = 2000)
+        }
+
+        //mapa?.moveCamera(CameraUpdateFactory.newCameraPosition(posicaoCameraMapa))
     }
-    fun atualizarPosicaoCamera(latLng: LatLng, zoom: Float = 18f){
-        posicaoCameraBusca =CameraPosition.builder()
-            .target(latLng)
-            .zoom(zoom)
-            .build()
-    }
+
 
     fun atualizarPosicaoCamera(novaPosicao: CameraPosition){
-        posicaoCameraBusca = novaPosicao
-
+        posicaoCameraMapa = novaPosicao
+        mapa?.moveCamera(CameraUpdateFactory.newCameraPosition(posicaoCameraMapa))
     }
-    fun localizarUsuario(){
-        posicaoCameraBusca = CameraPosition.builder()
-            .target(_localizacao.value)
+
+    fun atualizarPosicaoCameraLocalizacaoUsuario(){
+        posicaoCameraMapa = CameraPosition.builder()
+            .target(localizacao.value)
             .zoom(16f)
             .build()
         mapa?.moveCamera(CameraUpdateFactory.newCameraPosition(
-            posicaoCameraBusca
+            posicaoCameraMapa
         ))
     }
-
+    // endregion
 
    fun buscarEndereco(entrada: String){
         viewModelScope.launch {
-            val requisicao = mapRepository.buscarEndereco(entrada)
+            val resultado = buscaEnderecoUseCase(entrada)
             mapRepository.salvarEnderecoPesquisado(entrada)
-            if(requisicao.isSuccessful && requisicao.body() != null){
+
+            resultado.onSuccess {
+                val enderecoCandidato = it.candidates[0]
+                val latLng = LatLng(
+                    enderecoCandidato.geometry.location.lat,
+                    enderecoCandidato.geometry.location.lng
+                )
                 markerBusca?.remove()
 
                 markerBusca = mapa?.addMarker(
                     MarkerOptions()
-                    .visible(false)
-                    .title("Busca")
-                    .position(LatLng(-23.557984712431196, -46.661776750487476))
+                        .visible(false)
+                        .title("Busca")
+                        .position(LatLng(-23.557984712431196, -46.661776750487476))
                 )
 
-                val lat = requisicao.body()!!.candidates[0].geometry.location.lat
-                val lng = requisicao.body()!!.candidates[0].geometry.location.lng
-                val latLng = LatLng(lat, lng)
-
-                markerBusca?.title = "Busca"
+                markerBusca?.title = entrada
                 markerBusca?.isVisible = true
                 markerBusca?.position = latLng
 
-
                 atualizarPosicaoCamera(latLng)
             }
+            resultado.onFailure {
+                atualizarUiState(MainStateHolder.Error("Busca endereço", it.message!!))
+            }
+
         }
    }
-    fun obterEnderecosPesquisadosRecentes(){
-        viewModelScope.launch {
-            mapRepository.obterEnderecosPesquisados().collect{
-                enderecosRecentesPesquisados.value = it
-            }
-        }
 
-    }
     fun atualizarMapaCalor() {
 
         mapaCalorCamada?.remove()
@@ -263,14 +266,9 @@ class MapaViewModel (private val mapRepository: IMapRepository,
         }
 
     }
-    fun limparRotas(){
-        _rotas.value = emptyList()
-    }
-    fun limparPolylinesRotas(){
-        polylines.forEach {
-            it.remove()
-        }
-    }
+
+
+    // region rotas
     fun buscarRotas(){
         viewModelScope.launch {
             val requisicao = mapRepository.buscarRota(meioRota.value,
@@ -283,7 +281,17 @@ class MapaViewModel (private val mapRepository: IMapRepository,
 
         }
     }
-    fun definirRotaEscolhida(rota: RotaResponse, corPolyline: Color){
+
+    fun limparRotas(){
+        _rotas.value = emptyList()
+    }
+    fun limparPolylinesRotas(){
+        polylines.forEach {
+            it.remove()
+        }
+    }
+
+    fun iniciarRota(rota: RotaResponse, corPolyline: Color){
         showBottomSheet = false
         limparPolylinesRotas()
         rotaEscolhida.value = rota
@@ -319,11 +327,13 @@ class MapaViewModel (private val mapRepository: IMapRepository,
 
         }
     }
+    //endregion
 
-    private fun definirRaioBusca(): Double {
 
-        val zoom = posicaoCameraBusca.zoom
-        var radius = 5.0
+    fun definirRaioBusca(): Double {
+
+        val zoom = posicaoCameraMapa.zoom
+        var radius = 3.0
         if (zoom <= 13) {
             return radius
         } else if (zoom <= 15) {
@@ -336,6 +346,13 @@ class MapaViewModel (private val mapRepository: IMapRepository,
         return radius
     }
 
+    fun obterEnderecosPesquisadosRecentes(){
+        viewModelScope.launch {
+            mapRepository.obterEnderecosPesquisados().collect{
+                enderecosRecentesPesquisados.value = it
+            }
+        }
 
+    }
 
 }

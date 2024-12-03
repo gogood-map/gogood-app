@@ -60,6 +60,7 @@ fun BuscasRecentes(modifier: Modifier = Modifier, tipo:TipoBuscaRecente, onClick
                     ){
                         Spacer(modifier = Modifier.height(16.dp))
                         Row (
+                            modifier = Modifier.fillMaxWidth(),
                             horizontalArrangement = Arrangement.spacedBy(8.dp),
                             verticalAlignment = Alignment.CenterVertically,
                         ){
@@ -70,7 +71,10 @@ fun BuscasRecentes(modifier: Modifier = Modifier, tipo:TipoBuscaRecente, onClick
                         Spacer(modifier = Modifier.height(4.dp))
                         if(i<lista.value.size-1){
                             HorizontalDivider(thickness = 2.dp)
+                        }else{
+                            Spacer(modifier = Modifier.height(8.dp))
                         }
+
 
                     }
 

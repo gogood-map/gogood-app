@@ -7,4 +7,5 @@ import kotlinx.coroutines.flow.MutableStateFlow
 interface ILocalizacaoUtils {
     fun observerLocalizacao(): Flow<LatLng>
     var permissaoLocalizacao: MutableStateFlow<Boolean>
+    fun calcularDistancia(latLng1: LatLng, latLng2: LatLng): Double
 }
