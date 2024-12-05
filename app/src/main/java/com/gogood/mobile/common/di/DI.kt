@@ -19,6 +19,8 @@ import com.gogood.mobile.home.data.repository.local.MapRepositoryLocal
 import com.gogood.mobile.home.data.repository.remote.MapRepository
 import com.gogood.mobile.home.domain.services.GooglePlacesService
 import com.gogood.mobile.home.domain.services.MapsService
+import com.gogood.mobile.home.domain.usecases.BuscaEnderecoUseCase
+import com.gogood.mobile.home.domain.usecases.IBuscaEnderecoUseCase
 import com.gogood.mobile.home.domain.usecases.IObterCoordenadasOcorrenciaRaioUseCase
 import com.gogood.mobile.home.domain.usecases.IObterRelatorioRaioUseCase
 import com.gogood.mobile.home.domain.usecases.ObterCoordenadasOcorrenciasRaioUseCase
@@ -72,8 +74,8 @@ val appModule = module {
         EnderecoRepository(get())
     }
     single<IMapRepository>{
-        //MapRepository(get(), get())
-        MapRepositoryLocal()
+        //MapRepository(get(), get(), get())
+        MapRepositoryLocal(get())
     }
     single<IUserRepository>{
         UserRepository(get(), get())
@@ -86,9 +88,13 @@ val appModule = module {
         ObterRelatorioRaioUseCase(get())
     }
 
+    single<IBuscaEnderecoUseCase>{
+        BuscaEnderecoUseCase(get())
+    }
+
 
     viewModel {
-        MapaViewModel(get(), get(), get(), get(), get())
+        MapaViewModel(get(), get(), get(), get(), get(), get())
     }
     viewModel {
         MenuViewModel(get(), get())

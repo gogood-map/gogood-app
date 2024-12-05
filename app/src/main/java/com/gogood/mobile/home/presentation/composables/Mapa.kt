@@ -20,6 +20,7 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.AltRoute
 import androidx.compose.material.icons.filled.CrisisAlert
+import androidx.compose.material.icons.filled.MyLocation
 import androidx.compose.material.icons.sharp.Directions
 import androidx.compose.material.icons.sharp.LocationOn
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -30,7 +31,6 @@ import androidx.compose.material3.SmallFloatingActionButton
 import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -39,6 +39,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.viewinterop.AndroidView
 import androidx.navigation.NavController
@@ -47,11 +48,11 @@ import com.gogood.mobile.menu.apresentation.composables.Menu
 import com.gogood.mobile.ui.theme.GogoodGray
 import com.gogood.mobile.ui.theme.GogoodGreen
 import com.gogood.mobile.ui.theme.GogoodWhite
-import com.gogood.mobile.utils.ILocalizacaoUtils
 import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.MapView
 import com.google.android.gms.maps.MapsInitializer
-import org.koin.compose.koinInject
+import com.google.android.gms.maps.model.CameraPosition
+import com.google.android.gms.maps.model.LatLng
 import org.koin.compose.viewmodel.koinViewModel
 
 @SuppressLint("MissingPermission")
@@ -59,7 +60,7 @@ import org.koin.compose.viewmodel.koinViewModel
 @Composable
 fun Mapa(navController: NavController) {
     val context = LocalContext.current
-
+    val focusManager = LocalFocusManager.current
     val mapaViewModel: MapaViewModel = koinViewModel()
 
 
@@ -67,7 +68,6 @@ fun Mapa(navController: NavController) {
     val origemState = mapaViewModel.entradaOrigemRota
     val destinoState = mapaViewModel.entradaDestinoRota
 
-    val localizacaoObserver = koinInject<ILocalizacaoUtils>()
 
     var showMenu by remember { mutableStateOf(false) }
 
@@ -87,39 +87,59 @@ fun Mapa(navController: NavController) {
             mapView.onDestroy()
         }
     }
-    LaunchedEffect(localizacaoObserver.permissaoLocalizacao.collectAsState()) {
-        mapaViewModel.observarUsuario()
-    }
-
 
     AndroidView(
         factory = { mapView },
         modifier = Modifier.fillMaxSize(),
     ) { map ->
         map.getMapAsync { mapInstance ->
-            mapInstance.moveCamera(
-                CameraUpdateFactory.newCameraPosition(
-                mapaViewModel.posicaoCameraBusca
-            ))
 
 
+            mapInstance.setOnMapClickListener {
+                focusManager.clearFocus()
+            }
             mapInstance.setOnCameraIdleListener {
-                mapaViewModel.atualizarPosicaoCamera(mapInstance.cameraPosition)
 
-                mapaViewModel.buscarOcorrenciasRaio()
-                mapaViewModel.buscarRelatorioRaio()
-                mapaViewModel.atualizarMapaCalor()
+                mapaViewModel.atualizarPosicaoCamera(mapInstance.cameraPosition)
+                val posicaoCameraAtual = LatLng(mapaViewModel.posicaoCameraMapa.target.latitude,
+                                                mapaViewModel.posicaoCameraMapa.target.longitude)
+                val raioBuscaMetros = mapaViewModel.definirRaioBusca()*1000
+                val distancia = mapaViewModel.localizacaoUtils.calcularDistancia(posicaoCameraAtual, mapaViewModel.ultimaPosicaoBuscaMapa.value)
+                if(distancia > raioBuscaMetros)
+                {
+                    mapaViewModel.buscarOcorrenciasRaio()
+                    mapaViewModel.buscarRelatorioRaio()
+                    mapaViewModel.ultimaPosicaoBuscaMapa.value = posicaoCameraAtual
+                }
+
             }
-            if(localizacaoObserver.permissaoLocalizacao.value){
-                mapInstance.isMyLocationEnabled = true
-            }
+
+            mapInstance.uiSettings.isMyLocationButtonEnabled = false
+
 
             mapInstance.isBuildingsEnabled = false
 
-            mapaViewModel.mapa = mapInstance
-            mapaViewModel.buscarOcorrenciasRaio()
-            mapaViewModel.buscarRelatorioRaio()
-            mapaViewModel.atualizarMapaCalor()
+            if (mapaViewModel.mapa == null) {
+
+                mapaViewModel.mapa = mapInstance
+
+
+                if(mapaViewModel.localizacaoUtils.permissaoLocalizacao.value){
+                    mapaViewModel.mapa!!.isMyLocationEnabled = true
+                    mapaViewModel.observarUsuario()
+                }else{
+                    mapaViewModel.mapa!!.moveCamera(
+                        CameraUpdateFactory.newCameraPosition(CameraPosition.fromLatLngZoom(
+                            LatLng(-23.550395929666593, -46.63396345499372),
+                            18f
+                        ))
+                    )
+                }
+
+           
+
+            }
+           
         }
     }
 
@@ -147,7 +167,7 @@ fun Mapa(navController: NavController) {
             ) {
                 CaixaPesquisaEndereco(searchState = buscaEnderecoState) {
                     mapaViewModel.buscarEndereco(buscaEnderecoState.value)
-                    buscaEnderecoState.value = ""
+
 
                 }
             }
@@ -182,6 +202,23 @@ fun Mapa(navController: NavController) {
                 horizontalAlignment = Alignment.CenterHorizontally,
 
                 ){
+                SmallFloatingActionButton(
+                    onClick = {
+                        mapaViewModel.atualizarPosicaoCameraLocalizacaoUsuario()
+                    },
+                    containerColor = GogoodGreen,
+                    contentColor = GogoodWhite,
+                    shape = CircleShape,
+                    modifier = Modifier
+
+                        .size(48.dp)
+
+                ) {
+                    Icon(
+                        Icons.Default.MyLocation, "Botão de me localizar",
+                    )
+                }
+                Spacer(modifier = Modifier.height(16.dp))
                 if(rotas.isNotEmpty()){
                     SmallFloatingActionButton(
                         onClick = {
@@ -197,6 +234,7 @@ fun Mapa(navController: NavController) {
                     }
                     Spacer(modifier = Modifier.height(16.dp))
                 }
+
                 FloatingActionButton(
                     onClick = {
                         mapaViewModel.showBottomSheet = true
@@ -216,6 +254,8 @@ fun Mapa(navController: NavController) {
                     )
                 }
             }
+
+
 
             FloatingActionButton(
                 onClick = {

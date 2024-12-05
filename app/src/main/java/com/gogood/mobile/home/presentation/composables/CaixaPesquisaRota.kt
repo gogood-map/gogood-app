@@ -28,6 +28,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.unit.dp
+import com.gogood.mobile.ui.theme.GogoodBorderWhite
 import com.gogood.mobile.ui.theme.GogoodGray
 import com.gogood.mobile.ui.theme.GogoodOptionRed
 
@@ -39,10 +40,10 @@ fun CaixaPesquisaRota(
     onDone: () -> Unit,
 ) {
     var bordaOrigem by remember {
-        mutableStateOf(GogoodGray)
+        mutableStateOf(GogoodBorderWhite)
     }
     var bordaDestino by remember {
-        mutableStateOf(GogoodGray)
+        mutableStateOf(GogoodBorderWhite)
     }
     Column(Modifier.fillMaxWidth()) {
         BasicTextField(
@@ -53,7 +54,7 @@ fun CaixaPesquisaRota(
             modifier = modifier
                 .fillMaxWidth()
                 .height(45.dp)
-                .border(.50.dp, bordaOrigem, RoundedCornerShape(topEnd = 20.dp, topStart = 20.dp))
+                .border(1.dp, bordaOrigem, RoundedCornerShape(topEnd = 20.dp, topStart = 20.dp))
                 .background(Color.White, RoundedCornerShape(topEnd = 20.dp, topStart = 20.dp))
                 .padding(start = 15.dp, top = 15.dp),
             singleLine = true,
@@ -67,7 +68,7 @@ fun CaixaPesquisaRota(
                 .fillMaxWidth()
                 .background(Color.White, RoundedCornerShape(bottomStart = 20.dp, bottomEnd = 20.dp))
                 .border(
-                    .50.dp,
+                    1.dp,
                     bordaDestino,
                     RoundedCornerShape(bottomStart = 20.dp, bottomEnd = 20.dp)
                 )
@@ -81,7 +82,7 @@ fun CaixaPesquisaRota(
                     .fillMaxWidth(.85f)
                     .height(45.dp)
                     .border(
-                        .50.dp,
+                        1.dp,
                         Color.Transparent,
                         RoundedCornerShape(bottomStart = 20.dp, bottomEnd = 20.dp)
                     )
@@ -101,8 +102,8 @@ fun CaixaPesquisaRota(
                             bordaDestino = GogoodOptionRed
                         }
                         if(origem.value.isNotBlank() && destino.value.isNotBlank()){
-                            bordaDestino = GogoodGray
-                            bordaOrigem = GogoodGray
+                            bordaDestino = GogoodBorderWhite
+                            bordaOrigem = GogoodBorderWhite
                             onDone()
                         }
                     }
@@ -117,8 +118,8 @@ fun CaixaPesquisaRota(
                         bordaDestino = GogoodOptionRed
                     }
                     if(origem.value.isNotBlank() && destino.value.isNotBlank()){
-                        bordaDestino = GogoodGray
-                        bordaOrigem = GogoodGray
+                        bordaDestino = GogoodBorderWhite
+                        bordaOrigem = GogoodBorderWhite
                         onDone()
                     }
 
