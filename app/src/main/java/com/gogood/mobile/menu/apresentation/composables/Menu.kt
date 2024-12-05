@@ -1,5 +1,6 @@
 package com.gogood.mobile.menu.apresentation.composables
 
+import AddressForm
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.slideInHorizontally
 import androidx.compose.animation.slideOutHorizontally
@@ -29,7 +30,6 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import coil.compose.AsyncImage
-import com.gogood.mobile.address.presentation.composables.AddressForm
 import com.gogood.mobile.auth.apresentation.composables.SolicitacaoEntrada
 import com.gogood.mobile.menu.apresentation.viewmodels.MenuViewModel
 import com.gogood.mobile.ui.theme.GogoodGray

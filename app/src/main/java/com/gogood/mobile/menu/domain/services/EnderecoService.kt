@@ -10,7 +10,7 @@ import retrofit2.http.Path
 
 interface EnderecoService : AddressService {
 
-    @GET("/enderecos/{id}")
+    @GET("enderecos/{id}")
     suspend fun obter(@Path("id")id:Int):Response<List<EnderecoResponse>>
     override fun getUserAddresses(idUsuario: Int): Response<List<AddressResponse>> {
         TODO("Not yet implemented")
