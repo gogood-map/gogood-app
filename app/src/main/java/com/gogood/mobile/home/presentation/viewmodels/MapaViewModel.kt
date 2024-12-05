@@ -19,6 +19,7 @@ import com.gogood.mobile.home.domain.usecases.IBuscaEnderecoUseCase
 import com.gogood.mobile.home.domain.usecases.IObterCoordenadasOcorrenciaRaioUseCase
 import com.gogood.mobile.home.domain.usecases.IObterRelatorioRaioUseCase
 import com.gogood.mobile.home.presentation.stateholders.MainStateHolder
+import com.gogood.mobile.ui.theme.GogoodGreen
 import com.gogood.mobile.ui.theme.GogoodOrange
 import com.gogood.mobile.ui.theme.GogoodPolylines
 import com.gogood.mobile.utils.IConexaoUtils
@@ -60,6 +61,7 @@ class MapaViewModel (private val mapRepository: IMapRepository,
 
     private val _rotas = MutableStateFlow<List<RotaResponse>>(emptyList())
     val rotas: StateFlow<List<RotaResponse>> = _rotas
+
 
 
     var isSearchAddress by mutableStateOf(true)
@@ -121,6 +123,8 @@ class MapaViewModel (private val mapRepository: IMapRepository,
                     buscarRelatorioRaio()
                     localizouUsuario = true
                 }
+
+
             }.launchIn(viewModelScope)
         }
     }
@@ -176,7 +180,7 @@ class MapaViewModel (private val mapRepository: IMapRepository,
     }
 
     //region Camera Mapa
-    fun atualizarPosicaoCamera(latLng: LatLng, angulo: Float=0f, zoom: Float = 18f){
+    fun atualizarPosicaoCamera(latLng: LatLng, angulo: Float=0f, zoom: Float = 18f, animacao: Boolean = true){
         posicaoCameraMapa =CameraPosition.builder()
             .target(latLng)
             .tilt(
@@ -184,12 +188,18 @@ class MapaViewModel (private val mapRepository: IMapRepository,
             )
             .zoom(zoom)
             .build()
-        viewModelScope.launch {
-            mapa?.awaitAnimateCamera(CameraUpdateFactory.newCameraPosition(posicaoCameraMapa),
-                durationMs = 2000)
+
+        if(animacao){
+            viewModelScope.launch {
+                mapa?.awaitAnimateCamera(CameraUpdateFactory.newCameraPosition(posicaoCameraMapa),
+                    durationMs = 2000)
+            }
+        }
+        else{
+            mapa?.moveCamera(CameraUpdateFactory.newCameraPosition(posicaoCameraMapa))
         }
 
-        //mapa?.moveCamera(CameraUpdateFactory.newCameraPosition(posicaoCameraMapa))
+        //
     }
 
 
@@ -301,8 +311,8 @@ class MapaViewModel (private val mapRepository: IMapRepository,
             latLng = coordenadasTrajetoRota.value!![0],
             angulo = 90f
         )
-
     }
+
     fun exibirPolyline(rotaResponse: RotaResponse, corPolyline: Color){
         val polylineDecodificada = PolyUtil.decode(rotaResponse.polyline)
 
@@ -314,6 +324,7 @@ class MapaViewModel (private val mapRepository: IMapRepository,
         val polyline = mapa?.addPolyline(polylineOptions)
         polylines.add(polyline!!)
     }
+
 
     fun exibirPolylinesOpcoes() {
         polylines.forEach {

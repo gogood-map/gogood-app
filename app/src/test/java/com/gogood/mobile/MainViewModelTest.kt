@@ -5,6 +5,8 @@ import androidx.lifecycle.Observer
 import com.gogood.mobile.home.data.repository.IMapRepository
 import com.gogood.mobile.home.domain.models.QtdMes
 import com.gogood.mobile.home.domain.models.RelatorioOcorrenciasResponse
+import com.gogood.mobile.home.domain.usecases.BuscaEnderecoUseCase
+import com.gogood.mobile.home.domain.usecases.IBuscaEnderecoUseCase
 import com.gogood.mobile.home.domain.usecases.IObterCoordenadasOcorrenciaRaioUseCase
 import com.gogood.mobile.home.domain.usecases.IObterRelatorioRaioUseCase
 import com.gogood.mobile.home.presentation.stateholders.MainStateHolder
@@ -56,6 +58,10 @@ class MainViewModelTest {
     @Mock
     private lateinit var obterRelatorioRaioUseCase: IObterRelatorioRaioUseCase
 
+    @Mock
+    private lateinit var buscaEnderecoUseCase: IBuscaEnderecoUseCase
+
+
     @Before
     fun setup(){
         Dispatchers.setMain(testDispatcher)
@@ -74,6 +80,7 @@ class MainViewModelTest {
             localizacaoUtils = localizacaoUtils,
             mapRepository = mapRepository,
             conexaoUtils = conexaoUtils,
+            buscaEnderecoUseCase = buscaEnderecoUseCase
         )
     }
 
