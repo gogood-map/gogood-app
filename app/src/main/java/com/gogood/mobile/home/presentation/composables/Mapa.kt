@@ -20,6 +20,8 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.AltRoute
 import androidx.compose.material.icons.filled.CrisisAlert
+import androidx.compose.material.icons.filled.Explore
+import androidx.compose.material.icons.filled.ExploreOff
 import androidx.compose.material.icons.filled.MyLocation
 import androidx.compose.material.icons.sharp.Directions
 import androidx.compose.material.icons.sharp.LocationOn
@@ -47,6 +49,7 @@ import com.gogood.mobile.home.presentation.viewmodels.MapaViewModel
 import com.gogood.mobile.menu.apresentation.composables.Menu
 import com.gogood.mobile.ui.theme.GogoodGray
 import com.gogood.mobile.ui.theme.GogoodGreen
+import com.gogood.mobile.ui.theme.GogoodOptionRed
 import com.gogood.mobile.ui.theme.GogoodWhite
 import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.MapView
@@ -96,6 +99,7 @@ fun Mapa(navController: NavController) {
 
 
             mapInstance.setOnMapClickListener {
+                mapaViewModel.cameraMapaAcompanhaUsuario.value = false
                 focusManager.clearFocus()
             }
             mapInstance.setOnCameraIdleListener {
@@ -204,6 +208,12 @@ fun Mapa(navController: NavController) {
                 ){
                 SmallFloatingActionButton(
                     onClick = {
+                        if(mapaViewModel.cameraMapaAcompanhaUsuario.value){
+                            mapaViewModel.cameraMapaAcompanhaUsuario.value = false
+                        }else{
+                            mapaViewModel.cameraMapaAcompanhaUsuario.value = true
+                        }
+
                         mapaViewModel.atualizarPosicaoCameraLocalizacaoUsuario()
                     },
                     containerColor = GogoodGreen,
@@ -214,9 +224,16 @@ fun Mapa(navController: NavController) {
                         .size(48.dp)
 
                 ) {
-                    Icon(
-                        Icons.Default.MyLocation, "Botão de me localizar",
-                    )
+                    if(mapaViewModel.cameraMapaAcompanhaUsuario.value){
+                        Icon(
+                            Icons.Default.Explore, "Botão de me localizar",
+                        )
+                    }else{
+                        Icon(
+                            Icons.Default.MyLocation, "Botão de me localizar",
+                        )
+                    }
+
                 }
                 Spacer(modifier = Modifier.height(16.dp))
                 if(rotas.isNotEmpty()){
@@ -249,7 +266,7 @@ fun Mapa(navController: NavController) {
                 ) {
                     Icon(
 
-                        Icons.Default.CrisisAlert, "Small floating action button."
+                        Icons.Default.CrisisAlert, "Botão de abrir bottom sheet"
 
                     )
                 }

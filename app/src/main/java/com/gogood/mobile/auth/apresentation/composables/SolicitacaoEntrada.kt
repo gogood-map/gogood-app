@@ -21,6 +21,7 @@ import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
 import com.gogood.mobile.ui.theme.GoGoodTheme
+import com.gogood.mobile.ui.theme.GogoodGreen
 
 @Composable
 fun SolicitacaoEntrada(
@@ -39,7 +40,7 @@ fun SolicitacaoEntrada(
             horizontalArrangement = Arrangement.Center
         ) {
             Text(
-                text = "Faça ",
+                text = "Faça",
                 fontWeight = FontWeight.Bold,
                 fontSize = 20.sp
             )
@@ -49,7 +50,7 @@ fun SolicitacaoEntrada(
                 text = "Login"
             )
             Text(
-                text = " ou ",
+                text = "ou ",
                 fontWeight = FontWeight.Bold,
                 fontSize = 20.sp
             )
@@ -85,7 +86,8 @@ fun TextoNavegacao(
             text = text,
             textDecoration = TextDecoration.Underline,
             fontWeight = FontWeight.ExtraBold,
-            fontSize = 20.sp
+            fontSize = 20.sp,
+            color = GogoodGreen
         )
     }
 }
