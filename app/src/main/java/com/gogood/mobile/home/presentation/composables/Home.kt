@@ -8,6 +8,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.SideEffect
 import androidx.compose.ui.platform.LocalContext
 import androidx.navigation.NavController
+import com.gogood.mobile.auth.apresentation.viewmodels.LoginViewModel
 import com.gogood.mobile.common.apresentation.composables.Erro
 import com.gogood.mobile.home.presentation.stateholders.MainStateHolder
 import com.gogood.mobile.home.presentation.viewmodels.MapaViewModel
@@ -20,14 +21,17 @@ import org.koin.compose.viewmodel.koinViewModel
 fun Home(navController: NavController) {
     val contexto = LocalContext.current
     val localizacaoObserver = koinInject<ILocalizacaoUtils>()
-
+    val loginViewModel: LoginViewModel = koinViewModel()
     val mapaViewModel: MapaViewModel = koinViewModel()
+    loginViewModel.verificarLogin()
 
     val getPermission = rememberLauncherForActivityResult(
         ActivityResultContracts.RequestPermission()
     ) { isGranted ->
         if (isGranted) {
             localizacaoObserver.permissaoLocalizacao.value = true
+            mapaViewModel.observarLocalizacaoUsuario()
+
         }
     }
     SideEffect {

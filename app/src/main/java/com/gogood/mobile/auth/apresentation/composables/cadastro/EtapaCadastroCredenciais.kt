@@ -68,10 +68,10 @@ fun EtapaCadastroCredenciais(navController: NavController) {
         TitleText("Cadastre-se")
         Spacer(modifier = Modifier.height(14.dp))
 
-        Campo("Nome", nomeState, nomeValido)
+        Campo("Nome", nomeState, "Seu nome",nomeValido)
         Spacer(modifier = Modifier.height(14.dp))
 
-        Campo("Email", emailState, emailValido)
+        Campo("Email", emailState, "seu@email.com",emailValido)
         Spacer(modifier = Modifier.height(14.dp))
 
         CampoSenha("Senha",  senhaState, exibirSenhaState, senhaValida)

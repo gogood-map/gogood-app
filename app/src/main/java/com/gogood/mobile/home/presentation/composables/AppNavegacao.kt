@@ -14,6 +14,8 @@ import androidx.navigation.compose.rememberNavController
 import com.gogood.mobile.auth.apresentation.composables.cadastro.CadastroTela
 import com.gogood.mobile.auth.apresentation.composables.login.LoginTela
 import com.gogood.mobile.ui.theme.GoGoodTheme
+import com.gogood.mobile.utils.IAppNavigator
+import org.koin.compose.koinInject
 import org.koin.compose.viewmodel.koinViewModel
 
 @Composable
@@ -21,8 +23,7 @@ fun AppNavegacao() {
 
 
     val navController = rememberNavController()
-
-
+    koinInject<IAppNavigator>().navController = navController
 
     Scaffold { innerPadding ->
         NavHost(

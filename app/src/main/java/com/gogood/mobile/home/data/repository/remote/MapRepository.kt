@@ -57,6 +57,7 @@ class MapRepository(private val service: MapsService,
             if(listaEnderecosPesquisados.size > 10){
                 listaEnderecosPesquisados.removeFirst()
             }
+
             if(!listaEnderecosPesquisados.contains(endereco)){
                 listaEnderecosPesquisados.add(endereco.replace(";", ""))
             }

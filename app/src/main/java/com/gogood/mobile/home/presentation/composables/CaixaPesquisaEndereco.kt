@@ -30,9 +30,13 @@ import androidx.compose.ui.focus.onFocusChanged
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
+import com.gogood.mobile.auth.apresentation.viewmodels.LoginViewModel
+import com.gogood.mobile.home.presentation.viewmodels.MapaViewModel
 import com.gogood.mobile.ui.theme.GogoodBorderWhite
 import com.gogood.mobile.ui.theme.GogoodGray
 import com.gogood.mobile.ui.theme.GogoodOptionRed
+import org.koin.compose.viewmodel.koinViewModel
 
 @Composable
 fun CaixaPesquisaEndereco(
@@ -45,8 +49,9 @@ fun CaixaPesquisaEndereco(
     }
     var caixaAtiva by remember {
         mutableStateOf(false)
-
     }
+    val mapaViewModel = koinViewModel<MapaViewModel>()
+    val loginViewModel = koinViewModel<LoginViewModel>()
     Column {
         Row (
             verticalAlignment = Alignment.CenterVertically,
@@ -69,10 +74,12 @@ fun CaixaPesquisaEndereco(
                     .background(Color.White, RoundedCornerShape(32.dp))
                     .padding(start = 15.dp, top = 15.dp)
                     .onFocusChanged { estadoFoco ->
+                        mapaViewModel.salvarEnderecoProcurado.value = true
                         caixaAtiva = estadoFoco.isFocused
 
                     },
                 singleLine = true,
+
                 keyboardOptions = KeyboardOptions.Default.copy(imeAction = ImeAction.Done),
                 keyboardActions = KeyboardActions(
                     onDone = {
@@ -84,7 +91,17 @@ fun CaixaPesquisaEndereco(
                         }
 
                     }
-                )
+                ),
+                decorationBox = {innerTextField->
+                    if(searchState.value.isEmpty()){
+                        Text(
+                            text = "Procure por um endereço",
+                            color = Color.Gray, fontSize = 16.sp)
+
+                    }
+                    innerTextField()
+
+                }
             )
             Icon(
                 modifier = Modifier.clickable {
@@ -98,8 +115,16 @@ fun CaixaPesquisaEndereco(
                 imageVector = Icons.Default.Search, contentDescription = "Pesquisar endereço")
         }
         if(caixaAtiva){
+            if(loginViewModel.isLoggedIn.value){
+                Spacer(modifier = Modifier.height(8.dp))
+                BarraEnderecosFavoritos {
+                    mapaViewModel.salvarEnderecoProcurado.value = false
+                    searchState.value = it
+                }
+        }
             Spacer(modifier = Modifier.height(8.dp))
             BuscasRecentes(tipo = TipoBuscaRecente.ENDERECO){
+                mapaViewModel.salvarEnderecoProcurado.value = false
                 searchState.value = it
             }
         }

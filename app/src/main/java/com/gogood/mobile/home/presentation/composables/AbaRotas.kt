@@ -28,8 +28,7 @@ import org.koin.compose.viewmodel.koinViewModel
 fun AbaRotas() {
     val mapaViewModel = koinViewModel<MapaViewModel>()
     val rotas by mapaViewModel.rotas.collectAsState()
-    val entradasRotasValidas = mapaViewModel.entradaOrigemRota.value.isNotBlank() ||
-            mapaViewModel.entradaOrigemRota.value.isNotBlank()
+    val entradasRotasValidas = mapaViewModel.entradaDestinoRota.value.isNotBlank()
     var corBotao by remember {
         mutableStateOf(GogoodGreen)
     }

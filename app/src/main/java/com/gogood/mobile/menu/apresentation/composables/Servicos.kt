@@ -63,7 +63,7 @@ fun Servicos(navController: NavController, menuViewModel: MenuViewModel = koinVi
         ) {
             if( menuViewModel.usuario!!.userId == null){
                 SolicitacaoEntrada(
-                    navController = navController,
+
                     modifier = Modifier.padding(bottom = 64.dp)
                 )
             }else{

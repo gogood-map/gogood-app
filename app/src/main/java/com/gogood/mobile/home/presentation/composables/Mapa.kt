@@ -21,7 +21,6 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.AltRoute
 import androidx.compose.material.icons.filled.CrisisAlert
 import androidx.compose.material.icons.filled.Explore
-import androidx.compose.material.icons.filled.ExploreOff
 import androidx.compose.material.icons.filled.MyLocation
 import androidx.compose.material.icons.sharp.Directions
 import androidx.compose.material.icons.sharp.LocationOn
@@ -49,7 +48,6 @@ import com.gogood.mobile.home.presentation.viewmodels.MapaViewModel
 import com.gogood.mobile.menu.apresentation.composables.Menu
 import com.gogood.mobile.ui.theme.GogoodGray
 import com.gogood.mobile.ui.theme.GogoodGreen
-import com.gogood.mobile.ui.theme.GogoodOptionRed
 import com.gogood.mobile.ui.theme.GogoodWhite
 import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.MapView
@@ -90,8 +88,13 @@ fun Mapa(navController: NavController) {
             mapView.onDestroy()
         }
     }
+    if(mapaViewModel.localizacaoUtils.permissaoLocalizacao.collectAsState().value) {
+        if(mapaViewModel.mapa != null){
+            mapaViewModel.mapa!!.isMyLocationEnabled = true
+        }
 
-    AndroidView(
+    }
+        AndroidView(
         factory = { mapView },
         modifier = Modifier.fillMaxSize(),
     ) { map ->
@@ -130,7 +133,6 @@ fun Mapa(navController: NavController) {
 
                 if(mapaViewModel.localizacaoUtils.permissaoLocalizacao.value){
                     mapaViewModel.mapa!!.isMyLocationEnabled = true
-                    mapaViewModel.observarUsuario()
                 }else{
                     mapaViewModel.mapa!!.moveCamera(
                         CameraUpdateFactory.newCameraPosition(CameraPosition.fromLatLngZoom(
@@ -170,6 +172,7 @@ fun Mapa(navController: NavController) {
                 exit = slideOutVertically(targetOffsetY = { it })
             ) {
                 CaixaPesquisaEndereco(searchState = buscaEnderecoState) {
+
                     mapaViewModel.buscarEndereco(buscaEnderecoState.value)
 
 
@@ -278,6 +281,7 @@ fun Mapa(navController: NavController) {
                 onClick = {
                     mapaViewModel.isSearchRoute = !mapaViewModel.isSearchRoute
                     mapaViewModel.isSearchAddress = !mapaViewModel.isSearchRoute
+
                 },
                 containerColor = GogoodGray,
                 contentColor = GogoodWhite,

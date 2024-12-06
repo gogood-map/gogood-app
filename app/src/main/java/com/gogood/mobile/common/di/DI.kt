@@ -30,7 +30,9 @@ import com.gogood.mobile.menu.apresentation.viewmodels.MenuViewModel
 import com.gogood.mobile.menu.data.repository.IEnderecoRepository
 import com.gogood.mobile.menu.data.repository.remote.EnderecoRepository
 import com.gogood.mobile.menu.domain.services.EnderecoService
+import com.gogood.mobile.utils.AppNavigator
 import com.gogood.mobile.utils.ConexaoUtils
+import com.gogood.mobile.utils.IAppNavigator
 import com.gogood.mobile.utils.IConexaoUtils
 import com.gogood.mobile.utils.ILocalizacaoUtils
 import com.gogood.mobile.utils.LocalizacaoUtils
@@ -66,6 +68,9 @@ val appModule = module {
 
     single<AddressService> { ApiClient.addressService }
 
+    single<IAppNavigator>{
+        AppNavigator()
+    }
 
     single<IAddressRepository> { AddressRepository(get()) }
 

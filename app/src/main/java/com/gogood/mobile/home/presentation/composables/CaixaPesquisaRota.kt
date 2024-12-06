@@ -17,6 +17,7 @@ import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material3.Icon
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.getValue
@@ -28,6 +29,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import com.gogood.mobile.ui.theme.GogoodBorderWhite
 import com.gogood.mobile.ui.theme.GogoodGray
 import com.gogood.mobile.ui.theme.GogoodOptionRed
@@ -58,6 +60,15 @@ fun CaixaPesquisaRota(
                 .background(Color.White, RoundedCornerShape(topEnd = 20.dp, topStart = 20.dp))
                 .padding(start = 15.dp, top = 15.dp),
             singleLine = true,
+            decorationBox = {innerTextField->
+                if(origem.value.isEmpty()){
+                    Text(
+                        text = "Endereço de partida (opcional)",
+                        color = Color.Gray, fontSize = 16.sp)
+
+                }
+                innerTextField()
+            }
         )
         Spacer(modifier = Modifier.height(6.dp))
         Row (
@@ -103,7 +114,16 @@ fun CaixaPesquisaRota(
                             onDone()
                         }
                     }
-                )
+                ),
+                decorationBox = {innerTextField->
+                    if(destino.value.isEmpty()){
+                        Text(
+                            text = "Destino",
+                            color = Color.Gray, fontSize = 16.sp)
+
+                    }
+                    innerTextField()
+                }
             )
             Icon(
                 modifier = Modifier.clickable {

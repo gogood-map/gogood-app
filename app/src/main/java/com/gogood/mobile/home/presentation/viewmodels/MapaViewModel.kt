@@ -57,6 +57,7 @@ class MapaViewModel (private val mapRepository: IMapRepository,
     }
     val uiState: MutableState<MainStateHolder> = mutableStateOf(MainStateHolder.Loading)
 
+    var salvarEnderecoProcurado = mutableStateOf(true)
 
     private val _rotas = MutableStateFlow<List<RotaResponse>>(emptyList())
     val rotas: StateFlow<List<RotaResponse>> = _rotas
@@ -113,7 +114,7 @@ class MapaViewModel (private val mapRepository: IMapRepository,
     }
 
     @SuppressLint("MissingPermission")
-    fun observarUsuario(){
+    fun observarLocalizacaoUsuario(){
         if(localizacaoUtils.permissaoLocalizacao.value){
             localizacaoUtils.observerLocalizacao().onEach { novaLocalizacao->
                
@@ -228,7 +229,11 @@ class MapaViewModel (private val mapRepository: IMapRepository,
    fun buscarEndereco(entrada: String){
         viewModelScope.launch {
             val resultado = buscaEnderecoUseCase(entrada)
-            mapRepository.salvarEnderecoPesquisado(entrada)
+
+            if(salvarEnderecoProcurado.value ){
+                mapRepository.salvarEnderecoPesquisado(entrada)
+            }
+
 
             resultado.onSuccess {
                 val enderecoCandidato = it.candidates[0]
@@ -287,6 +292,10 @@ class MapaViewModel (private val mapRepository: IMapRepository,
     // region rotas
     fun buscarRotas(){
         viewModelScope.launch {
+
+            if(entradaOrigemRota.value.isEmpty()){
+                entradaOrigemRota.value = "${localizacao.value.latitude}, ${localizacao.value.longitude}"
+            }
             val requisicao = mapRepository.buscarRota(meioRota.value,
                 entradaOrigemRota.value,
                 entradaDestinoRota.value)

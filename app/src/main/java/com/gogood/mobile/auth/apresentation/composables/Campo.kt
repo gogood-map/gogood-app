@@ -23,7 +23,7 @@ import androidx.compose.ui.unit.sp
 import com.gogood.mobile.ui.theme.GogoodOptionRed
 
 @Composable
-fun Campo(label: String, state: MutableState<String>, regraValida: (String)->Boolean,
+fun Campo(label: String, state: MutableState<String>,textoPlaceholder:String, regraValida: (String)->Boolean,
           validoParam: Boolean = true) {
     var valido by remember {
         mutableStateOf(validoParam)
@@ -61,6 +61,15 @@ fun Campo(label: String, state: MutableState<String>, regraValida: (String)->Boo
                 .background(Color.White, RoundedCornerShape(8.dp))
                 .padding(start = 15.dp, top = 15.dp),
             singleLine = true,
+            decorationBox = {innerTextField->
+                if(state.value.isEmpty()){
+                    Text(
+                        text = textoPlaceholder,
+                        color = Color.Gray, fontSize = 16.sp)
+
+                }
+                innerTextField()
+            }
         )
         if(!valido){
             corInput = GogoodOptionRed
