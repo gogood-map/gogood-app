@@ -14,3 +14,11 @@ data class Endereco(
     val bairro: String,
     val createdAt: String,
 )
+
+enum class TipoEndereco(val tipo:String){
+    CASA("Casa"),
+    PARCEIRO_A("Parceiro(a)"),
+    TRABALHO("Trabalho"),
+    OUTRO("Outro"),
+    FACULDADE("Faculdade")
+}

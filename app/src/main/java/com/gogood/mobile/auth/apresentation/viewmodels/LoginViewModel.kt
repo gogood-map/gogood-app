@@ -15,20 +15,37 @@ class LoginViewModel(
     private val userRepository: IUserRepository
 ) : ViewModel() {
 
-    var isLoggedIn by mutableStateOf(false)
+    var isLoggedIn = mutableStateOf(false)
     var isError by mutableStateOf(false)
     var usuarioLogin by mutableStateOf(UsuarioLoginRequest())
+
+
 
     fun login(email: String, password: String) {
         viewModelScope.launch {
             val resposta = userService.login(LoginRequest(email, password))
             if (resposta.isSuccessful) {
-                isLoggedIn = true
+                isLoggedIn.value = true
                 userRepository.salvarUsuario(resposta.body()!!)
             }else{
                 isError = true
             }
         }
+    }
+
+    fun verificarLogin(){
+        viewModelScope.launch {
+            userRepository.obterUsuarioSalvo().collect{usuario->
+                if(usuario != null){
+                    isLoggedIn.value = true
+                }else{
+                    isLoggedIn.value = false
+                }
+            }
+
+        }
+
+
     }
 
 

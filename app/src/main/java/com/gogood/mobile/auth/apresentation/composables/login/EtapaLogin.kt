@@ -67,6 +67,10 @@ fun LoginSection(navController: NavController) {
 
     habilitarProximo = emailValido(emailState.value) && senhaValida(senhaState.value)
 
+    if(loginViewModel.isLoggedIn.value){
+        navController.navigate("Mapa")
+    }
+
     Column(
         modifier = Modifier.fillMaxSize(),
         horizontalAlignment = Alignment.CenterHorizontally,
@@ -74,7 +78,7 @@ fun LoginSection(navController: NavController) {
     ) {
         TitleText("Login")
         Spacer(modifier = Modifier.height(14.dp))
-        Campo("Email", emailState, emailValido)
+        Campo("Email", emailState, "seu@email.com",emailValido)
         Spacer(modifier = Modifier.height(14.dp))
         CampoSenha(label = "Senha", state= senhaState, exibirSenha = exibirSenhaState, senhaValida)
         Spacer(modifier = Modifier.height(8.dp))
@@ -94,9 +98,7 @@ fun LoginSection(navController: NavController) {
         LoginButton(habilitarProximo){
             if(habilitarProximo){
                 loginViewModel.login(emailState.value, senhaState.value)
-                if(loginViewModel.isLoggedIn){
-                    navController.navigate("Mapa")
-                }
+
             }
         }
         Spacer(modifier = Modifier.height(18.dp))
@@ -118,66 +120,3 @@ fun LoginSection(navController: NavController) {
     }
 }
 
-@Composable
-fun LoginButton(enableNext:Boolean = true ,click: ()->Unit) {
-    Row(
-        horizontalArrangement = Arrangement.Center,
-        verticalAlignment = Alignment.CenterVertically,
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(top = 16.dp),
-    ) {
-
-        IconButton(
-            onClick = {
-                click()
-
-            },
-            modifier = Modifier
-                .size(50.dp)
-                .shadow(8.dp, CircleShape)
-                .background(
-                    (if (enableNext)
-                        GogoodGray
-                    else
-                        Color(0xFF7C7C7C)), CircleShape
-                )
-        ) {
-            Icon(
-                imageVector = Icons.AutoMirrored.Filled.ArrowForward,
-                contentDescription = "Next",
-                tint = Color.White
-            )
-        }
-    }
-}
-
-@Composable
-fun RegisterLink(navController: NavController) {
-    Row(
-        horizontalArrangement = Arrangement.Center,
-        verticalAlignment = Alignment.Bottom,
-        modifier = Modifier.fillMaxWidth()
-    ) {
-        Text(
-
-            buildAnnotatedString {
-                append("É novo na nossa plataforma? ")
-                withStyle(
-                    style = SpanStyle(
-                        color = GogoodGreen,
-                        textDecoration = TextDecoration.Underline
-                    )
-                ) {
-                    append("Cadastrar")
-                }
-            },
-            modifier = Modifier.clickable {
-                navController.navigate("Cadastro")
-            },
-            fontSize = 12.sp,
-            textAlign = TextAlign.Center,
-            fontWeight = FontWeight.Normal,
-        )
-    }
-}

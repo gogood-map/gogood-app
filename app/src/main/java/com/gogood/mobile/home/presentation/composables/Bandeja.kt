@@ -18,6 +18,8 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
+import com.gogood.mobile.auth.apresentation.composables.SolicitacaoEntrada
+import com.gogood.mobile.auth.apresentation.viewmodels.LoginViewModel
 import com.gogood.mobile.home.presentation.viewmodels.MapaViewModel
 import org.koin.compose.viewmodel.koinViewModel
 
@@ -26,7 +28,7 @@ fun Bandeja(
     modifier: Modifier = Modifier
 ) {
     val mapaViewModel = koinViewModel<MapaViewModel>()
-
+    val loginViewModel = koinViewModel<LoginViewModel>()
     val pagerState = rememberPagerState (initialPage = 0){
         2
     }
@@ -39,22 +41,29 @@ fun Bandeja(
     }
     Column(verticalArrangement = Arrangement.Center, horizontalAlignment = Alignment.CenterHorizontally){
         HorizontalPager(state = pagerState,
-            modifier = Modifier.
-            fillMaxWidth().
-            fillMaxHeight(0.75F)
+            modifier = Modifier
+                .fillMaxWidth()
+                .fillMaxHeight(0.75F)
         ) {atual->
             when(atual){
                 0->{
                     AbaRelatorioOcorrencias()
                 }
                 1->{
-                    AbaRotas()
+                    if(loginViewModel.isLoggedIn.value){
+                        AbaRotas()
+                    }else{
+                        SolicitacaoEntrada()
+                    }
+
                 }
             }
             
         }
         TabRow(
-            modifier = Modifier.fillMaxHeight(0.25F).width(100.dp),
+            modifier = Modifier
+                .fillMaxHeight(0.25F)
+                .width(100.dp),
             selectedTabIndex = mapaViewModel.abaBandeja,
             indicator = {
 

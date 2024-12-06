@@ -73,7 +73,7 @@ fun Menu(
                     )
                 }
             }
-            SolicitacaoEntrada(navController = navController)
+            SolicitacaoEntrada()
 
         }
     }else{

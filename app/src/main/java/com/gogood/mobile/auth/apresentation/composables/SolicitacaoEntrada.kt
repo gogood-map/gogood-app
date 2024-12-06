@@ -22,12 +22,14 @@ import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
 import com.gogood.mobile.ui.theme.GoGoodTheme
 import com.gogood.mobile.ui.theme.GogoodGreen
+import com.gogood.mobile.utils.IAppNavigator
+import org.koin.compose.koinInject
 
 @Composable
 fun SolicitacaoEntrada(
-    modifier: Modifier = Modifier,
-    navController: NavController
+    modifier: Modifier = Modifier
 ) {
+    val navController = koinInject<IAppNavigator>().navController
     Column(
         modifier = modifier
             .fillMaxWidth()
@@ -45,7 +47,7 @@ fun SolicitacaoEntrada(
                 fontSize = 20.sp
             )
             TextoNavegacao(
-                navController = navController,
+                navController = navController!!,
                 navigateTo = "Login",
                 text = "Login"
             )
@@ -96,6 +98,6 @@ fun TextoNavegacao(
 @Composable
 fun SolicitacaoLoginPreview(modifier: Modifier = Modifier) {
     GoGoodTheme {
-        SolicitacaoEntrada(modifier = modifier, navController = rememberNavController())
+        SolicitacaoEntrada(modifier = modifier)
     }
 }
