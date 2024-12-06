@@ -8,6 +8,8 @@ import com.gogood.mobile.home.domain.services.MapsService
 import com.gogood.mobile.home.data.repository.IMapRepository
 import com.gogood.mobile.home.domain.models.BuscaEnderecoResponse
 import com.gogood.mobile.home.domain.models.RelatorioOcorrenciasResponse
+import com.gogood.mobile.home.domain.models.RotaHistoricoRequest
+import com.gogood.mobile.home.domain.models.RotaHistoricoResponse
 import com.gogood.mobile.home.domain.models.RotaResponse
 import com.gogood.mobile.home.domain.services.GooglePlacesService
 import com.google.android.gms.maps.model.LatLng
@@ -65,6 +67,10 @@ class MapRepository(private val service: MapsService,
             preferences[enderecoPreferencesKey] = listaEnderecosPesquisados.joinToString(";")
 
         }
+    }
+
+    override suspend fun salvarRotaHistorico(rotaNova: RotaHistoricoRequest): Response<RotaHistoricoResponse> {
+        return service.salvarHistoricoRota(rotaNova)
     }
 
     override suspend fun obterEnderecosPesquisados(): Flow<List<String>>{

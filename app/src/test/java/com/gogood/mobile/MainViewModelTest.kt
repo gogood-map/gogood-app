@@ -2,13 +2,19 @@ package com.gogood.mobile
 
 import androidx.arch.core.executor.testing.InstantTaskExecutorRule
 import androidx.lifecycle.Observer
+import com.gogood.mobile.auth.data.repository.IUserRepository
+import com.gogood.mobile.auth.data.repository.remote.UserRepository
 import com.gogood.mobile.home.data.repository.IMapRepository
 import com.gogood.mobile.home.domain.models.QtdMes
 import com.gogood.mobile.home.domain.models.RelatorioOcorrenciasResponse
 import com.gogood.mobile.home.domain.usecases.BuscaEnderecoUseCase
+import com.gogood.mobile.home.domain.usecases.BuscaRotaUseCase
 import com.gogood.mobile.home.domain.usecases.IBuscaEnderecoUseCase
+import com.gogood.mobile.home.domain.usecases.IBuscaRotaUseCase
 import com.gogood.mobile.home.domain.usecases.IObterCoordenadasOcorrenciaRaioUseCase
 import com.gogood.mobile.home.domain.usecases.IObterRelatorioRaioUseCase
+import com.gogood.mobile.home.domain.usecases.ISalvarRotaHistoricoUseCase
+import com.gogood.mobile.home.domain.usecases.SalvarRotaHistoricoUseCase
 import com.gogood.mobile.home.presentation.stateholders.MainStateHolder
 import com.gogood.mobile.home.presentation.viewmodels.MapaViewModel
 import com.gogood.mobile.utils.IConexaoUtils
@@ -61,6 +67,14 @@ class MainViewModelTest {
     @Mock
     private lateinit var buscaEnderecoUseCase: IBuscaEnderecoUseCase
 
+    @Mock
+    private lateinit var salvarRotaHistoricoUseCase: ISalvarRotaHistoricoUseCase
+
+    @Mock
+    private lateinit var buscaRotaUseCase: IBuscaRotaUseCase
+
+    @Mock
+    private lateinit var userRepository: IUserRepository
 
     @Before
     fun setup(){
@@ -76,11 +90,14 @@ class MainViewModelTest {
     private fun setupViewModel(){
         viewModel = MapaViewModel(
             obterCoordenadasOcorrenciasRaioUseCase = obterCoordenadasOcorrenciasRaioUseCase,
+            userRepository = userRepository,
             obterRelatorioRaioUseCase = obterRelatorioRaioUseCase,
             localizacaoUtils = localizacaoUtils,
             mapRepository = mapRepository,
             conexaoUtils = conexaoUtils,
-            buscaEnderecoUseCase = buscaEnderecoUseCase
+            buscaEnderecoUseCase = buscaEnderecoUseCase,
+            salvarRotaHistoricoUseCase = salvarRotaHistoricoUseCase,
+            buscaRotaUseCase = buscaRotaUseCase
         )
     }
 
