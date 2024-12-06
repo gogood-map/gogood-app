@@ -20,11 +20,15 @@ import com.gogood.mobile.home.data.repository.remote.MapRepository
 import com.gogood.mobile.home.domain.services.GooglePlacesService
 import com.gogood.mobile.home.domain.services.MapsService
 import com.gogood.mobile.home.domain.usecases.BuscaEnderecoUseCase
+import com.gogood.mobile.home.domain.usecases.BuscaRotaUseCase
 import com.gogood.mobile.home.domain.usecases.IBuscaEnderecoUseCase
+import com.gogood.mobile.home.domain.usecases.IBuscaRotaUseCase
 import com.gogood.mobile.home.domain.usecases.IObterCoordenadasOcorrenciaRaioUseCase
 import com.gogood.mobile.home.domain.usecases.IObterRelatorioRaioUseCase
+import com.gogood.mobile.home.domain.usecases.ISalvarRotaHistoricoUseCase
 import com.gogood.mobile.home.domain.usecases.ObterCoordenadasOcorrenciasRaioUseCase
 import com.gogood.mobile.home.domain.usecases.ObterRelatorioRaioUseCase
+import com.gogood.mobile.home.domain.usecases.SalvarRotaHistoricoUseCase
 import com.gogood.mobile.home.presentation.viewmodels.MapaViewModel
 import com.gogood.mobile.menu.apresentation.viewmodels.MenuViewModel
 import com.gogood.mobile.menu.data.repository.IEnderecoRepository
@@ -96,10 +100,16 @@ val appModule = module {
     single<IBuscaEnderecoUseCase>{
         BuscaEnderecoUseCase(get())
     }
+    single<IBuscaRotaUseCase> {
+        BuscaRotaUseCase(get())
+    }
+    single<ISalvarRotaHistoricoUseCase>{
+        SalvarRotaHistoricoUseCase(get())
+    }
 
 
     viewModel {
-        MapaViewModel(get(), get(), get(), get(), get(), get())
+        MapaViewModel(get(), get(), get(), get(), get(), get(), get(), get(), get())
     }
     viewModel {
         MenuViewModel(get(), get())

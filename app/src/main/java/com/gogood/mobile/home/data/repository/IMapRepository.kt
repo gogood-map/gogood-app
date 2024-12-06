@@ -3,6 +3,8 @@ package com.gogood.mobile.home.data.repository
 import com.gogood.mobile.home.domain.models.BuscaEnderecoResponse
 import com.gogood.mobile.home.domain.models.LatLngOcorrencia
 import com.gogood.mobile.home.domain.models.RelatorioOcorrenciasResponse
+import com.gogood.mobile.home.domain.models.RotaHistoricoRequest
+import com.gogood.mobile.home.domain.models.RotaHistoricoResponse
 import com.gogood.mobile.home.domain.models.RotaResponse
 import com.google.android.gms.maps.model.LatLng
 import kotlinx.coroutines.flow.Flow
@@ -16,4 +18,5 @@ interface IMapRepository {
     suspend fun buscarRelatorioRaio(lat:Double, lng: Double, raio: Double):Response<RelatorioOcorrenciasResponse>
     suspend fun obterEnderecosPesquisados(): Flow<List<String>>
     suspend fun salvarEnderecoPesquisado(endereco: String)
+    suspend fun salvarRotaHistorico(rotaNova: RotaHistoricoRequest): Response<RotaHistoricoResponse>
 }

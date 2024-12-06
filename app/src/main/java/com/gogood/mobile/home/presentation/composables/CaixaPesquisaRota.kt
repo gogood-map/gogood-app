@@ -26,13 +26,16 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.focus.onFocusChanged
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.gogood.mobile.auth.apresentation.viewmodels.LoginViewModel
 import com.gogood.mobile.ui.theme.GogoodBorderWhite
 import com.gogood.mobile.ui.theme.GogoodGray
 import com.gogood.mobile.ui.theme.GogoodOptionRed
+import org.koin.compose.viewmodel.koinViewModel
 
 @Composable
 fun CaixaPesquisaRota(
@@ -41,11 +44,18 @@ fun CaixaPesquisaRota(
     destino: MutableState<String>,
     onDone: () -> Unit,
 ) {
+    val loginViewModel = koinViewModel<LoginViewModel>()
     var bordaOrigem by remember {
         mutableStateOf(GogoodBorderWhite)
     }
     var bordaDestino by remember {
         mutableStateOf(GogoodBorderWhite)
+    }
+    var origemAtivo by remember {
+        mutableStateOf(false)
+    }
+    var destinoAtivo by remember {
+        mutableStateOf(false)
     }
     Column(Modifier.fillMaxWidth()) {
         BasicTextField(
@@ -58,8 +68,12 @@ fun CaixaPesquisaRota(
                 .height(45.dp)
                 .border(1.dp, bordaOrigem, RoundedCornerShape(topEnd = 20.dp, topStart = 20.dp))
                 .background(Color.White, RoundedCornerShape(topEnd = 20.dp, topStart = 20.dp))
-                .padding(start = 15.dp, top = 15.dp),
+                .padding(start = 15.dp, top = 15.dp)
+                .onFocusChanged {
+                    origemAtivo = it.isFocused
+                },
             singleLine = true,
+
             decorationBox = {innerTextField->
                 if(origem.value.isEmpty()){
                     Text(
@@ -71,6 +85,7 @@ fun CaixaPesquisaRota(
             }
         )
         Spacer(modifier = Modifier.height(6.dp))
+
         Row (
             verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.spacedBy(8.dp),
@@ -101,7 +116,10 @@ fun CaixaPesquisaRota(
                         Color.White,
                         RoundedCornerShape(bottomStart = 20.dp, bottomEnd = 20.dp)
                     )
-                    .padding(start = 15.dp, top = 15.dp),
+                    .padding(start = 15.dp, top = 15.dp)
+                    .onFocusChanged {
+                        destinoAtivo = it.isFocused
+                    },
                 singleLine = true,
                 keyboardOptions = KeyboardOptions.Default.copy(imeAction = ImeAction.Done),
                 keyboardActions = KeyboardActions(
@@ -139,6 +157,28 @@ fun CaixaPesquisaRota(
                 imageVector = Icons.Default.Search, contentDescription = "Pesquisar endereço")
         }
 
+        if(origemAtivo || destinoAtivo){
+            if(loginViewModel.isLoggedIn.value){
+                Spacer(modifier = Modifier.height(8.dp))
+                BarraEnderecosFavoritos {endereco->
+                    if(origemAtivo){
+                        origem.value = endereco
+                    }
+                    if(destinoAtivo){
+                        destino.value = endereco
+                    }
+                }
+            }
+            Spacer(modifier = Modifier.height(8.dp))
+            BuscasRecentes(tipo = TipoBuscaRecente.ENDERECO){endereco->
+                if(origemAtivo){
+                    origem.value = endereco
+                }
+                if(destinoAtivo){
+                    destino.value = endereco
+                }
+            }
+        }
 
     }
 }

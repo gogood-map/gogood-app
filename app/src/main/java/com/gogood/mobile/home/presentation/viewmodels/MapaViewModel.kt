@@ -12,12 +12,20 @@ import androidx.compose.ui.graphics.toArgb
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.gogood.mobile.auth.apresentation.viewmodels.LoginViewModel
+import com.gogood.mobile.auth.data.repository.IUserRepository
+import com.gogood.mobile.auth.domain.models.UsuarioResponse
 import com.gogood.mobile.home.data.repository.IMapRepository
 import com.gogood.mobile.home.domain.models.RelatorioOcorrenciasResponse
+import com.gogood.mobile.home.domain.models.RotaHistoricoRequest
 import com.gogood.mobile.home.domain.models.RotaResponse
+import com.gogood.mobile.home.domain.usecases.BuscaRotaUseCase
 import com.gogood.mobile.home.domain.usecases.IBuscaEnderecoUseCase
+import com.gogood.mobile.home.domain.usecases.IBuscaRotaUseCase
 import com.gogood.mobile.home.domain.usecases.IObterCoordenadasOcorrenciaRaioUseCase
 import com.gogood.mobile.home.domain.usecases.IObterRelatorioRaioUseCase
+import com.gogood.mobile.home.domain.usecases.ISalvarRotaHistoricoUseCase
+import com.gogood.mobile.home.domain.usecases.SalvarRotaHistoricoUseCase
 import com.gogood.mobile.home.presentation.stateholders.MainStateHolder
 import com.gogood.mobile.ui.theme.GogoodOrange
 import com.gogood.mobile.ui.theme.GogoodPolylines
@@ -42,13 +50,17 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
+import org.koin.compose.viewmodel.koinViewModel
 
 class MapaViewModel (private val mapRepository: IMapRepository,
+                     private val userRepository: IUserRepository,
                      val localizacaoUtils: ILocalizacaoUtils,
                      private val conexaoUtils: IConexaoUtils,
                      private val obterCoordenadasOcorrenciasRaioUseCase: IObterCoordenadasOcorrenciaRaioUseCase,
                      private val obterRelatorioRaioUseCase: IObterRelatorioRaioUseCase,
-                     private val buscaEnderecoUseCase: IBuscaEnderecoUseCase
+                     private val buscaEnderecoUseCase: IBuscaEnderecoUseCase,
+                     private val salvarRotaHistoricoUseCase: ISalvarRotaHistoricoUseCase,
+                    private val buscaRotaUseCase: IBuscaRotaUseCase
 ) : ViewModel() {
 
 
@@ -77,6 +89,7 @@ class MapaViewModel (private val mapRepository: IMapRepository,
     var relatorioOcorrenciasResponse = MutableLiveData<RelatorioOcorrenciasResponse>()
     val enderecosRecentesPesquisados = MutableStateFlow<List<String>>(emptyList())
 
+    private var usuarioLogado = MutableLiveData<UsuarioResponse>()
 
     private var markerBusca by mutableStateOf<Marker?>(null)
     private var polylines = mutableStateListOf<Polyline>()
@@ -296,12 +309,31 @@ class MapaViewModel (private val mapRepository: IMapRepository,
             if(entradaOrigemRota.value.isEmpty()){
                 entradaOrigemRota.value = "${localizacao.value.latitude}, ${localizacao.value.longitude}"
             }
-            val requisicao = mapRepository.buscarRota(meioRota.value,
+
+            val resultado = buscaRotaUseCase(meioRota.value,
                 entradaOrigemRota.value,
                 entradaDestinoRota.value)
-            if(requisicao.isSuccessful){
-                _rotas.value = requisicao.body()!!
+
+            resultado.onSuccess {
+                _rotas.value = resultado.getOrNull()!!
                 exibirOpcoesRotas()
+            }
+            resultado.onFailure {
+                atualizarUiState(MainStateHolder.Error("Busca rota", it.message!!))
+            }
+
+            userRepository.obterUsuarioSalvo().collect{
+                usuarioLogado.value = it
+                if(usuarioLogado.value != null){
+                    salvarRotaHistoricoUseCase(
+                        RotaHistoricoRequest(
+                            id_usuario = usuarioLogado.value?.userId!!,
+                            destino = entradaDestinoRota.value,
+                            origem = entradaOrigemRota.value,
+                            meio_locomocao = meioRota.value
+                        )
+                    )
+                }
             }
 
         }

@@ -1,6 +1,7 @@
 package com.gogood.mobile.utils.extensions
 
 fun String.sentenceCase(): String {
+
     val palavraSeparada = this.split(" ")
     var palavraSentenceCase =  ""
 
