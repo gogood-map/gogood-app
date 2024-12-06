@@ -2,6 +2,7 @@ package com.gogood.mobile.utils
 
 import android.annotation.SuppressLint
 import android.content.Context
+import android.location.Location
 import com.google.android.gms.location.FusedLocationProviderClient
 import com.google.android.gms.location.LocationCallback
 import com.google.android.gms.location.LocationRequest
@@ -39,11 +40,11 @@ class LocalizacaoUtils(context: Context): ILocalizacaoUtils {
 
 
     @SuppressLint("MissingPermission")
-    override fun observerLocalizacao(): Flow<LatLng> = callbackFlow {
+    override fun observerLocalizacao(): Flow<Location> = callbackFlow {
         val locationCallback = object : LocationCallback() {
             override fun onLocationResult(locationResult: LocationResult) {
                 locationResult.lastLocation?.let { location ->
-                    trySend(LatLng(location.latitude, location.longitude))
+                    trySend(location)
                 }
             }
         }

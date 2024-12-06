@@ -95,13 +95,9 @@ fun CaixaPesquisaRota(
                 keyboardOptions = KeyboardOptions.Default.copy(imeAction = ImeAction.Done),
                 keyboardActions = KeyboardActions(
                     onDone = {
-                        if(origem.value.isBlank()){
-                            bordaOrigem = GogoodOptionRed
-                        }
                         if(destino.value.isBlank()){
                             bordaDestino = GogoodOptionRed
-                        }
-                        if(origem.value.isNotBlank() && destino.value.isNotBlank()){
+                        }else{
                             bordaDestino = GogoodBorderWhite
                             bordaOrigem = GogoodBorderWhite
                             onDone()
@@ -111,13 +107,9 @@ fun CaixaPesquisaRota(
             )
             Icon(
                 modifier = Modifier.clickable {
-                    if(origem.value.isBlank()){
-                        bordaOrigem = GogoodOptionRed
-                    }
                     if(destino.value.isBlank()){
                         bordaDestino = GogoodOptionRed
-                    }
-                    if(origem.value.isNotBlank() && destino.value.isNotBlank()){
+                    }else{
                         bordaDestino = GogoodBorderWhite
                         bordaOrigem = GogoodBorderWhite
                         onDone()

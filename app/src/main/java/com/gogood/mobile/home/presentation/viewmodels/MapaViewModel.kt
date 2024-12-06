@@ -19,7 +19,6 @@ import com.gogood.mobile.home.domain.usecases.IBuscaEnderecoUseCase
 import com.gogood.mobile.home.domain.usecases.IObterCoordenadasOcorrenciaRaioUseCase
 import com.gogood.mobile.home.domain.usecases.IObterRelatorioRaioUseCase
 import com.gogood.mobile.home.presentation.stateholders.MainStateHolder
-import com.gogood.mobile.ui.theme.GogoodGreen
 import com.gogood.mobile.ui.theme.GogoodOrange
 import com.gogood.mobile.ui.theme.GogoodPolylines
 import com.gogood.mobile.utils.IConexaoUtils
@@ -62,8 +61,9 @@ class MapaViewModel (private val mapRepository: IMapRepository,
     private val _rotas = MutableStateFlow<List<RotaResponse>>(emptyList())
     val rotas: StateFlow<List<RotaResponse>> = _rotas
 
-
-
+    val direcao = mutableStateOf(90f)
+    val cameraMapaAcompanhaUsuario = mutableStateOf(false)
+    val modoRota = mutableStateOf(false)
     var isSearchAddress by mutableStateOf(true)
     var isSearchRoute by mutableStateOf(false)
     var mapa: GoogleMap? by mutableStateOf(null)
@@ -116,12 +116,23 @@ class MapaViewModel (private val mapRepository: IMapRepository,
     fun observarUsuario(){
         if(localizacaoUtils.permissaoLocalizacao.value){
             localizacaoUtils.observerLocalizacao().onEach { novaLocalizacao->
-                localizacao.value = novaLocalizacao
+               
+                localizacao.value = LatLng(novaLocalizacao.latitude, novaLocalizacao.longitude)
+                direcao.value = novaLocalizacao.bearing
+
                 if(!localizouUsuario){
                     atualizarPosicaoCamera(localizacao.value)
                     buscarOcorrenciasRaio()
                     buscarRelatorioRaio()
                     localizouUsuario = true
+                }
+
+                if(cameraMapaAcompanhaUsuario.value){
+                    atualizarPosicaoCamera(
+                        angulo = if(modoRota.value) 90f else 0f,
+                        latLng = localizacao.value,
+                        zoom = 22f
+                    )
                 }
 
 
@@ -186,13 +197,14 @@ class MapaViewModel (private val mapRepository: IMapRepository,
             .tilt(
                angulo
             )
+            .bearing(direcao.value)
             .zoom(zoom)
             .build()
 
         if(animacao){
             viewModelScope.launch {
                 mapa?.awaitAnimateCamera(CameraUpdateFactory.newCameraPosition(posicaoCameraMapa),
-                    durationMs = 2000)
+                    durationMs = 1000)
             }
         }
         else{
@@ -209,13 +221,7 @@ class MapaViewModel (private val mapRepository: IMapRepository,
     }
 
     fun atualizarPosicaoCameraLocalizacaoUsuario(){
-        posicaoCameraMapa = CameraPosition.builder()
-            .target(localizacao.value)
-            .zoom(16f)
-            .build()
-        mapa?.moveCamera(CameraUpdateFactory.newCameraPosition(
-            posicaoCameraMapa
-        ))
+        atualizarPosicaoCamera(localizacao.value, zoom=20f)
     }
     // endregion
 
@@ -286,7 +292,7 @@ class MapaViewModel (private val mapRepository: IMapRepository,
                 entradaDestinoRota.value)
             if(requisicao.isSuccessful){
                 _rotas.value = requisicao.body()!!
-                exibirPolylinesOpcoes()
+                exibirOpcoesRotas()
             }
 
         }
@@ -311,6 +317,8 @@ class MapaViewModel (private val mapRepository: IMapRepository,
             latLng = coordenadasTrajetoRota.value!![0],
             angulo = 90f
         )
+        cameraMapaAcompanhaUsuario.value = true
+        modoRota.value = true
     }
 
     fun exibirPolyline(rotaResponse: RotaResponse, corPolyline: Color){
@@ -326,10 +334,9 @@ class MapaViewModel (private val mapRepository: IMapRepository,
     }
 
 
-    fun exibirPolylinesOpcoes() {
-        polylines.forEach {
-            it.remove()
-        }
+    fun exibirOpcoesRotas() {
+        limparPolylinesRotas()
+
         _rotas.value.sortedBy {
             it.qtdOcorrenciasTotais
         }.forEachIndexed { i, rota ->
@@ -337,6 +344,10 @@ class MapaViewModel (private val mapRepository: IMapRepository,
 
 
         }
+        atualizarPosicaoCamera(
+            latLng = polylines[0].points[0],
+            angulo = 0f
+        )
     }
     //endregion
 

@@ -29,8 +29,7 @@ fun ItemListaCardRelatorio(modifier: Modifier = Modifier, cor: Color, crime: Cri
     Row(horizontalArrangement = Arrangement.spacedBy(8.dp),
         verticalAlignment = Alignment.CenterVertically,
         modifier = Modifier.fillMaxWidth()){
-        Box(modifier = modifier.background(cor, RoundedCornerShape(25)).height(12.dp).width(24.dp)
-            .border(1.dp, color = Color.Black, shape = RoundedCornerShape(25)))
+        Box(modifier = modifier.background(cor, RoundedCornerShape(25)).height(12.dp).width(24.dp))
         TextoItemCardRelatorio(crime.crime.replace(" - OUTROS", "").sentenceCase().trim())
         TextoItemCardRelatorio("-")
         TextoItemCardRelatorio(crime.qtdOcorrido.toString()+" ocorrências")
