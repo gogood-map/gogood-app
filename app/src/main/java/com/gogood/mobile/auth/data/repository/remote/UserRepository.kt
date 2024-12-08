@@ -36,17 +36,22 @@ class UserRepository(private val userService: UserService, private val dataStore
         TODO("Not yet implemented")
     }
 
-    override suspend fun salvarUsuario(usuarioResponse: UsuarioResponse) {
+    override suspend fun salvarUsuarioLocal(usuarioResponse: UsuarioResponse) {
         val jsonString = Json.encodeToString(usuarioResponse)
         dataStore.edit { preferences ->
             preferences[usuarioPreferencesKey] = jsonString
         }
     }
-    override fun obterUsuarioSalvo(): Flow<UsuarioResponse?> {
+    override fun obterUsuarioSalvoLocal(): Flow<UsuarioResponse?> {
         return dataStore.data.map { preferences ->
             preferences[usuarioPreferencesKey]?.let { jsonString ->
                 Json.decodeFromString<UsuarioResponse>(jsonString)
             }
+        }
+    }
+    override suspend fun excluirUsuarioLocal(){
+        dataStore.edit { preferences ->
+            preferences.remove(usuarioPreferencesKey)
         }
     }
 }

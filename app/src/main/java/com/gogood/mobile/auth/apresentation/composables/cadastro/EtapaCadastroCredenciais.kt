@@ -68,10 +68,10 @@ fun EtapaCadastroCredenciais(navController: NavController) {
         TitleText("Cadastre-se")
         Spacer(modifier = Modifier.height(14.dp))
 
-        Campo("Nome", nomeState, nomeValido)
+        Campo("Nome", nomeState, "Seu nome",nomeValido)
         Spacer(modifier = Modifier.height(14.dp))
 
-        Campo("Email", emailState, emailValido)
+        Campo("Email", emailState, "seu@email.com",emailValido)
         Spacer(modifier = Modifier.height(14.dp))
 
         CampoSenha("Senha",  senhaState, exibirSenhaState, senhaValida)
@@ -100,8 +100,6 @@ fun EtapaCadastroCredenciais(navController: NavController) {
         NavigationButtons(nextSection = "DadosPessoaisSection", enableNext = habilitarProximo)
 
         Spacer(modifier = Modifier.height(18.dp))
-        SocialLogin()
-        Spacer(modifier = Modifier.height(10.dp))
         LoginLink(navController)
     }
 }
@@ -124,24 +122,7 @@ fun TitleText(text: String) {
 }
 
 
-@Composable
-fun SocialLogin() {
-    Row(
-        horizontalArrangement = Arrangement.Center,
-        verticalAlignment = Alignment.Bottom,
-        modifier = Modifier.fillMaxWidth()
-    ) {
-        Column(horizontalAlignment = Alignment.CenterHorizontally) {
-            Text(
-                text = "Ou faça parte com",
-                fontSize = 12.sp,
-                fontWeight = FontWeight.Normal,
-            )
-            Spacer(modifier = Modifier.height(10.dp))
-            GoogleIcon()
-        }
-    }
-}
+
 
 @Composable
 fun LoginLink(navController: NavController) {

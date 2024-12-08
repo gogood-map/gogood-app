@@ -9,16 +9,16 @@ data class RelatorioOcorrenciasResponse(
 
 data class CrimeQtd(
     val crime: String,
-    val qtd: Int
+    val qtdOcorrido: Int
 )
 
 data class QtdMes(
-    val janeiro: Int,
-    val fevereiro: Int,
-    val marco: Int,
-    val abril: Int,
-    val maio: Int,
-    val junho: Int,
-    val julho: Int,
-    val agosto: Int
+    var janeiro: Int = 0,
+    var fevereiro: Int = 0,
+    var marco: Int = 0,
+    var abril: Int = 0,
+    var maio: Int = 0,
+    var junho: Int = 0,
+    var julho: Int = 0,
+    var agosto: Int = 0
 )

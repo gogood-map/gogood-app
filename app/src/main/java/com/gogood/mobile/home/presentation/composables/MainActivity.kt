@@ -4,10 +4,13 @@ import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.tooling.preview.Preview
 import com.gogood.mobile.common.di.appModule
+import com.gogood.mobile.home.presentation.viewmodels.MapaViewModel
 import com.gogood.mobile.ui.theme.GoGoodTheme
 import org.koin.android.ext.koin.androidContext
+import org.koin.compose.viewmodel.koinViewModel
 import org.koin.core.context.startKoin
 
 class MainActivity : ComponentActivity() {

@@ -12,28 +12,28 @@ import retrofit2.http.Path
 
 interface UserService {
 
-    @POST("api/usuarios/login")
+    @POST("usuarios/login")
     suspend fun login(
         @Body request: LoginRequest
     ): Response<UsuarioResponse>
 
-    @POST("api/usuarios/cadastro")
+    @POST("usuarios/cadastro")
     suspend fun register(
         @Body usuarioCadastro: UsuarioCadastroRequest
     ): Response<UsuarioResponse>
 
-    @PUT("/usuarios/{id}")
+    @PUT("usuarios/{id}")
     suspend fun update(
         @Path("id") id: Int,
         @Body usuarioCadastro: UsuarioCadastroRequest
     ): Response<Void>
 
-    @DELETE("/usuarios/{id}")
+    @DELETE("usuarios/{id}")
     suspend fun delete(
         @Path("id") id: Int
     ): Response<Void>
 
-    @GET("/usuarios/{id}")
+    @GET("usuarios/{id}")
     suspend fun getUser(
         @Path("id") id: Int
     ): Response<UsuarioCadastroRequest>

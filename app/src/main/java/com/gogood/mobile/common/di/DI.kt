@@ -4,37 +4,57 @@ import android.content.Context
 import androidx.datastore.core.DataStore
 import androidx.datastore.preferences.core.Preferences
 import androidx.datastore.preferences.preferencesDataStore
+import com.gogood.mobile.address.data.repository.IAddressRepository
+import com.gogood.mobile.address.data.repository.remote.AddressRepository
+import com.gogood.mobile.address.domain.services.AddressService
+import com.gogood.mobile.address.presentation.viewModel.AddressViewModel
 import com.gogood.mobile.auth.apresentation.viewmodels.CadastroViewModel
 import com.gogood.mobile.auth.apresentation.viewmodels.LoginViewModel
 import com.gogood.mobile.auth.data.repository.IUserRepository
 import com.gogood.mobile.auth.data.repository.remote.UserRepository
 import com.gogood.mobile.auth.domain.services.UserService
 import com.gogood.mobile.common.ApiClient
-import com.gogood.mobile.home.domain.services.MapsService
-import com.gogood.mobile.home.data.repository.remote.MapRepository
 import com.gogood.mobile.home.data.repository.IMapRepository
+import com.gogood.mobile.home.data.repository.local.MapRepositoryLocal
+import com.gogood.mobile.home.data.repository.remote.MapRepository
 import com.gogood.mobile.home.domain.services.GooglePlacesService
+import com.gogood.mobile.home.domain.services.MapsService
+import com.gogood.mobile.home.domain.usecases.BuscaEnderecoUseCase
+import com.gogood.mobile.home.domain.usecases.BuscaRotaUseCase
+import com.gogood.mobile.home.domain.usecases.IBuscaEnderecoUseCase
+import com.gogood.mobile.home.domain.usecases.IBuscaRotaUseCase
+import com.gogood.mobile.home.domain.usecases.IObterCoordenadasOcorrenciaRaioUseCase
+import com.gogood.mobile.home.domain.usecases.IObterRelatorioRaioUseCase
+import com.gogood.mobile.home.domain.usecases.ISalvarRotaHistoricoUseCase
+import com.gogood.mobile.home.domain.usecases.ObterCoordenadasOcorrenciasRaioUseCase
+import com.gogood.mobile.home.domain.usecases.ObterRelatorioRaioUseCase
+import com.gogood.mobile.home.domain.usecases.SalvarRotaHistoricoUseCase
 import com.gogood.mobile.home.presentation.viewmodels.MapaViewModel
 import com.gogood.mobile.menu.apresentation.viewmodels.MenuViewModel
 import com.gogood.mobile.menu.data.repository.IEnderecoRepository
 import com.gogood.mobile.menu.data.repository.remote.EnderecoRepository
 import com.gogood.mobile.menu.domain.services.EnderecoService
-import com.gogood.mobile.utils.ConexaoInternetObserver
-import com.gogood.mobile.utils.LocalizacaoObserver
-import org.koin.android.ext.koin.androidContext
+import com.gogood.mobile.utils.AppNavigator
+import com.gogood.mobile.utils.ConexaoUtils
+import com.gogood.mobile.utils.IAppNavigator
+import com.gogood.mobile.utils.IConexaoUtils
+import com.gogood.mobile.utils.ILocalizacaoUtils
+import com.gogood.mobile.utils.LocalizacaoUtils
+import org.koin.android.ext.koin.androidApplication
 import org.koin.core.module.dsl.viewModel
 import org.koin.dsl.module
 
 val appModule = module {
     single<DataStore<Preferences>> {
-        provideDataStore(androidContext())
+        provideDataStore(androidApplication())
     }
-    single<ConexaoInternetObserver>{
-        ConexaoInternetObserver(androidContext())
-    }
-    single<LocalizacaoObserver>
+
+    single<ILocalizacaoUtils>
     {
-        LocalizacaoObserver(androidContext())
+        LocalizacaoUtils(androidApplication())
+    }
+    single<IConexaoUtils>{
+        ConexaoUtils(androidApplication())
     }
 
     single<MapsService> {
@@ -50,22 +70,46 @@ val appModule = module {
         ApiClient.googlePlacesService
     }
 
+    single<AddressService> { ApiClient.addressService }
+
+    single<IAppNavigator>{
+        AppNavigator()
+    }
+
+    single<IAddressRepository> { AddressRepository(get()) }
+
 
     single <IEnderecoRepository>{
         EnderecoRepository(get())
     }
     single<IMapRepository>{
-        MapRepository(get(), get())
+        MapRepository(get(), get(), get())
+        //MapRepositoryLocal(get())
     }
     single<IUserRepository>{
         UserRepository(get(), get())
     }
 
+    single <IObterCoordenadasOcorrenciaRaioUseCase>{
+        ObterCoordenadasOcorrenciasRaioUseCase(get())
+    }
+    single<IObterRelatorioRaioUseCase> {
+        ObterRelatorioRaioUseCase(get())
+    }
 
+    single<IBuscaEnderecoUseCase>{
+        BuscaEnderecoUseCase(get())
+    }
+    single<IBuscaRotaUseCase> {
+        BuscaRotaUseCase(get())
+    }
+    single<ISalvarRotaHistoricoUseCase>{
+        SalvarRotaHistoricoUseCase(get())
+    }
 
 
     viewModel {
-        MapaViewModel(get(), get(), get())
+        MapaViewModel(get(), get(), get(), get(), get(), get(), get(), get(), get())
     }
     viewModel {
         MenuViewModel(get(), get())
@@ -76,6 +120,9 @@ val appModule = module {
     viewModel {
         CadastroViewModel(get())
     }
+
+    viewModel { AddressViewModel(get()) }
+
 }
 val Context.dataStore by preferencesDataStore("user_preferences")
 fun provideDataStore(context: Context): DataStore<Preferences> {

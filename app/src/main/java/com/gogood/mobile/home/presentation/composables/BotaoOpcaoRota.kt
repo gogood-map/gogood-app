@@ -1,4 +1,4 @@
-package com.gogood.mobile.bandeja.presentation.composables
+package com.gogood.mobile.home.presentation.composables
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -20,18 +20,8 @@ import com.gogood.mobile.ui.theme.GogoodOptionRed
 import com.gogood.mobile.ui.theme.GogoodOptionYellow
 
 @Composable
-fun BotaoOpcaoRota(opcao: OpcaoRota, selecionado: Boolean = false, onClick: () -> Unit) {
-    val razaoQtdOcorrenciasDistancia = opcao.qtdOcorrencias / opcao.distancia
-    val cor = when {
-        razaoQtdOcorrenciasDistancia <= 50 -> GogoodOptionGreen
-        razaoQtdOcorrenciasDistancia <= 75 -> GogoodOptionYellow
-        else -> GogoodOptionRed
-    }
-    val riscoTexto = when {
-        razaoQtdOcorrenciasDistancia <= 50 -> "Risco baixo"
-        razaoQtdOcorrenciasDistancia <= 75 -> "Risco médio"
-        else -> "Risco alto"
-    }
+fun BotaoOpcaoRota(opcao: OpcaoRota, corOpcao:Color, texto:String,
+                   selecionado: Boolean = false, onClick: () -> Unit) {
 
     Button(
         onClick = onClick,
@@ -58,12 +48,12 @@ fun BotaoOpcaoRota(opcao: OpcaoRota, selecionado: Boolean = false, onClick: () -
                         .width(32.dp)
                         .height(12.dp)
                         .clip(RoundedCornerShape(30))
-                        .background(cor)
+                        .background(corOpcao)
                         .border(1.5.dp, if (selecionado) Color.White else Color.Transparent)
                 )
-                Text(text = riscoTexto, fontSize = 16.sp)
+                Text(text = texto, fontSize = 16.sp)
             }
-            Text(text = "${opcao.distancia} km", fontSize = 16.sp)
+            Text(text = opcao.duracao, fontSize = 16.sp)
         }
     }
 }

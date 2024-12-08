@@ -12,6 +12,7 @@ import okhttp3.Response
 import okhttp3.logging.HttpLoggingInterceptor
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
+import java.util.concurrent.TimeUnit
 
 object ApiClient {
     class apiInterceptor: Interceptor {
@@ -20,6 +21,7 @@ object ApiClient {
             val newRequest = Request.Builder()
                 .url(request.url)
                 .method(request.method, request.body)
+
                 .build()
             return chain.proceed(newRequest)
         }
@@ -28,7 +30,9 @@ object ApiClient {
 
     private val client by lazy {
         OkHttpClient.Builder()
-            .addInterceptor(apiInterceptor())
+            .connectTimeout(60, TimeUnit.SECONDS)
+            .readTimeout(60, TimeUnit.SECONDS)
+            .writeTimeout(60, TimeUnit.SECONDS)
             .addInterceptor(logInterceptor())
             .build()
     }
@@ -80,6 +84,10 @@ object ApiClient {
 
     val googlePlacesService by lazy {
         apiGooglePlaces.create(GooglePlacesService::class.java)
+    }
+
+    val addressService by lazy {
+        api.create(EnderecoService::class.java)
     }
 
 //    fun <T> createService(service: Class<T>): T {
