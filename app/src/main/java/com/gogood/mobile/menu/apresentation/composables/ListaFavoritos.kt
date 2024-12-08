@@ -46,25 +46,25 @@ fun ListaFavoritos(
             }
 
         }
-        Row(
-            verticalAlignment = Alignment.CenterVertically,
-            horizontalArrangement = Arrangement.spacedBy(10.dp),
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(top = 10.dp)
-                .padding(horizontal = 16.dp)
-                .clickable {
-                    openAddressForm()
-                }
-        ) {
-            Icon(
-                Icons.AutoMirrored.Filled.PlaylistAdd,
-                modifier = Modifier
-                    .size(28.dp),
-                contentDescription = "Botão de Adicionar Favorito"
-            )
-            TextoItemListaFavorito("Adicionar Favorito")
-        }
+//        Row(
+//            verticalAlignment = Alignment.CenterVertically,
+//            horizontalArrangement = Arrangement.spacedBy(10.dp),
+//            modifier = Modifier
+//                .fillMaxWidth()
+//                .padding(top = 10.dp)
+//                .padding(horizontal = 16.dp)
+//                .clickable {
+//                    openAddressForm()
+//                }
+//        ) {
+//            Icon(
+//                Icons.AutoMirrored.Filled.PlaylistAdd,
+//                modifier = Modifier
+//                    .size(28.dp),
+//                contentDescription = "Botão de Adicionar Favorito"
+//            )
+//            TextoItemListaFavorito("Adicionar Favorito")
+//        }
     }
 
     if (showDialog) {
