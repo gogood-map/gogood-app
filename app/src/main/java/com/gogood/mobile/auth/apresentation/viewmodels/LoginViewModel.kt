@@ -5,6 +5,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import androidx.lifecycle.viewmodel.compose.viewModel
 import com.gogood.mobile.common.ApiClient.userService
 import com.gogood.mobile.auth.domain.services.LoginRequest
 import com.gogood.mobile.auth.data.repository.IUserRepository
@@ -26,16 +27,21 @@ class LoginViewModel(
             val resposta = userService.login(LoginRequest(email, password))
             if (resposta.isSuccessful) {
                 isLoggedIn.value = true
-                userRepository.salvarUsuario(resposta.body()!!)
+                userRepository.salvarUsuarioLocal(resposta.body()!!)
             }else{
                 isError = true
             }
         }
     }
+    fun sair(){
+        viewModelScope.launch {
+            userRepository.excluirUsuarioLocal()
+        }
 
+    }
     fun verificarLogin(){
         viewModelScope.launch {
-            userRepository.obterUsuarioSalvo().collect{usuario->
+            userRepository.obterUsuarioSalvoLocal().collect{ usuario->
                 if(usuario != null){
                     isLoggedIn.value = true
                 }else{

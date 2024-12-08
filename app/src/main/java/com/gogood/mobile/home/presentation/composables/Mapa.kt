@@ -16,12 +16,14 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.AltRoute
 import androidx.compose.material.icons.filled.CrisisAlert
 import androidx.compose.material.icons.filled.Explore
 import androidx.compose.material.icons.filled.MyLocation
+import androidx.compose.material.icons.filled.Stop
 import androidx.compose.material.icons.sharp.Directions
 import androidx.compose.material.icons.sharp.LocationOn
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -39,6 +41,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.unit.dp
@@ -48,6 +51,7 @@ import com.gogood.mobile.home.presentation.viewmodels.MapaViewModel
 import com.gogood.mobile.menu.apresentation.composables.Menu
 import com.gogood.mobile.ui.theme.GogoodGray
 import com.gogood.mobile.ui.theme.GogoodGreen
+import com.gogood.mobile.ui.theme.GogoodOptionRed
 import com.gogood.mobile.ui.theme.GogoodWhite
 import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.MapView
@@ -133,6 +137,7 @@ fun Mapa(navController: NavController) {
 
                 if(mapaViewModel.localizacaoUtils.permissaoLocalizacao.value){
                     mapaViewModel.mapa!!.isMyLocationEnabled = true
+
                 }else{
                     mapaViewModel.mapa!!.moveCamera(
                         CameraUpdateFactory.newCameraPosition(CameraPosition.fromLatLngZoom(
@@ -172,10 +177,7 @@ fun Mapa(navController: NavController) {
                 exit = slideOutVertically(targetOffsetY = { it })
             ) {
                 CaixaPesquisaEndereco(searchState = buscaEnderecoState) {
-
                     mapaViewModel.buscarEndereco(buscaEnderecoState.value)
-
-
                 }
             }
 
@@ -240,18 +242,42 @@ fun Mapa(navController: NavController) {
                 }
                 Spacer(modifier = Modifier.height(16.dp))
                 if(rotas.isNotEmpty()){
-                    SmallFloatingActionButton(
-                        onClick = {
-                            mapaViewModel.showBottomSheet = true
-                        },
-                        containerColor = GogoodGreen,
-                        contentColor = GogoodWhite,
-                        shape = CircleShape,) {
-                        Icon(
-                            imageVector = Icons.Default.AltRoute,
-                            contentDescription = "Opções de Rotas"
-                        )
+                    Row (){
+
+                            SmallFloatingActionButton(
+                                onClick = {
+                                    mapaViewModel.showBottomSheet = true
+                                },
+                                containerColor = GogoodGreen,
+                                contentColor = GogoodWhite,
+                                shape = CircleShape,) {
+                                Icon(
+                                    imageVector = Icons.Default.AltRoute,
+                                    contentDescription = "Opções de Rotas"
+                                )
+                            }
+
+
+
+                            SmallFloatingActionButton(
+                                onClick = {
+                                    mapaViewModel.limparPolylinesRotas()
+                                    mapaViewModel.limparRotas()
+                                    mapaViewModel.cameraMapaAcompanhaUsuario.value = false
+                                    mapaViewModel.modoRota.value = false
+                                    mapaViewModel.atualizarPosicaoCameraLocalizacaoUsuario()
+                                },
+                                containerColor = Color.White,
+                                contentColor = GogoodOptionRed,
+                                shape = CircleShape,) {
+                                Icon(
+                                    imageVector = Icons.Default.Stop,
+                                    contentDescription = "Opções de limpar rotas"
+                                )
+                            }
+
                     }
+
                     Spacer(modifier = Modifier.height(16.dp))
                 }
 

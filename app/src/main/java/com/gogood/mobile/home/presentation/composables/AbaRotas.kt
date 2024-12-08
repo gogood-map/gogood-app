@@ -51,11 +51,17 @@ fun AbaRotas() {
                     ListaOpcoesRotas()
                 }
             }
+            if(mapaViewModel.loadingBuscaRotas.value){
+               item {
+                   Loading()
+               }
+            }
             item {
                 Spacer(modifier = Modifier.height(16.dp))
                 Button(
                     onClick = {
                         if (entradasRotasValidas) {
+                            mapaViewModel.loadingBuscaRotas.value = true
                             mapaViewModel.buscarRotas()
                         }
                     },

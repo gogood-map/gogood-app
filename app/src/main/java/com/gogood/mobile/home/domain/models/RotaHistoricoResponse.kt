@@ -6,5 +6,5 @@ data class RotaHistoricoResponse(
     val destino: String,
     val meio_locomocao: String,
     val idUsuario: Int,
-    val created_at: String
+    var created_at: String
 )

@@ -53,7 +53,7 @@ fun BotaoOpcaoRota(opcao: OpcaoRota, corOpcao:Color, texto:String,
                 )
                 Text(text = texto, fontSize = 16.sp)
             }
-            Text(text = "${opcao.distancia} km", fontSize = 16.sp)
+            Text(text = opcao.duracao, fontSize = 16.sp)
         }
     }
 }

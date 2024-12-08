@@ -12,6 +12,7 @@ import com.gogood.mobile.auth.apresentation.viewmodels.LoginViewModel
 import com.gogood.mobile.common.apresentation.composables.Erro
 import com.gogood.mobile.home.presentation.stateholders.MainStateHolder
 import com.gogood.mobile.home.presentation.viewmodels.MapaViewModel
+import com.gogood.mobile.utils.IAppNavigator
 import com.gogood.mobile.utils.ILocalizacaoUtils
 import org.koin.compose.koinInject
 import org.koin.compose.viewmodel.koinViewModel
@@ -30,8 +31,8 @@ fun Home(navController: NavController) {
     ) { isGranted ->
         if (isGranted) {
             localizacaoObserver.permissaoLocalizacao.value = true
+            mapaViewModel.localizouUsuario = false
             mapaViewModel.observarLocalizacaoUsuario()
-
         }
     }
     SideEffect {
@@ -62,7 +63,7 @@ fun Home(navController: NavController) {
                     tituloErro = uiState.titulo
                 }
                 Erro(titulo = tituloErro, descricao = descricaoErro) {
-                    mapaViewModel.uiState.value = MainStateHolder.Content()
+                    navController.navigate("Mapa")
                 }
             }
 

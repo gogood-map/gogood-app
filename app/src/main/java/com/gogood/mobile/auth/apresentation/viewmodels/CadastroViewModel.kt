@@ -56,7 +56,7 @@ class CadastroViewModel(private val userRepository: IUserRepository) : ViewModel
                 isLoading = false
                 isOk = true
 
-                userRepository.salvarUsuario(resposta.body()!!)
+                userRepository.salvarUsuarioLocal(resposta.body()!!)
 
 
             }else{

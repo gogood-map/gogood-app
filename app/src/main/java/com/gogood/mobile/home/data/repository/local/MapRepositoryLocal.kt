@@ -143,7 +143,14 @@ class MapRepositoryLocal(private val dataStore: DataStore<Preferences>): IMapRep
     }
 
     override suspend fun salvarRotaHistorico(rotaNova: RotaHistoricoRequest): Response<RotaHistoricoResponse> {
-        TODO("Not yet implemented")
+        return Response.success(RotaHistoricoResponse(
+            id = 0,
+            idUsuario = 0,
+            origem = "",
+            destino = "",
+            meio_locomocao = "",
+            created_at = ""
+        ))
     }
 
     override suspend fun obterEnderecosPesquisados(): Flow<List<String>>{

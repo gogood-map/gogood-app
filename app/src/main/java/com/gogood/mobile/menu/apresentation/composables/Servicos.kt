@@ -11,7 +11,9 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.sharp.Analytics
+import androidx.compose.material.icons.outlined.Favorite
+import androidx.compose.material.icons.sharp.ExitToApp
+import androidx.compose.material.icons.sharp.Favorite
 import androidx.compose.material.icons.sharp.History
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
@@ -33,63 +35,30 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import com.gogood.mobile.auth.apresentation.composables.SolicitacaoEntrada
+import com.gogood.mobile.auth.apresentation.viewmodels.LoginViewModel
 import com.gogood.mobile.menu.apresentation.viewmodels.MenuViewModel
+import com.gogood.mobile.ui.theme.GogoodOptionRed
 import org.koin.compose.viewmodel.koinViewModel
+import kotlin.math.log
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun Servicos(navController: NavController, menuViewModel: MenuViewModel = koinViewModel()) {
-
-    val sheetState = rememberModalBottomSheetState()
-    var showBottomSheet by remember { mutableStateOf(false) }
+fun Servicos(navController: NavController) {
+    val menuViewModel: MenuViewModel = koinViewModel()
 
     Column(verticalArrangement = Arrangement.spacedBy(16.dp)) {
-        Titulo(texto = "Serviços")
+
         Row(horizontalArrangement = Arrangement.Center, modifier = Modifier.fillMaxWidth()) {
-            CardServico(texto = "Histórico", cor = Color(0xFFB0DCFC), icone = Icons.Sharp.History, tamanho = 100.dp) {
-                showBottomSheet = true
+            CardServico(texto = "Favoritos", corFundo = Color(0xFFFFCBCD), icone = Icons.Outlined.Favorite, tamanho = 100.dp,
+                ativo = menuViewModel.abaMenu == 0) {
+                menuViewModel.abaMenu = 0
             }
             Spacer(modifier = Modifier.width(24.dp))
-            CardServico(texto = "Analytics", cor = Color(0xFFB0FCCD), icone = Icons.Sharp.Analytics, tamanho = 100.dp) {
-                showBottomSheet = true
+            CardServico(texto = "Histórico", corFundo = Color(0xFFB0DCFC), icone = Icons.Sharp.History, tamanho = 100.dp,
+                ativo = menuViewModel.abaMenu == 1) {
+                menuViewModel.abaMenu = 1
             }
-        }
-    }
-
-    if (showBottomSheet) {
-        ModalBottomSheet(
-            sheetState = sheetState,
-            onDismissRequest = { showBottomSheet = false }
-        ) {
-            if( menuViewModel.usuario!!.userId == null){
-                SolicitacaoEntrada(
-
-                    modifier = Modifier.padding(bottom = 64.dp)
-                )
-            }else{
-
-            }
-
-
         }
     }
 }
 
-@Composable
-fun CardServico(texto: String, cor: Color, icone: ImageVector, tamanho: Dp, onClick: () -> Unit) {
-    Card(
-        onClick = onClick,
-        colors = CardDefaults.cardColors(containerColor = cor),
-        modifier = Modifier.size(tamanho)
-    ) {
-        Column(
-            horizontalAlignment = Alignment.CenterHorizontally,
-            verticalArrangement = Arrangement.Center,
-            modifier = Modifier.fillMaxSize()
-        ) {
-            Icon(imageVector = icone, contentDescription = null)
-            Spacer(modifier = Modifier.height(8.dp))
-            Text(text = texto)
-        }
-    }
-}

@@ -12,20 +12,17 @@ import androidx.compose.ui.graphics.toArgb
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.gogood.mobile.auth.apresentation.viewmodels.LoginViewModel
 import com.gogood.mobile.auth.data.repository.IUserRepository
 import com.gogood.mobile.auth.domain.models.UsuarioResponse
 import com.gogood.mobile.home.data.repository.IMapRepository
 import com.gogood.mobile.home.domain.models.RelatorioOcorrenciasResponse
 import com.gogood.mobile.home.domain.models.RotaHistoricoRequest
 import com.gogood.mobile.home.domain.models.RotaResponse
-import com.gogood.mobile.home.domain.usecases.BuscaRotaUseCase
 import com.gogood.mobile.home.domain.usecases.IBuscaEnderecoUseCase
 import com.gogood.mobile.home.domain.usecases.IBuscaRotaUseCase
 import com.gogood.mobile.home.domain.usecases.IObterCoordenadasOcorrenciaRaioUseCase
 import com.gogood.mobile.home.domain.usecases.IObterRelatorioRaioUseCase
 import com.gogood.mobile.home.domain.usecases.ISalvarRotaHistoricoUseCase
-import com.gogood.mobile.home.domain.usecases.SalvarRotaHistoricoUseCase
 import com.gogood.mobile.home.presentation.stateholders.MainStateHolder
 import com.gogood.mobile.ui.theme.GogoodOrange
 import com.gogood.mobile.ui.theme.GogoodPolylines
@@ -50,7 +47,6 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
-import org.koin.compose.viewmodel.koinViewModel
 
 class MapaViewModel (private val mapRepository: IMapRepository,
                      private val userRepository: IUserRepository,
@@ -95,10 +91,11 @@ class MapaViewModel (private val mapRepository: IMapRepository,
     private var polylines = mutableStateListOf<Polyline>()
     private var localizacao = MutableStateFlow(LatLng(-23.550395929666593, -46.63396345499372))
     private var mapaCalorCamada: TileOverlay? by mutableStateOf(null)
-    private var localizouUsuario by mutableStateOf(false)
+    var localizouUsuario by mutableStateOf(false)
     private var rotaEscolhida = MutableLiveData<RotaResponse>()
     private var coordenadasTrajetoRota = MutableLiveData<List<LatLng>>()
 
+    val loadingBuscaRotas = mutableStateOf(false)
 
     var posicaoCameraMapa by mutableStateOf(
         CameraPosition.
@@ -143,7 +140,7 @@ class MapaViewModel (private val mapRepository: IMapRepository,
 
                 if(cameraMapaAcompanhaUsuario.value){
                     atualizarPosicaoCamera(
-                        angulo = if(modoRota.value) 90f else 0f,
+                        angulo = if(cameraMapaAcompanhaUsuario.value) 90f else 0f,
                         latLng = localizacao.value,
                         zoom = 22f
                     )
@@ -211,14 +208,14 @@ class MapaViewModel (private val mapRepository: IMapRepository,
             .tilt(
                angulo
             )
-            .bearing(direcao.value)
+            .bearing(if(cameraMapaAcompanhaUsuario.value) direcao.value else 0f)
             .zoom(zoom)
             .build()
 
         if(animacao){
             viewModelScope.launch {
                 mapa?.awaitAnimateCamera(CameraUpdateFactory.newCameraPosition(posicaoCameraMapa),
-                    durationMs = 1000)
+                    durationMs = 1500)
             }
         }
         else{
@@ -316,13 +313,14 @@ class MapaViewModel (private val mapRepository: IMapRepository,
 
             resultado.onSuccess {
                 _rotas.value = resultado.getOrNull()!!
+                loadingBuscaRotas.value = false
                 exibirOpcoesRotas()
             }
             resultado.onFailure {
                 atualizarUiState(MainStateHolder.Error("Busca rota", it.message!!))
             }
 
-            userRepository.obterUsuarioSalvo().collect{
+            userRepository.obterUsuarioSalvoLocal().collect{
                 usuarioLogado.value = it
                 if(usuarioLogado.value != null){
                     salvarRotaHistoricoUseCase(

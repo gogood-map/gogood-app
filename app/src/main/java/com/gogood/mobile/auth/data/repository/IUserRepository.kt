@@ -11,8 +11,9 @@ interface IUserRepository {
     suspend fun update(usuarioCadastro: UsuarioCadastroRequest): Response<Void>
     suspend fun delete(id: Int): Response<Void>
     suspend fun getUser(userId: String): Response<UsuarioCadastroRequest>
-    suspend fun salvarUsuario(usuarioResponse: UsuarioResponse)
-    fun obterUsuarioSalvo(): Flow<UsuarioResponse?>
+    suspend fun salvarUsuarioLocal(usuarioResponse: UsuarioResponse)
+    fun obterUsuarioSalvoLocal(): Flow<UsuarioResponse?>
 //    suspend fun googleRegister(user: User): Response<User>
 //    suspend fun googleLogin(email: String, googleId: String): Response<User>
+    suspend fun excluirUsuarioLocal()
 }
